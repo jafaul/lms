@@ -24,7 +24,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', "default-secret-key")
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True').lower() == 'True'
+DEBUG = True # os.getenv('DEBUG', 'True').lower() == 'True'
 
 ALLOWED_HOSTS = ["*"]
 
@@ -39,9 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',  # sending msg from server to client
     'django.contrib.staticfiles',  # allowing static files (html, css)
 
-    'apps.lesson.apps',
     'apps.about',
-    'apps.random_app'
+    'apps.random_app',
+    'apps.user',
+    'apps.management',
+    'apps.assessment'
+
 ]
 
 MIDDLEWARE = [
