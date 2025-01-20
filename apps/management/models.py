@@ -16,18 +16,11 @@ class Course(models.Model):
     description = models.TextField(_('Description'), null=True, blank=True)
     students = models.ManyToManyField(
         User, related_name='courses_as_students',
-      #  through='CourseStudent', through_fields=('course', 'student')
     )
 
     def __str__(self):
-        return self.title
+        return f'<Course: {self.title}>'
 
-
-# class CourseStudent(models.Model):
-#     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-#     student = models.ForeignKey(
-#         User, on_delete=models.CASCADE)
-#
 
 class Task(models.Model):
     course = models.ForeignKey(
