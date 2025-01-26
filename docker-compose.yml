@@ -8,6 +8,8 @@ services:
         POSTGRES_DB: ${DB_NAME}
     env_file:
       - .env
+    ports:
+      - ${DB_PORT}:${DB_PORT}
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -20,7 +22,7 @@ services:
       - .:/src
     env_file:
      - .env
-    command: "/bin/bash -c 'python3 manage.py runserver 0.0.0.0:8000'"
+    command: "/bin/bash -c './manage.py migrate; python3 manage.py runserver 0.0.0.0:8000'"
     depends_on:
       - db
     ports:

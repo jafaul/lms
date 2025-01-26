@@ -24,7 +24,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', "default-secret-key")
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True').lower() == 'True'
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ["*"]
 
@@ -39,9 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',  # sending msg from server to client
     'django.contrib.staticfiles',  # allowing static files (html, css)
 
-    'apps.lesson.apps',
     'apps.about',
-    'apps.random_app'
+    'apps.random_app',
+    'apps.user',
+    'apps.management',
+    'apps.assessment'
+
 ]
 
 MIDDLEWARE = [
@@ -83,6 +86,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'ATOMIC_REQUESTS': True,
     }
 }
 
@@ -118,6 +122,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+# todo check multilang
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
