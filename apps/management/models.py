@@ -1,14 +1,15 @@
 import datetime
+
+from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from apps.authentication.models import User
+
+User = get_user_model()
 
 
 # Create your models here.
-
-
 class Course(models.Model):
     teacher = models.ForeignKey(
         User, on_delete=models.SET_NULL, related_name='courses_as_teacher', null=True)

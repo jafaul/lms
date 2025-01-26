@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    {%  block style %} {% endblock %}
+</head>
+<body>
+
+<div class="container first-container col-sm-12 pull-left">
+  <table class="table table-condensed">
+    <thead>
+      <tr>
+        <th id="id-column">ID</th>
+        <th id="title-column">Title</th>
+        <th id="teacher-column">Teacher</th>
+        <th id="desc-column">Description</th>
+        <th id="stud-column">Students</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for course in object_list %}
+        <tr class="row">
+            <td id="id-column">
+               {{ course.id }}
+            </td>
+            <td id="title-column">
+                {{ course.title }}
+            </td>
+            <td id="teacher-column">
+                {{ course.teacher.email}}
+            </td>
+
+            <td id="desc-column">{{ course.description }}</td>
+            <td id="stud-column">
+            {% if course.students.all %}
+                <ul id="students-list">
+                    {% for student in course.students.all %}
+                        <li>{{ student.email}}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                No students
+            {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+
+</body>
+</html>

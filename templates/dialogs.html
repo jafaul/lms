@@ -1,0 +1,46 @@
+<fieldset id="input-default-form">
+    <form method="post">
+    {% csrf_token %}
+        {% for field in fields %}
+            <label for="{{ field.name }}">
+                {{ field.title }}
+                {% if field.is_required %}
+                    <span class="required">*</span>
+                {% endif %}
+            </label>
+
+            {% if field.name == "description" %}
+                    <textarea id="desc" name="{{ field.name }}" rows="4" cols="30"
+                              {% if field.is_required %}required{% endif %}>
+                    </textarea>
+            {% elif field.type == "list" %}
+                <select class="form-select" name="{{ field.name }}"
+                    {% if field.multiple %} multiple {% endif %}
+                    {% if field.is_required %} required {% endif %}>
+                    {% if not field.default %}
+                        <option disabled selected>Select {{ field.name }}</option>
+                    {% else %}
+                         <option selected>{{ field.default }}</option>
+                    {% endif %}
+
+                    {% for field_option in field.options %}
+                        <option value="{{ field_option }}" id="options">{{ field_option }}</option>
+                    {% endfor %}
+
+                </select>
+            {% else %}
+                <input class="form-field"
+                   id="{{ field.name }}"
+                   type="{{ field.type }}"
+                   name="{{ field.name }}"
+                   {% if field.default_value %} value="{{ field.default_value }}" {% endif %}
+                   {% if field.max %} max="{{ field.max }}" {% endif %}
+                   {% if field.min %} min="{{ field.min }}" {% endif %}
+                   {% if field.is_required %}required{% endif %}
+                   {% if field.placeholder %}placeholder="{{ field.placeholder }}"{% endif %} />  <br>
+
+                {% endif %}
+        {% endfor %}
+        {%  include 'submit.html' with url='' method='get' text=submit_name id='submit-btn' %}
+    </form>
+</fieldset>

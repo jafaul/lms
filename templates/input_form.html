@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+
+{% block title %} {{ title }} {% endblock %}
+
+{% block content %}
+    {% include 'dialogs.html' with fields=fields %}
+{% endblock content %}
+
+
+
+{%  include 'footer.html' %}

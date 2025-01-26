@@ -11,6 +11,8 @@ from django.utils.translation import gettext_lazy as _
 # class UserData(models.Model):
 #     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
+# todo check pbkdf2 storage password standard; c
+
 class SchoolUserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
         if not email:
@@ -33,6 +35,11 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
     email = models.EmailField(_('email address'), unique=True)
     objects = SchoolUserManager()
+
+    def save(self, *args, **kwargs):
+        if not self.username:
+            self.username = self.email
+        super(User, self).save(*args, **kwargs)
 
 #
 # # https://docs.djangoproject.com/en/5.1/topics/auth/customizing/

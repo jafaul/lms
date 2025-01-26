@@ -1,0 +1,7 @@
+{% if url %}
+ <form action="{{ url }}" method="{{ method }}">
+ {% else %}
+ <form>
+ {% endif %}
+    <button type="submit" class="btn btn-primary" id="{{ id }}">{{ text }}</button>
+</form>
