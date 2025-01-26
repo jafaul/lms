@@ -194,3 +194,7 @@ tests/.test.env
 users/
 .env
 db.sqlite3
+dz1
+dz1_run.py
+
+*.pyc
