@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.utils.translation.template import context_re
 
 from django.views.generic import ListView, CreateView, TemplateView
@@ -42,16 +43,27 @@ class MyCourseListView(LoginRequiredMixin, ListView):
 
 
 class CourseView(TemplateView):
-    def get_context_data(self, request, course_id: int):
-        course = models.Course.objects.get(id=course_id)
-        course_data = {
-                "title": course.title,
-                "description": course.description,
-                "teacher": course.teacher.username if course.teacher else None,
-                "students": [student for student in course.students],
-                "tasks": [task for task in course.tasks],
-            }
-        return JsonResponse(course_data, safe=False)
+    template_name = 'course_detail.html'
+
+    def get_context_data(self, course_id: int, **kwargs):
+        get_object_or_404(models.Course, id=course_id)
+
+        course = models.Course.objects.prefetch_related(
+            "students",
+            "lectures",
+            "tasks",
+            "tasks__responses",
+            "tasks__responses__mark__mark_value"
+        ).select_related(
+            "teacher"
+        ).get(id=course_id)
+
+        context = super().get_context_data(**kwargs)
+        context['course'] = course
+        context['lectures'] = course.lectures.all()
+        context['tasks'] = course.tasks.all()
+
+        return context
 
 
 

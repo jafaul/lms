@@ -9,12 +9,12 @@ User = get_user_model()
 
 # Create your models here.
 class Response(models.Model):
-    task = models.ForeignKey("management.Task", on_delete=models.CASCADE)
+    task = models.ForeignKey("management.Task", on_delete=models.CASCADE, related_name="responses")
     description = models.TextField(_("Description"), max_length=500)
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     submission_datetime = models.DateTimeField(
         _("Submission datetime"), auto_now_add=True, blank=True, null=False)
-    mark =  models.OneToOneField("assessment.Mark", on_delete=models.CASCADE, null=True)  # one to one rel
+    mark =  models.OneToOneField("assessment.Mark", on_delete=models.CASCADE, null=True, blank=True)  # one to one rel
 
     def __str__(self):
         return self.description
@@ -27,4 +27,4 @@ class Mark(models.Model):
     teacher = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.mark_value
+        return str(self.mark_value)

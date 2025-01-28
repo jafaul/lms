@@ -9,7 +9,7 @@ urlpatterns = [
     path("", views.CourseListView.as_view(), name='all-courses'),
     path("my/", views.MyCourseListView.as_view(), name='my-courses'),
 
-    # path("courses/<int:course_id>/", CourseView.as_view(), name='management_course_by_id'),
+    path("<int:course_id>/", views.CourseView.as_view(), name='course-detail'),
     # path("courses/add/", CourseCreateView.as_view(), name='management_create_course'),
 
 ]
