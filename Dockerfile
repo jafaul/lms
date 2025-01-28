@@ -15,6 +15,10 @@ COPY poetry.lock .
 
 RUN poetry config virtualenvs.create false
 
-RUN pip install poetry && poetry install --only main --no-root --no-directory
+RUN if [ "$DEBUG" = "False" ]; then \
+    pip install poetry && poetry install --only main --no-root --no-directory; \
+    else \
+        pip install poetry && poetry install --no-root --no-directory; \
+    fi
 
 COPY . .

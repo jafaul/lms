@@ -26,10 +26,14 @@ class UserSettingsView(LoginRequiredMixin, TemplateView):
     template_name = 'settings.html'
 
 
+class UserProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'profile.html'
+
+
 class UserRegistrationView(View):
     def get(self, request):
         if request.user.is_authenticated:
-            return redirect('apps.management:management_courses')
+            return redirect('apps.management:my_courses')
         form = UserRegistrationForm(request.GET or None)
         return render(
             request=request,
@@ -39,13 +43,13 @@ class UserRegistrationView(View):
 
     def post(self, request):
         if request.user.is_authenticated:
-            return redirect('apps.management:management_courses')
+            return redirect('apps.management:my_courses')
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
             user.is_active = True
             login(request, user)
-            return redirect('apps.management:management_courses')
+            return redirect('apps.management:my_courses')
         else:
             for error in list(form.errors.values()):
                 print(request, error)

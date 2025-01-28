@@ -4,14 +4,6 @@ from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-# Create your models here.
-
-# User = get_user_model()
-
-# class UserData(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-# todo check pbkdf2 storage password standard; c
 
 class SchoolUserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
@@ -24,32 +16,32 @@ class SchoolUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password, **extra_fields):
-        extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('is_staff', True)
-
+        extra_fields.setdefault('position', User.Position.ADMIN)
         return self.create_user(email, password, **extra_fields)
 
 
 class User(AbstractUser):
+    class Position(models.TextChoices):
+        ADMIN = "admin", _("Admin")
+        TEACHER = "teacher", _("Teacher")
+        STUDENT = "student", _("Student")
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     email = models.EmailField(_('email address'), unique=True)
     objects = SchoolUserManager()
+    position = models.CharField(max_length=20, choices=Position.choices, default=Position.STUDENT)
 
     def save(self, *args, **kwargs):
         if not self.username:
             self.username = self.email
         super(User, self).save(*args, **kwargs)
 
-#
-# # https://docs.djangoproject.com/en/5.1/topics/auth/customizing/
-# class User(models.Model):
-#     email = models.EmailField(unique=True, max_length=36)
-#     password = models.CharField(max_length=36)
-#     name = models.CharField(_('Name'), max_length=36)
-#     surname = models.CharField(_('Surname'), max_length=40)
-#     photo = models.ImageField(_('Photo'), upload_to='users/%Y/%m/%d', null=True, blank=True)
-#     phone_number = models.CharField(max_length=20, blank=True, null=True)
-#
-#     def __str__(self):
-#         return self.name + " " + self.surname
+    @property
+    def is_staff(self):
+        return self.position == User.Position.TEACHER or \
+            self.position == User.Position.ADMIN
+
+    @property
+    def is_superuser(self):
+        return self.position == User.Position.ADMIN

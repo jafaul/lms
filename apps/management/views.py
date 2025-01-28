@@ -1,27 +1,70 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.http import HttpResponse
-from django.urls import reverse_lazy
-from django.views import View
-from django.views.generic import ListView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
+from django.utils.translation.template import context_re
 
+from django.views.generic import ListView, CreateView, TemplateView
 
 from apps.management import models
 
 
-# Create your views here.
-class HomeView(View):
-    def get(self, request, *args, **kwargs):
-        return HttpResponse(f"Hello World, GET: { request.META.get('HTTP_USER_AGENT')}")
+class CourseListView(ListView):
+    model = models.Course
+    template_name = 'course_list.html'
 
+    def get_queryset(self):
+        return models.Course.objects.prefetch_related(
+            "students"
+        ).select_related("teacher").all()
 
-# todo https://www.geeksforgeeks.org/software-engineering-coupling-and-cohesion/ ; two scoops of django
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Courses"
+
+        return context
 
 
 # @login_required -- func based
-class CourseListView(LoginRequiredMixin, ListView):
+class MyCourseListView(LoginRequiredMixin, ListView):
     model = models.Course
-    redirect_field_name = 'next'  # Where to redirect after login
+    redirect_field_name = 'next'
     template_name = 'course_list.html'
+
+    def get_queryset(self):
+        return models.Course.objects.prefetch_related(
+            "students"
+        ).select_related("teacher").filter(students=self.request.user).all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "My Courses"
+
+        return context
+
+
+class CourseView(TemplateView):
+    template_name = 'course_detail.html'
+
+    def get_context_data(self, course_id: int, **kwargs):
+        get_object_or_404(models.Course, id=course_id)
+
+        course = models.Course.objects.prefetch_related(
+            "students",
+            "lectures",
+            "tasks",
+            "tasks__responses",
+            "tasks__responses__mark__mark_value"
+        ).select_related(
+            "teacher"
+        ).get(id=course_id)
+
+        context = super().get_context_data(**kwargs)
+        context['course'] = course
+        context['lectures'] = course.lectures.all()
+        context['tasks'] = course.tasks.all()
+
+        return context
+
 
 
 # class CourseCreateView(CreateView):
@@ -29,17 +72,3 @@ class CourseListView(LoginRequiredMixin, ListView):
 #     fields = '__all__'
 #     success_url = reverse_lazy("management:management_create_course")
 #
-
-# class CourseView(TemplateView):
-#     def get(self, request, course_id: int):
-#         course = models.Course.objects.get(id=course_id)
-#         course_data = {
-#                 "id": course.id,
-#                 "title": course.title,
-#                 "description": course.description,
-#                 "teacher": course.teacher.username if course.teacher else None,
-#                 # "students": [for student in course.students],
-#             }
-#         return JsonResponse(course_data, safe=False)
-
-

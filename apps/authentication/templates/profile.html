@@ -1,0 +1,31 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{%  trans "Account Settings" %}</title>
+    {%  block style %} {% endblock %}
+</head>
+<body>
+<div>
+    <h2>{%  trans "My account" %}</h2>
+    <fieldset>
+
+        <ul>
+            <li>{%  trans "Fullname:" %} {{ user.first_name  }} {{ user.last_name }}</li>
+            <li>{%  trans "Role:" %} {{ user.position|capfirst }}</li>
+            <li>{%  trans "Email:" %} {{ user.email }}</li>
+            <li>{%  trans "Date joined: " %}{{ user.date_joined }}</li>
+        </ul>
+
+    </fieldset>
+</div>
+
+<div>
+<a href="{% url "apps.management:my-courses" %}"> My courses </a>
+</div>
+
+</body>
+</html>

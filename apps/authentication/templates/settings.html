@@ -1,16 +1,21 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock %}</title>
+    <title>{%  trans "Account Settings" %}</title>
     {%  block style %} {% endblock %}
 </head>
 <body>
+<div>
+    <h1>{%  trans "Settings" %}</h1>
+
+</div>
 <form method="post" action="{% url 'apps.authentication:to_logout' %}">
     {% csrf_token %}
-    <button type="submit">Logout</button>
+    <button type="submit">{% trans "Logout" %}</button>
 </form>
 </body>
 </html>
