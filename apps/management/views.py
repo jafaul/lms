@@ -11,6 +11,11 @@ class CourseListView(ListView):
     model = models.Course
     template_name = 'course_list.html'
 
+    def get_queryset(self):
+        return models.Course.objects.prefetch_related(
+            "students"
+        ).select_related("teacher").all()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Courses"
@@ -25,7 +30,9 @@ class MyCourseListView(LoginRequiredMixin, ListView):
     template_name = 'course_list.html'
 
     def get_queryset(self):
-        return models.Course.objects.filter(students=self.request.user)
+        return models.Course.objects.prefetch_related(
+            "students"
+        ).select_related("teacher").filter(students=self.request.user).all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -33,12 +40,6 @@ class MyCourseListView(LoginRequiredMixin, ListView):
 
         return context
 
-
-# class CourseCreateView(CreateView):
-#     model = models.Course
-#     fields = '__all__'
-#     success_url = reverse_lazy("management:management_create_course")
-#
 
 class CourseView(TemplateView):
     def get_context_data(self, request, course_id: int):
@@ -53,3 +54,9 @@ class CourseView(TemplateView):
         return JsonResponse(course_data, safe=False)
 
 
+
+# class CourseCreateView(CreateView):
+#     model = models.Course
+#     fields = '__all__'
+#     success_url = reverse_lazy("management:management_create_course")
+#
