@@ -17,20 +17,22 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from config import settings
+from config.settings import base
 
 # todo https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Django/Sessions
 # todo try to do data migrations (DML) while dividing app for a few new apps
 # todo https://www.geeksforgeeks.org/software-engineering-coupling-and-cohesion/ ; two scoops of django
+# todo check pbkdf2 storage password standard; c
+# todo книжка искусство джанго
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('courses/', include('apps.management.urls', namespace='management')),
     path('accounts/', include('apps.authentication.urls', namespace='authentication')),
-    path(''), include('apps.home.urls', namespace='home')
+    path('', include('apps.home.urls', namespace='home')),
 ]
 
-if settings.DEBUG:
+if base.DEBUG:
     from debug_toolbar.toolbar import debug_toolbar_urls
     urlpatterns += debug_toolbar_urls()

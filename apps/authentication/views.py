@@ -26,6 +26,10 @@ class UserSettingsView(LoginRequiredMixin, TemplateView):
     template_name = 'settings.html'
 
 
+class UserProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'profile.html'
+
+
 class UserRegistrationView(View):
     def get(self, request):
         if request.user.is_authenticated:

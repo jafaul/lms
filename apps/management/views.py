@@ -25,7 +25,7 @@ class MyCourseListView(LoginRequiredMixin, ListView):
     template_name = 'course_list.html'
 
     def get_queryset(self):
-        return models.Course.objects.filter(user=self.request.user)
+        return models.Course.objects.filter(students=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
