@@ -7,7 +7,7 @@ User = apps.get_model(settings.AUTH_USER_MODEL)
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ["email", "is_superuser", "is_active"]
+    list_display = ["email", "position", "is_staff", "is_superuser", "is_active"]
 
 
 admin.site.register(User, UserAdmin)

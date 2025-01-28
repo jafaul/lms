@@ -1,27 +1,37 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.http import HttpResponse
-from django.urls import reverse_lazy
-from django.views import View
-from django.views.generic import ListView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse, JsonResponse
+from django.utils.translation.template import context_re
 
+from django.views.generic import ListView, CreateView, TemplateView
 
 from apps.management import models
 
 
-# Create your views here.
-class HomeView(View):
-    def get(self, request, *args, **kwargs):
-        return HttpResponse(f"Hello World, GET: { request.META.get('HTTP_USER_AGENT')}")
+class CourseListView(ListView):
+    model = models.Course
+    template_name = 'course_list.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Courses"
 
-# todo https://www.geeksforgeeks.org/software-engineering-coupling-and-cohesion/ ; two scoops of django
+        return context
 
 
 # @login_required -- func based
-class CourseListView(LoginRequiredMixin, ListView):
+class MyCourseListView(LoginRequiredMixin, ListView):
     model = models.Course
-    redirect_field_name = 'next'  # Where to redirect after login
+    redirect_field_name = 'next'
     template_name = 'course_list.html'
+
+    def get_queryset(self):
+        return models.Course.objects.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "My Courses"
+
+        return context
 
 
 # class CourseCreateView(CreateView):
@@ -30,16 +40,16 @@ class CourseListView(LoginRequiredMixin, ListView):
 #     success_url = reverse_lazy("management:management_create_course")
 #
 
-# class CourseView(TemplateView):
-#     def get(self, request, course_id: int):
-#         course = models.Course.objects.get(id=course_id)
-#         course_data = {
-#                 "id": course.id,
-#                 "title": course.title,
-#                 "description": course.description,
-#                 "teacher": course.teacher.username if course.teacher else None,
-#                 # "students": [for student in course.students],
-#             }
-#         return JsonResponse(course_data, safe=False)
+class CourseView(TemplateView):
+    def get_context_data(self, request, course_id: int):
+        course = models.Course.objects.get(id=course_id)
+        course_data = {
+                "title": course.title,
+                "description": course.description,
+                "teacher": course.teacher.username if course.teacher else None,
+                "students": [student for student in course.students],
+                "tasks": [task for task in course.tasks],
+            }
+        return JsonResponse(course_data, safe=False)
 
 
