@@ -25,6 +25,7 @@ services:
     command: "/bin/bash -c './manage.py migrate; python3 manage.py runserver 0.0.0.0:8000'"
     depends_on:
       - db-postgres
+
     ports:
       - "${DJANGO_PROJECT_PORT}:${DJANGO_PROJECT_PORT}"
 
