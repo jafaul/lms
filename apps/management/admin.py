@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.db import models
+from tinymce.widgets import TinyMCE
 
 from apps.management.models import Course, Task, Lecture
 
@@ -24,6 +26,13 @@ class TaskAdmin(admin.ModelAdmin):
     list_filter = ("title", )
     readonly_fields = ("title", "max_mark", )
 
+    formfield_overrides = {
+        models.TextField: {
+            "widget": TinyMCE(attrs={"rows": 3, "cols": 20}),
+        }
+    }
+
+
 
 @admin.register(Lecture)
 class LectureAdmin(admin.ModelAdmin):
@@ -31,3 +40,9 @@ class LectureAdmin(admin.ModelAdmin):
     search_fields = ("title", )
     list_filter = ("title", )
     readonly_fields = ("title", )
+
+    formfield_overrides = {
+        models.TextField: {
+            "widget": TinyMCE(attrs={"rows": 3, "cols": 20}),
+        }
+    }

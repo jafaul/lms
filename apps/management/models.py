@@ -28,7 +28,7 @@ class Task(models.Model):
         "Course", on_delete=models.CASCADE, related_name="tasks"
     )
     title = models.CharField(_("Title"), max_length=100)
-    description = HTMLField(_("Description"), max_length=1000)
+    description = models.TextField(_("Description"), max_length=1000)
     max_mark = models.PositiveIntegerField(
         _("Max Mark"), default=5,  validators=[MinValueValidator(1), MaxValueValidator(200)]
     )
