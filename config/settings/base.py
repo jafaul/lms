@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',  # sending msg from server to client
     'django.contrib.staticfiles',  # allowing static files (html, css)
 
+    'tinymce',
+
     'apps.authentication',
     'apps.management',
     'apps.assessment'
@@ -141,6 +143,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 # LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'

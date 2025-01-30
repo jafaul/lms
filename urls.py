@@ -31,6 +31,8 @@ urlpatterns = [
     path('courses/', include('apps.management.urls', namespace='management')),
     path('accounts/', include('apps.authentication.urls', namespace='authentication')),
     path('', include('apps.home.urls', namespace='home')),
+    path('tinymce/', include('tinymce.urls')),
+
 ]
 
 if base.DEBUG:

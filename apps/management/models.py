@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
+from tinymce.models import HTMLField
 
 User = get_user_model()
 
@@ -28,7 +28,7 @@ class Task(models.Model):
         "Course", on_delete=models.CASCADE, related_name="tasks"
     )
     title = models.CharField(_("Title"), max_length=100)
-    description = models.TextField(_("Description"), max_length=1000)
+    description = HTMLField(_("Description"), max_length=1000)
     max_mark = models.PositiveIntegerField(
         _("Max Mark"), default=5,  validators=[MinValueValidator(1), MaxValueValidator(200)]
     )

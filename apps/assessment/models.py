@@ -3,6 +3,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from django.utils.translation import gettext_lazy as _
+from tinymce.models import HTMLField
 
 User = get_user_model()
 
@@ -10,7 +11,7 @@ User = get_user_model()
 # Create your models here.
 class Response(models.Model):
     task = models.ForeignKey("management.Task", on_delete=models.CASCADE, related_name="responses")
-    description = models.TextField(_("Description"), max_length=500)
+    description = HTMLField(_("Description"), max_length=500)
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     submission_datetime = models.DateTimeField(
         _("Submission datetime"), auto_now_add=True, blank=True, null=False)
