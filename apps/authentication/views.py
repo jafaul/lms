@@ -6,9 +6,9 @@ from django.contrib.auth.views import LoginView as BaseLoginView
 from django.contrib.auth.views import LogoutView as BaseLogoutView
 from django.shortcuts import render, redirect
 from django.views import View
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, FormView
 
-from apps.authentication.form import UserRegistrationForm
+from apps.authentication import forms
 
 
 # Create your views here.
@@ -30,32 +30,7 @@ class UserProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'profile.html'
 
 
-class UserRegistrationView(View):
-    def get(self, request):
-        if request.user.is_authenticated:
-            return redirect('apps.management:my_courses')
-        form = UserRegistrationForm(request.GET or None)
-        return render(
-            request=request,
-            template_name='register.html',
-            context={'form': form}
-        )
-
-    def post(self, request):
-        if request.user.is_authenticated:
-            return redirect('apps.management:my_courses')
-        form = UserRegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            user.is_active = True
-            login(request, user)
-            return redirect('apps.management:my_courses')
-        else:
-            for error in list(form.errors.values()):
-                print(request, error)
-            return render(
-                request=request,
-                template_name='register.html',
-                context={'form': form}
-            )
+class UserRegistrationView(FormView):
+    template_name = "register.html"
+    form_class = forms.UserRegistrationForm
 

@@ -1,6 +1,5 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.auth.models import AbstractUser, Group
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -17,12 +16,18 @@ class SchoolUserManager(BaseUserManager):
 
     def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault('position', User.Position.ADMIN)
-        return self.create_user(email, password, **extra_fields)
+        user = self.create_user(email, password, **extra_fields)
+
+        admin_group, created = Group.objects.get_or_create(name="Admin")
+        user.groups.add(admin_group)
+
+        return user
 
 
 class User(AbstractUser):
     class Position(models.TextChoices):
         ADMIN = "admin", _("Admin")
+        MANAGER = "manager", _("Manager")
         TEACHER = "teacher", _("Teacher")
         STUDENT = "student", _("Student")
 

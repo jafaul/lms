@@ -6,10 +6,13 @@ app_name = "apps.management"
 
 
 urlpatterns = [
+    # list views
     path("", views.CourseListView.as_view(), name='all-courses'),
     path("my/", views.MyCourseListView.as_view(), name='my-courses'),
-
-    path("<int:course_id>/", views.CourseView.as_view(), name='course-detail'),
-    # path("courses/add/", CourseCreateView.as_view(), name='management_create_course'),
-
+    # detail views
+    path("<int:pk>/", views.CourseDetailView.as_view(), name='course-detail'),
+    # create views
+    path("add/", views.CourseCreateView.as_view(), name='create_course'),
+    path("<int:pk>/tasks/add/", views.TaskCreateView.as_view(), name='create-task'),
+    path("<int:pk>/lectures/add/", views.LectureCreateView.as_view(), name='create-lecture'),
 ]
