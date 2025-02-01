@@ -52,6 +52,11 @@ class MarkCreateView(BaseCreateView):
 
     def form_valid(self, form):
         form.instance.teacher = self.request.user
+        answer = get_object_or_404(models.Answer, pk=self.kwargs['pkanswer'])
+        mark = form.save()
+        answer.mark = mark
+        answer.save()
+
         return super().form_valid(form)
 
     def get_action_url(self):

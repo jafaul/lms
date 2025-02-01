@@ -80,8 +80,8 @@
                                 <tr>
                                 <td>{{ answer.student.first_name}} {{ answer.student.last_name }}</td>
                                 <td>{{ answer.description|safe }}</td>
-                                <td>{{ answer.submission_date }}</td>
-                                {% if answer.mark %}
+                                <td>{{ answer.submission_datetime }}</td>
+                                {% if answer.mark_id %}
                                 <td>{{ answer.mark.teacher.first_name }} {{ answer.mark.teacher.last_name}}</td>
                                 <td>{{ answer.mark.mark_value }}</td>
                                 {% else %}

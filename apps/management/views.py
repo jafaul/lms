@@ -53,7 +53,7 @@ class CourseDetailView(DetailView):
             "lectures",
             "tasks",
             "tasks__answers",
-            "tasks__answers__mark__mark_value"
+            "tasks__answers__mark"
         ).select_related("teacher")
 
         return course

@@ -15,7 +15,9 @@ class Answer(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     submission_datetime = models.DateTimeField(
         _("Submission datetime"), auto_now_add=True, blank=True, null=False)
-    mark =  models.OneToOneField("assessment.Mark", on_delete=models.CASCADE, null=True, blank=True)  # one to one rel
+    mark = models.OneToOneField(
+        "assessment.Mark", on_delete=models.CASCADE, null=True, blank=True, related_name="answer"
+    )  # one to one rel
 
     def __str__(self):
         return self.description
@@ -25,7 +27,7 @@ class Mark(models.Model):
     submission_datetime = models.DateTimeField(_("Submission datetime"), blank=True, null=False, auto_now=True)
     mark_value = models.IntegerField(
         _("Mark value"), default=5, validators=[MinValueValidator(1), MaxValueValidator(200)])
-    teacher = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
 
     def __str__(self):
         return str(self.mark_value)
