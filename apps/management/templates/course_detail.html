@@ -62,7 +62,7 @@
                         <dd class="sub-item-list"><strong>Description:</strong> </dd>
                         <dd  class="sub-item-list" style="margin-top: 10px;">{{ task.description|safe }}</dd>
                         {% endif %}
-                        {% if task.answers %}
+                        {% if task.answers.all %}
                             <hr>
 
                             <table  class="table table-condensed">
@@ -78,15 +78,18 @@
                             <tbody>
                             {% for answer in task.answers.all %}
                                 <tr>
-                                <td>{{ answer.student_name}}</td>
+                                <td>{{ answer.student.first_name}} {{ answer.student.last_name }}</td>
                                 <td>{{ answer.description|safe }}</td>
                                 <td>{{ answer.submission_date }}</td>
-                                {% if answer.mark and answer.teacher %}
-                                <td>{{ answer.teacher.first_name }} {{ answer.teacher.last_name}}</td>
-                                <td>{{ answer.mark }}</td>
+                                {% if answer.mark %}
+                                <td>{{ answer.mark.teacher.first_name }} {{ answer.mark.teacher.last_name}}</td>
+                                <td>{{ answer.mark.mark_value }}</td>
                                 {% else %}
                                 <td colspan="2">
-                                    <a href="" id="add-task-btn">Assign a mark</a>
+                                    <a href="{% url "assessment:create_mark" pk=course.id pktask=task.id pkanswer=answer.id %}"
+                                       id="add-task-btn">
+                                        Assign a mark
+                                    </a>
                                 </td>
                                 {% endif %}
 
@@ -95,7 +98,9 @@
                             </tbody>
                             </table>
                         {% endif %}
-                        <a href="" id="add-task-btn">Create answer</a>
+                        <a href="{% url "assessment:create_answer" pk=course.id pktask=task.id %}"
+                           id="add-task-btn">Create answer
+                        </a>
                         <hr>
 
                     {% endfor %}
@@ -115,3 +120,4 @@
 </body>
 
 {% include 'footer.html' %}
+</html>

@@ -2,10 +2,10 @@ from django.contrib import admin
 from django.db import models
 from tinymce.widgets import TinyMCE
 
-from apps.assessment.models import Response, Mark
+from apps.assessment.models import Answer, Mark
 
 
-@admin.register(Response)
+@admin.register(Answer)
 class ResponseAdmin(admin.ModelAdmin):
     list_display = ('id', 'description')
     search_fields = ('id', 'description')

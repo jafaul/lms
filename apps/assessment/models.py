@@ -9,8 +9,8 @@ User = get_user_model()
 
 
 # Create your models here.
-class Response(models.Model):
-    task = models.ForeignKey("management.Task", on_delete=models.CASCADE, related_name="responses")
+class Answer(models.Model):
+    task = models.ForeignKey("management.Task", on_delete=models.CASCADE, related_name="answers")
     description = HTMLField(_("Description"), max_length=500)
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     submission_datetime = models.DateTimeField(
@@ -25,7 +25,7 @@ class Mark(models.Model):
     submission_datetime = models.DateTimeField(_("Submission datetime"), blank=True, null=False, auto_now=True)
     mark_value = models.IntegerField(
         _("Mark value"), default=5, validators=[MinValueValidator(1), MaxValueValidator(200)])
-    teacher = models.ForeignKey(User, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
 
     def __str__(self):
         return str(self.mark_value)

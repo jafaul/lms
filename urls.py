@@ -32,7 +32,7 @@ urlpatterns = [
     path('accounts/', include('apps.authentication.urls', namespace='authentication')),
     path('', include('apps.home.urls', namespace='home')),
     path('tinymce/', include('tinymce.urls')),
-
+    path('courses/<int:pk>/tasks/<int:pktask>/', include('apps.assessment.urls', namespace='assessment')),
 ]
 
 if base.DEBUG:

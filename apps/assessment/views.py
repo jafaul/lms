@@ -1,3 +1,64 @@
-from django.shortcuts import render
+from django.contrib.auth import get_user_model
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
 
-# Create your views here.
+from apps.assessment import models, forms
+from apps.management.models import Course, Task
+
+
+class BaseCreateView(CreateView):
+    btn_name = ""
+    title = ""
+    template_name = 'form.html'
+
+    def get_action_url(self):
+        raise NotImplemented
+
+    def get_success_url(self):
+        return reverse_lazy('management:course-detail', kwargs={"pk": self.kwargs['pk']})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["action_url"] = self.get_action_url()
+        context["btn_name"] = self.btn_name
+        context["title"] = self.title
+        return context
+
+
+class AnswerCreateView(BaseCreateView):
+    model = models.Answer
+    form_class = forms.AnswerForm
+    btn_name = "Send homework"
+    title = "Apply homework"
+
+    def form_valid(self, form):
+        form.instance.student = self.request.user
+        form.instance.task = get_object_or_404(Task, pk=self.kwargs['pktask'])
+        return super().form_valid(form)
+
+    def get_action_url(self):
+        return reverse_lazy(
+            'assessment:create_answer', kwargs={"pk": self.kwargs["pk"], "pktask": self.kwargs['pktask']}
+        )
+
+
+class MarkCreateView(BaseCreateView):
+    model = models.Mark
+    form_class = forms.MarkForm
+    btn_name = "Assign mark"
+    title = "Assign mark"
+
+    def form_valid(self, form):
+        form.instance.teacher = self.request.user
+        return super().form_valid(form)
+
+    def get_action_url(self):
+        return reverse_lazy(
+            'assessment:create_mark', kwargs={
+                "pk": self.kwargs["pk"],
+                "pktask": self.kwargs['pktask'],
+                "pkanswer": self.kwargs['pkanswer'],
+            }
+        )

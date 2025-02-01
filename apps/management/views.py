@@ -52,8 +52,8 @@ class CourseDetailView(DetailView):
             "students",
             "lectures",
             "tasks",
-            "tasks__responses",
-            "tasks__responses__mark__mark_value"
+            "tasks__answers",
+            "tasks__answers__mark__mark_value"
         ).select_related("teacher")
 
         return course
@@ -62,7 +62,7 @@ class CourseDetailView(DetailView):
 class CourseCreateView(CreateView):
     model = models.Course
     fields = '__all__'
-    template_name = 'management_form.html'
+    template_name = 'form.html'
 
     def get_success_url(self):
         return reverse_lazy('management:course-detail', args=(self.object.id,))
@@ -79,7 +79,7 @@ class BaseCreateView(CreateView):
     action_url_name = ""
     btn_name = ""
     title = ""
-    template_name = 'management_form.html'
+    template_name = 'form.html'
 
 
     def get_success_url(self):
@@ -114,7 +114,3 @@ class LectureCreateView(BaseCreateView):
     title = "Create Lecture"
     action_url_name = "management:create-lecture"
     btn_name = "Create lecture"
-
-
-
-
