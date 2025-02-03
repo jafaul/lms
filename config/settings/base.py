@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 
     'tinymce',
 
+    'apps.home',
     'apps.authentication',
     'apps.management',
     'apps.assessment'

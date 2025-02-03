@@ -1,9 +1,10 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 
 from django.urls import reverse_lazy
 
-from django.views.generic import ListView, CreateView, DetailView
+from django.views.generic import ListView, CreateView, DetailView, UpdateView
 
 from apps.management import models, forms
 
@@ -25,7 +26,7 @@ class CourseListView(ListView):
 
 
 # @login_required -- func based
-class MyCourseListView(LoginRequiredMixin, ListView):
+class MyCourseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = models.Course
     redirect_field_name = 'next'
     template_name = 'course_list.html'
@@ -42,7 +43,7 @@ class MyCourseListView(LoginRequiredMixin, ListView):
         return context
 
 
-class CourseDetailView(DetailView):
+class CourseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     template_name = 'course_detail.html'
     model = models.Course
     context_object_name = 'course'  # to use "course" obj in template
@@ -53,16 +54,19 @@ class CourseDetailView(DetailView):
             "lectures",
             "tasks",
             "tasks__answers",
-            "tasks__answers__mark"
+            "tasks__answers__mark",
+            "tasks__answers__student",
+            "tasks__answers__mark__teacher"
         ).select_related("teacher")
 
         return course
 
 
-class CourseCreateView(CreateView):
+class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     model = models.Course
     fields = '__all__'
     template_name = 'form.html'
+    permission_required = ('apps.management.add_course',)
 
     def get_success_url(self):
         return reverse_lazy('management:course-detail', args=(self.object.id,))
@@ -75,12 +79,36 @@ class CourseCreateView(CreateView):
         return context
 
 
+class UpdateCourseView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+    model = models.Course
+    form_class = forms.CourseUpdateForm
+    template_name = 'form.html'
+    permission_required = ('apps.management.change_course',)
+
+    def get_success_url(self):
+        return reverse_lazy('management:course-detail', kwargs={'pk': self.kwargs['pk']})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Update"
+        context["action_url"] = reverse_lazy("management:update-course", kwargs={"pk": self.kwargs['pk']})
+        context["btn_name"] = "Register"
+        return context
+
+    def form_valid(self, form):
+        course = form.save(commit=False)
+        new_students = form.cleaned_data['students']
+        if new_students:
+            course.students.add(*new_students)
+        course.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+
 class BaseCreateView(CreateView):
     action_url_name = ""
     btn_name = ""
     title = ""
     template_name = 'form.html'
-
 
     def get_success_url(self):
         return reverse_lazy('management:course-detail', kwargs={"pk": self.kwargs['pk']})
@@ -98,7 +126,7 @@ class BaseCreateView(CreateView):
         return context
 
 
-class TaskCreateView(BaseCreateView):
+class TaskCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView):
     model = models.Task
     form_class = forms.TaskForm
 
@@ -107,7 +135,7 @@ class TaskCreateView(BaseCreateView):
     btn_name = "Add task"
 
 
-class LectureCreateView(BaseCreateView):
+class LectureCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView):
     model = models.Lecture
     form_class = forms.LectureForm
 

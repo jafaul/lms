@@ -16,7 +16,7 @@ class Course(models.Model):
     title = models.CharField(_('Title'), max_length=255)
     description = models.TextField(_('Description'), null=True, blank=True)
     students = models.ManyToManyField(
-        User, related_name='courses_as_students',
+        User, related_name='courses_as_students', default=[], blank=True
     )
 
     def __str__(self):

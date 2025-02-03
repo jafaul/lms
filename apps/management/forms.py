@@ -1,6 +1,7 @@
 from django import forms
+from django.contrib.auth import get_user_model
 
-from apps.management.models import Task, Lecture
+from apps.management.models import Task, Lecture, Course
 
 
 class TaskForm(forms.ModelForm):
@@ -24,3 +25,23 @@ class LectureForm(forms.ModelForm):
         lecture = super(LectureForm, self).save(commit=True)
         lecture.save()
         return lecture
+
+
+class CourseUpdateForm(forms.ModelForm):
+    User = get_user_model()
+
+    class Meta:
+        model = Course
+        fields = ["students", "teacher"]
+
+    students = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple(),
+    )
+
+    teacher = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        required=False,
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )

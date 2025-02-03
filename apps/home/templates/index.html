@@ -1,4 +1,4 @@
-{#{% load static %}#}
+{% load static %}
 {% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
@@ -11,22 +11,24 @@
 </head>
 <body>
 <h1>{% trans "Welcome to our school!" %}</h1>
-{#     <img class="welcome-picture" src="{% static 'Stay.jpg' %}" alt="There had to be a picture">#}
+     <img class="welcome-picture" src="{% static 'Stay.jpg' %}" alt="There had to be a picture">
 </body>
 <br>
-<a href="{% url "management:all-courses" %}">{% trans "Courses available" %}</a>
+<a href="{% url "management:all-courses" %}">{% trans "Courses available" %}</a><br>
 
 {% if user.is_authenticated %}
-    <p>{% trans "Hello" %}, {{ user.username }}!</p> <br>
-    <a href="{% url 'management:my-courses' %}">{% trans "My Courses" %}</a>
-    <hr>
-    <a href="{% url 'authentication:profile' %}">{% trans "My Profile" %}</a> <br>
-    <a href="{% url 'authentication:logout' %}">{% trans "Logout" %}</a> <br>
+    {% if not user.is_superuser %}
+        <p>{% trans "Hello" %} {{ user.username }}</p> <br>
+        <a href="{% url 'management:my-courses' %}">{% trans "My Courses" %}</a> <br>
+        <hr>
+        {% endif %}
+
+        <a href="{% url 'authentication:profile' %}">{% trans "Profile" %}</a> <br>
+        <a href="{% url 'authentication:settings' %}">{% trans "Settings" %}</a> <br>
 {% else %}
     <a href="{% url "authentication:login" %}">{% trans "Login" %}</a> <br>
     <a href="{% url "authentication:register" %}">{% trans "Sign up" %}</a> <br>
 {% endif %}
-
 
 {% include 'footer.html' %}
 
