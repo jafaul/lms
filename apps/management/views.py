@@ -9,9 +9,10 @@ from django.views.generic import ListView, CreateView, DetailView, UpdateView
 from apps.management import models, forms
 
 
-class CourseListView(ListView):
+class CourseListView(PermissionRequiredMixin, ListView):
     model = models.Course
     template_name = 'course_list.html'
+    permission_required = ("apps.management.view_course",)
 
     def get_queryset(self):
         return models.Course.objects.prefetch_related(
@@ -26,7 +27,7 @@ class CourseListView(ListView):
 
 
 # @login_required -- func based
-class MyCourseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+class MyCourseListView(LoginRequiredMixin, ListView):
     model = models.Course
     redirect_field_name = 'next'
     template_name = 'course_list.html'
@@ -48,6 +49,15 @@ class CourseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     model = models.Course
     context_object_name = 'course'  # to use "course" obj in template
 
+    def get_permission_required(self):
+        course = self.get_object()
+        permissions = [
+            "apps.management.view_course",
+            f"can_access_{course.id}_course_as_teacher",
+            f"can_access_{course.id}_course_as_student",
+        ]
+        return permissions
+
     def get_queryset(self):
         course = models.Course.objects.prefetch_related(
             "students",
@@ -66,7 +76,7 @@ class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     model = models.Course
     fields = '__all__'
     template_name = 'form.html'
-    permission_required = ('apps.management.add_course',)
+    permission_required = ["apps.management.create_course", ]
 
     def get_success_url(self):
         return reverse_lazy('management:course-detail', args=(self.object.id,))
@@ -134,6 +144,12 @@ class TaskCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView
     action_url_name = "management:create-task"
     btn_name = "Add task"
 
+    def get_permission_required(self):
+        permissions = [
+            f"can_access_{self.kwargs['pk']}_course_as_teacher",
+        ]
+        return permissions
+
 
 class LectureCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView):
     model = models.Lecture
@@ -142,3 +158,6 @@ class LectureCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateV
     title = "Create Lecture"
     action_url_name = "management:create-lecture"
     btn_name = "Create lecture"
+
+    permission_required = ("apps.management.create_lecture", )
+

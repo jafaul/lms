@@ -42,10 +42,14 @@ class User(AbstractUser):
             self.username = self.email
         super(User, self).save(*args, **kwargs)
 
+        group, _ = Group.objects.get_or_create(name=self.position)
+
+        self.groups.clear()
+        self.groups.add(group)
+
     @property
     def is_staff(self):
-        return self.position == User.Position.TEACHER or \
-            self.position == User.Position.ADMIN
+        return self.position in {User.Position.TEACHER, User.Position.ADMIN}
 
     @property
     def is_superuser(self):
