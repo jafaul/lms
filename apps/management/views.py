@@ -10,6 +10,7 @@ from django.views.generic import ListView, CreateView, DetailView, UpdateView
 
 from apps.management import models, forms
 from apps.management.models import Course
+from django.utils.translation import gettext_lazy as _
 
 
 class CourseListView(PermissionRequiredMixin, ListView):
@@ -98,7 +99,7 @@ class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
         teacher_permission = Permission(
             content_type=ContentType.objects.get_for_model(Course),
             codename=f"can_access_{course.id}_course_as_teacher",
-            name=f"Can access {course.id} course as teacher"
+            name=_(f"Can access {course.id} course as teacher")
         )
         teacher_permission.save()
         course.teacher.user_permissions.add(teacher_permission)
@@ -106,7 +107,7 @@ class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
         student_permission = Permission(
             content_type=ContentType.objects.get_for_model(Course),
             codename=f"can_access_{course.id}_course_as_student",
-            name=f"Can access {course.id} course as student"
+            name=_(f"Can access {course.id} course as student")
         )
         student_permission.save()
 

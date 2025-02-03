@@ -1,10 +1,11 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
 from apps.assessment import models, forms
-from apps.management.models import Course, Task
+from apps.management.models import Task
 
 
 class BaseCreateView(CreateView):
@@ -27,11 +28,17 @@ class BaseCreateView(CreateView):
         return context
 
 
-class AnswerCreateView(BaseCreateView):
+class AnswerCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView):
     model = models.Answer
     form_class = forms.AnswerForm
     btn_name = "Send homework"
     title = "Apply homework"
+
+    def get_permission_required(self):
+        permissions = [
+            f"can_access_{self.kwargs['pk']}_course_as_student",
+        ]
+        return permissions
 
     def form_valid(self, form):
         form.instance.student = self.request.user
@@ -44,11 +51,17 @@ class AnswerCreateView(BaseCreateView):
         )
 
 
-class MarkCreateView(BaseCreateView):
+class MarkCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView):
     model = models.Mark
     form_class = forms.MarkForm
     btn_name = "Assign mark"
     title = "Assign mark"
+
+    def get_permission_required(self):
+        permissions = [
+            f"can_access_{self.kwargs['pk']}_course_as_teacher",
+        ]
+        return permissions
 
     def form_valid(self, form):
         form.instance.teacher = self.request.user
