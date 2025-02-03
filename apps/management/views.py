@@ -1,4 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 
@@ -7,6 +9,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
 
 from apps.management import models, forms
+from apps.management.models import Course
 
 
 class CourseListView(PermissionRequiredMixin, ListView):
@@ -87,6 +90,30 @@ class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
         context["action_url"] = reverse_lazy("management:create_course")
         context["btn_name"] = "Create"
         return context
+
+    def form_valid(self, form):
+        course = form.save(commit=False)
+        course.save()
+
+        teacher_permission = Permission(
+            content_type=ContentType.objects.get_for_model(Course),
+            codename=f"can_access_{course.id}_course_as_teacher",
+            name=f"Can access {course.id} course as teacher"
+        )
+        teacher_permission.save()
+        course.teacher.user_permissions.add(teacher_permission)
+
+        student_permission = Permission(
+            content_type=ContentType.objects.get_for_model(Course),
+            codename=f"can_access_{course.id}_course_as_student",
+            name=f"Can access {course.id} course as student"
+        )
+        student_permission.save()
+
+        for student in course.students.all():
+            student.user_permissions.add(student_permission)
+
+        return super().form_valid(form)
 
 
 class UpdateCourseView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):

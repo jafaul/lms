@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView as BaseLoginView
 from django.contrib.auth.views import LogoutView as BaseLogoutView
 from django.shortcuts import render, redirect
@@ -30,7 +30,9 @@ class UserProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'profile.html'
 
 
-class UserRegistrationView(FormView):
+class UserRegistrationView(PermissionRequiredMixin, FormView):
     template_name = "register.html"
     form_class = forms.UserRegistrationForm
+
+    permission_required = ('authentication.create_user',)
 

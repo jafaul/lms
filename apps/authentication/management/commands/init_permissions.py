@@ -44,4 +44,6 @@ class Command(BaseCommand):
         )
         student_group.permissions.set(student_permissions)
 
+# todo add initialisation for the rest of courses
+
 
