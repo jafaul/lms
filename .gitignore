@@ -289,3 +289,18 @@ dz1
 dz1_run.py
 
 *.pyc
+
+.env
+
+
+# Secure files
+.env
+.env.template
+db.sqlite3
+
+# Python cache files
+*.pyc
+__pycache__/
+
+# IDE-related files
+.idea/

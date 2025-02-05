@@ -17,10 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+# todo https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Django/Sessions
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('lesson/', include('apps.lesson.urls')),
-    path('about/', include('apps.about.urls')),
-    path('random/', include('apps.random_app.urls')),
+    path('', include('apps.management.urls', namespace='management')),
 ]

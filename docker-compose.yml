@@ -1,5 +1,5 @@
 services:
-  db:
+  db-postgres:
     image: postgres:16
     environment:
         POSTGRES_USER: ${DB_USERNAME}
@@ -10,8 +10,10 @@ services:
       - .env
     volumes:
       - pgdata:/var/lib/postgresql/data
+    ports:
+      - ${DB_PORT}:${DB_PORT}
 
-  web:
+  django-web:
     build: .
     environment:
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
@@ -20,9 +22,9 @@ services:
       - .:/src
     env_file:
      - .env
-    command: "/bin/bash -c 'python3 manage.py runserver 0.0.0.0:8000'"
+    command: "/bin/bash -c './manage.py migrate; python3 manage.py runserver 0.0.0.0:8000'"
     depends_on:
-      - db
+      - db-postgres
     ports:
       - "${DJANGO_PROJECT_PORT}:${DJANGO_PROJECT_PORT}"
 
