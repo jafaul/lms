@@ -13,10 +13,9 @@ from apps.management.models import Course
 from django.utils.translation import gettext_lazy as _
 
 
-class CourseListView(PermissionRequiredMixin, ListView):
+class CourseListView(ListView):
     model = models.Course
     template_name = 'course_list.html'
-    permission_required = ("apps.management.view_course",)
 
     def get_queryset(self):
         return models.Course.objects.prefetch_related(
@@ -81,6 +80,7 @@ class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     fields = '__all__'
     template_name = 'form.html'
     permission_required = ["apps.management.create_course", ]
+    # form_class = forms.CourseCreateForm
 
     def get_success_url(self):
         return reverse_lazy('management:course-detail', args=(self.object.id,))
@@ -96,20 +96,22 @@ class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
         course = form.save(commit=False)
         course.save()
 
-        teacher_permission = Permission(
-            content_type=ContentType.objects.get_for_model(Course),
-            codename=f"can_access_{course.id}_course_as_teacher",
-            name=_(f"Can access {course.id} course as teacher")
-        )
-        teacher_permission.save()
-        course.teacher.user_permissions.add(teacher_permission)
+        content_type = ContentType.objects.get_for_model(Course)
 
-        student_permission = Permission(
-            content_type=ContentType.objects.get_for_model(Course),
+        teacher_perm, _ = Permission.objects.get_or_create(
+            codename=f"can_access_{course.id}_course_as_teacher",
+            name=_(f"Can access {course.title} course as teacher"),
+            content_type=content_type,
+        )
+
+        if course.teacher:
+            course.teacher.user_permissions.add(teacher_perm)
+
+        student_permission, _ = Permission.objects.get_or_create(
+            content_type=content_type,
             codename=f"can_access_{course.id}_course_as_student",
             name=_(f"Can access {course.id} course as student")
         )
-        student_permission.save()
 
         for student in course.students.all():
             student.user_permissions.add(student_permission)

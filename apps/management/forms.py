@@ -21,11 +21,6 @@ class LectureForm(forms.ModelForm):
         model = Lecture
         fields = ["title", "description"]
 
-    def save(self, commit=True):
-        lecture = super(LectureForm, self).save(commit=True)
-        lecture.save()
-        return lecture
-
 
 class CourseUpdateForm(forms.ModelForm):
     User = get_user_model()
@@ -45,3 +40,22 @@ class CourseUpdateForm(forms.ModelForm):
         required=False,
         widget=forms.Select(attrs={"class": "form-control"}),
     )
+
+
+class CourseCreateForm(forms.ModelForm):
+    User = get_user_model()
+    students = forms.ModelMultipleChoiceField(
+        queryset=User.objects.filter(groups__name=("student",)),
+        required=False,
+        widget=forms.CheckboxSelectMultiple(),
+    )
+
+    teacher = forms.ModelChoiceField(
+        queryset=User.objects.filter(groups__name=("teacher",)),
+        required=False,
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+
+    class Meta:
+        model = Course
+        fields = ["teacher", "title", "description", "students"]

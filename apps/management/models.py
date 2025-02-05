@@ -1,6 +1,8 @@
 import datetime
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -21,6 +23,22 @@ class Course(models.Model):
 
     def __str__(self):
         return f'<Course: {self.title}>'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        content_type = ContentType.objects.get_for_model(Course)
+
+        teacher_perm, _ = Permission.objects.get_or_create(
+            codename=f"can_access_{self.id}_course_as_teacher",
+            name=_(f"Can access {self.title} course as teacher"),
+            content_type=content_type,
+        )
+
+        students_perm, _ = Permission.objects.get_or_create(
+            codename=f"can_access_{self.id}_course_as_student",
+            name=_(f"Can access {self.title} course as student"),
+            content_type=content_type,
+        )
 
 
 class Task(models.Model):
