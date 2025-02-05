@@ -1,9 +1,9 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
-# from apps.management.models import Course
 
 
 class SchoolUserManager(BaseUserManager):
@@ -49,7 +49,7 @@ class User(AbstractUser):
         if self.position == self.Position.ADMIN:
             return Permission.objects.all()
         elif self.position == self.Position.MANAGER:
-            return Permission.objects.filter(codename__endswith="_lecture")
+            return Permission.objects.filter(Q(codename__endswith="_lecture")|Q(codename="view_course"))
         elif self.position == self.Position.TEACHER:
             return Permission.objects.none()
         elif self.position == self.Position.STUDENT:
@@ -66,18 +66,18 @@ class User(AbstractUser):
         group, created = Group.objects.get_or_create(name=self.position)
         print("group", group.name)
 
-        if created:
-            permissions = self.get_role_permissions()
+        permissions = self.get_role_permissions()
+        if set(group.permissions.all()) != set(permissions):
             group.permissions.set(permissions)
+            print("permissions", permissions)
 
-        self.groups.set([group,])
+        if group not in self.groups.all():
+            self.groups.set([group,])
+            super(User, self).save(*args, **kwargs)
 
-        super(User, self).save(*args, **kwargs)
-        print(f"user added to group: {self.groups}")
-
-        self.refresh_from_db()
-
-        print(f"User {self.email} added to group: {self.groups.all()}")
+            print(f"user added to group: {self.groups.all()}")
+            self.refresh_from_db()
+            print(f"User {self.email} added to group: {self.groups.all()}")
 
     @property
     def is_staff(self):

@@ -1,6 +1,5 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import  get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
@@ -36,7 +35,7 @@ class AnswerCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateVi
 
     def get_permission_required(self):
         permissions = [
-            f"can_access_{self.kwargs['pk']}_course_as_student",
+            f"management.can_access_{self.kwargs['pk']}_course_as_student",
         ]
         return permissions
 
@@ -59,7 +58,7 @@ class MarkCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView
 
     def get_permission_required(self):
         permissions = [
-            f"can_access_{self.kwargs['pk']}_course_as_teacher",
+            f"management.can_access_{self.kwargs['pk']}_course_as_teacher",
         ]
         return permissions
 

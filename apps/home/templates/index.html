@@ -14,21 +14,28 @@
      <img class="welcome-picture" src="{% static 'Stay.jpg' %}" alt="There had to be a picture">
 </body>
 <br>
+
 <a href="{% url "management:all-courses" %}">{% trans "Courses available" %}</a><br>
 
 {% if user.is_authenticated %}
-    {% if not user.is_superuser %}
-        <p>{% trans "Hello" %} {{ user.username }}</p> <br>
+        <p>{% trans "Hello" %}, {{ user.position|capfirst }}, {{ user.username }}</p> <br>
+
         <a href="{% url 'management:my-courses' %}">{% trans "My Courses" %}</a> <br>
         <hr>
-        {% endif %}
 
         <a href="{% url 'authentication:profile' %}">{% trans "Profile" %}</a> <br>
         <a href="{% url 'authentication:settings' %}">{% trans "Settings" %}</a> <br>
+
+        {% if user.position == "admin" %}
+            <hr>
+            <a href="{% url 'authentication:users-profiles' %}">{% trans "Users Profiles" %}</a> <br>
+        {% endif %}
+
 {% else %}
     <a href="{% url "authentication:login" %}">{% trans "Login" %}</a> <br>
     <a href="{% url "authentication:register" %}">{% trans "Sign up" %}</a> <br>
 {% endif %}
+
 
 {% include 'footer.html' %}
 

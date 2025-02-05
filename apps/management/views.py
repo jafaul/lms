@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
+
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 
@@ -9,7 +9,6 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
 
 from apps.management import models, forms
-from apps.management.models import Course
 from django.utils.translation import gettext_lazy as _
 
 
@@ -38,7 +37,9 @@ class MyCourseListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return models.Course.objects.prefetch_related(
             "students"
-        ).select_related("teacher").filter(students=self.request.user).all()
+        ).select_related(
+            "teacher"
+        ).filter(Q(students=self.request.user) | Q(teacher=self.request.user)).distinct()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -55,11 +56,15 @@ class CourseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     def get_permission_required(self):
         course = self.get_object()
         permissions = [
-            "apps.management.view_course",
-            f"can_access_{course.id}_course_as_teacher",
-            f"can_access_{course.id}_course_as_student",
+            "management.view_course",
+            f"management.can_access_{course.id}_course_as_teacher",
+            f"management.can_access_{course.id}_course_as_student",
         ]
         return permissions
+
+    def has_permission(self):
+        permissions = self.get_permission_required()
+        return any(self.request.user.has_perm(perm) for perm in permissions)
 
     def get_queryset(self):
         course = models.Course.objects.prefetch_related(
@@ -78,7 +83,7 @@ class CourseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
 class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     model = models.Course
     template_name = 'form.html'
-    permission_required = ["apps.management.create_course", ]
+    permission_required = ["apps.management.add_course", ]
     form_class = forms.CourseCreateForm
 
     def get_success_url(self):
@@ -90,32 +95,6 @@ class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
         context["action_url"] = reverse_lazy("management:create_course")
         context["btn_name"] = "Create"
         return context
-
-    def form_valid(self, form):
-        course = form.save(commit=False)
-        course.save()
-
-        content_type = ContentType.objects.get_for_model(Course)
-
-        teacher_perm, created = Permission.objects.get_or_create(
-            codename=f"can_access_{course.id}_course_as_teacher",
-            name=_(f"Can access {course.title} course as teacher"),
-            content_type=content_type,
-        )
-
-        if course.teacher:
-            course.teacher.user_permissions.add(teacher_perm)
-
-        student_permission, created = Permission.objects.get_or_create(
-            content_type=content_type,
-            codename=f"can_access_{course.id}_course_as_student",
-            name=_(f"Can access {course.title} course as student")
-        )
-
-        for student in course.students.all():
-            student.user_permissions.add(student_permission)
-
-        return super().form_valid(form)
 
 
 class UpdateCourseView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
@@ -169,13 +148,13 @@ class TaskCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView
     model = models.Task
     form_class = forms.TaskForm
 
-    title = "Add Task"
+    title = _("Add Task")
     action_url_name = "management:create-task"
-    btn_name = "Add task"
+    btn_name = _("Add task")
 
     def get_permission_required(self):
         permissions = [
-            f"can_access_{self.kwargs['pk']}_course_as_teacher",
+            f"management.can_access_{self.kwargs['pk']}_course_as_teacher",
         ]
         return permissions
 
@@ -184,9 +163,11 @@ class LectureCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateV
     model = models.Lecture
     form_class = forms.LectureForm
 
-    title = "Create Lecture"
+    title = _("Create Lecture")
     action_url_name = "management:create-lecture"
-    btn_name = "Create lecture"
+    btn_name = _("Create lecture")
 
-    permission_required = ("apps.management.create_lecture", )
+    permission_required = ("management.add_lecture", )
+    def has_permission(self):
+        return super().has_permission()
 

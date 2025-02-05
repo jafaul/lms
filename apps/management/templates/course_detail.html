@@ -11,6 +11,9 @@
 <body>
 <div>
     <h1>{{ course.title }}</h1>
+    {% if course.teacher %}
+    <h3>{% trans "Head teacher:" %} {{ course.teacher.email }}</h3>
+    {% endif %}
 </div>
 
 <div class="container">
@@ -19,7 +22,7 @@
                 <em>{{ course.description|safe }} </em>
             </p> <br>
         {% endif %}
-            {% if user.role == "ADMIN" %}
+            {% if user.position == "admin" %}
                 <a href="{% url "management:update-course" pk=course.id %}" id="add-task-btn">Update course</a> <br>
             {% endif %}
         </div>
@@ -41,8 +44,9 @@
             {% else %}
                 <p style="margin: 20px">No lectures available for this course.</p>
             {% endif %}
+            {% if user.position == "manager" or user.position == "admin" %}
                 <a href="{% url "management:create-lecture" pk=course.id %}" id="add-task-btn">Add a new lecture to this course</a>
-
+            {% endif %}
             </fieldset>
         </div>
 
@@ -123,10 +127,14 @@
                                 <td>{{ answer.mark.mark_value }}</td>
                                 {% else %}
                                 <td colspan="2">
+                                    {% if user.position == "teacher" or user.position == "admin"%}
                                     <a href="{% url "assessment:create_mark" pk=course.id pktask=task.id pkanswer=answer.id %}"
                                        id="add-task-btn">
                                         Assign a mark
                                     </a>
+                                    {% else %}
+                                        <p>No mark assigned yet</p>
+                                    {% endif %}
                                 </td>
                                 {% endif %}
 
@@ -135,9 +143,13 @@
                             </tbody>
                             </table>
                         {% endif %}
+
+                        {% if user.position == "student" %}
                         <a href="{% url "assessment:create_answer" pk=course.id pktask=task.id %}"
                            id="add-task-btn">Create answer
                         </a>
+                        {% endif %}
+
                         <hr>
 
                     {% endfor %}
@@ -146,15 +158,18 @@
             {% else %}
                 <p style="margin: 20px" >No lectures available for this course.</p>
             {% endif %}
+            {% if user.position == "teacher" or user.position == "admin" %}
             <a href="{% url "management:create-task" pk=course.id %}" id="add-task-btn">
                 Add a new task to this course
             </a>
+             {% endif %}
 
         </fieldset>
         </div>
     </div>
 
 </body>
-
+<hr>
+<a href="{% url "home:home-page" %}">{% trans "Back to home" %}</a>
 {% include 'footer.html' %}
 </html>

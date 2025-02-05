@@ -26,6 +26,7 @@ class Course(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
         content_type = ContentType.objects.get_for_model(Course)
 
         teacher_perm, created = Permission.objects.get_or_create(
@@ -39,6 +40,20 @@ class Course(models.Model):
             name=_(f"Can access {self.title} course as student"),
             content_type=content_type,
         )
+
+        if self.teacher and not self.teacher.has_perm(teacher_perm):
+            self.teacher.user_permissions.add(teacher_perm)
+            print(f"added permission for teacher: {self.teacher.get_all_permissions()}")
+
+        self.refresh_from_db()
+
+        if self.students.exists():
+            for student in self.students.all():
+                if not student.has_perm(students_perm):
+                    student.user_permissions.add(students_perm)
+                    print(f"added permission for student {student.email}: {self.teacher.get_all_permissions()}")
+        print("saving ... ")
+        super().save(*args, **kwargs)
 
 
 class Task(models.Model):
