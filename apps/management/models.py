@@ -28,13 +28,13 @@ class Course(models.Model):
         super().save(*args, **kwargs)
         content_type = ContentType.objects.get_for_model(Course)
 
-        teacher_perm, _ = Permission.objects.get_or_create(
+        teacher_perm, created = Permission.objects.get_or_create(
             codename=f"can_access_{self.id}_course_as_teacher",
             name=_(f"Can access {self.title} course as teacher"),
             content_type=content_type,
         )
 
-        students_perm, _ = Permission.objects.get_or_create(
+        students_perm, created = Permission.objects.get_or_create(
             codename=f"can_access_{self.id}_course_as_student",
             name=_(f"Can access {self.title} course as student"),
             content_type=content_type,

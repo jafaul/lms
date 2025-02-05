@@ -45,13 +45,12 @@ class CourseUpdateForm(forms.ModelForm):
 class CourseCreateForm(forms.ModelForm):
     User = get_user_model()
     students = forms.ModelMultipleChoiceField(
-        queryset=User.objects.filter(groups__name=("student",)),
+        queryset=User.objects.filter(groups__name="student"),
         required=False,
-        widget=forms.CheckboxSelectMultiple(),
     )
 
     teacher = forms.ModelChoiceField(
-        queryset=User.objects.filter(groups__name=("teacher",)),
+        queryset=User.objects.filter(groups__name="teacher"),
         required=False,
         widget=forms.Select(attrs={"class": "form-control"}),
     )

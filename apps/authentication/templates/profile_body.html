@@ -1,0 +1,14 @@
+{% load i18n %}
+
+<div>
+    <h2>{{ user.position|capfirst }}{%  trans " account" %}</h2>
+    <fieldset>
+
+        <ul>
+            <li>{%  trans "Fullname:" %} {{ user.first_name  }} {{ user.last_name }}</li>
+            <li>{%  trans "Email:" %} {{ user.email }}</li>
+            <li>{%  trans "Date joined: " %}{{ user.date_joined }}</li>
+        </ul>
+
+    </fieldset>
+</div>

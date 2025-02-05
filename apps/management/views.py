@@ -77,10 +77,9 @@ class CourseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
 
 class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     model = models.Course
-    fields = '__all__'
     template_name = 'form.html'
     permission_required = ["apps.management.create_course", ]
-    # form_class = forms.CourseCreateForm
+    form_class = forms.CourseCreateForm
 
     def get_success_url(self):
         return reverse_lazy('management:course-detail', args=(self.object.id,))
@@ -98,7 +97,7 @@ class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
 
         content_type = ContentType.objects.get_for_model(Course)
 
-        teacher_perm, _ = Permission.objects.get_or_create(
+        teacher_perm, created = Permission.objects.get_or_create(
             codename=f"can_access_{course.id}_course_as_teacher",
             name=_(f"Can access {course.title} course as teacher"),
             content_type=content_type,
@@ -107,10 +106,10 @@ class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
         if course.teacher:
             course.teacher.user_permissions.add(teacher_perm)
 
-        student_permission, _ = Permission.objects.get_or_create(
+        student_permission, created = Permission.objects.get_or_create(
             content_type=content_type,
             codename=f"can_access_{course.id}_course_as_student",
-            name=_(f"Can access {course.id} course as student")
+            name=_(f"Can access {course.title} course as student")
         )
 
         for student in course.students.all():

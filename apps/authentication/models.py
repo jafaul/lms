@@ -64,13 +64,20 @@ class User(AbstractUser):
         super(User, self).save(*args, **kwargs)
 
         group, created = Group.objects.get_or_create(name=self.position)
+        print("group", group.name)
 
-        self.groups.clear()
-        self.groups.add(group)
+        if created:
+            permissions = self.get_role_permissions()
+            group.permissions.set(permissions)
 
-        # if created:
-        permissions = self.get_role_permissions()
-        group.permissions.set(permissions)
+        self.groups.set([group,])
+
+        super(User, self).save(*args, **kwargs)
+        print(f"user added to group: {self.groups}")
+
+        self.refresh_from_db()
+
+        print(f"User {self.email} added to group: {self.groups.all()}")
 
     @property
     def is_staff(self):

@@ -33,14 +33,3 @@ class UserAssignmentRoleForm(forms.ModelForm):
         model = get_user_model()
         fields = ['position']
 
-    def save(self, commit=True):
-        user = super(UserAssignmentRoleForm, self).save(commit=False)
-        user.grous.clear()
-        position = self.cleaned_data['position']
-        group, created = Group.objects.get_or_create(name=position)
-
-        user.groups.add(group)
-        if commit:
-            user.save()
-        return user
-
