@@ -8,10 +8,10 @@ services:
         POSTGRES_DB: ${DB_NAME}
     env_file:
       - .env
-    volumes:
-      - pgdata:/var/lib/postgresql/data
     ports:
       - ${DB_PORT}:${DB_PORT}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
   django-web:
     build: .

@@ -289,7 +289,10 @@ dz1
 dz1_run.py
 
 *.pyc
+<<<<<<< HEAD
 
+=======
+>>>>>>> ecb2d78 (init)
 .env
 
 
@@ -304,3 +307,4 @@ __pycache__/
 
 # IDE-related files
 .idea/
+
