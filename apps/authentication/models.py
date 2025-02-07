@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
+from storages.backends.s3boto3 import S3Boto3Storage
 
 
 class SchoolUserManager(BaseUserManager):
@@ -44,6 +45,7 @@ class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     objects = SchoolUserManager()
     position = models.CharField(max_length=20, choices=Position.choices, default=Position.STUDENT)
+    photo = models.ImageField(_("Photo"), null=True, blank=True, upload_to='photos/%Y/%m/%d', storage=S3Boto3Storage())
 
     def get_role_permissions(self):
         if self.position == self.Position.ADMIN:
