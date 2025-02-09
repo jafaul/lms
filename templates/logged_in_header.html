@@ -41,7 +41,14 @@
             <li><a class="dropdown-item" href="{% url "authentication:settings" %}">Settings</a></li>
             <li><a class="dropdown-item" href="{% url "authentication:profile" %}">Profile</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{% url 'apps.authentication:logout' %}">Sign out</a></li>
+            <li>
+                 <form method="post" action="{% url 'apps.authentication:logout' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="dropdown-item" style="border:none; background:none; padding:0; cursor:pointer;">
+                        {% trans "Sign out" %}
+                    </button>
+                </form>
+{#                <a class="dropdown-item" href="{% url 'apps.authentication:logout' %}">Sign out</a></li>#}
           </ul>
         </div>
       </div>

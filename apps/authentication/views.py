@@ -18,6 +18,7 @@ User = get_user_model()
 class LoginView(BaseLoginView):
     redirect_authenticated_user = True
     template_name = "login.html"
+    form_class = forms.LoginForm
 
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid username or password.')

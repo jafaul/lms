@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.forms import AuthenticationForm
+
 
 User = get_user_model()
 
@@ -54,3 +56,20 @@ class UserUpdateForm(forms.ModelForm):
         if email and User.objects.exclude(pk=self.instance.pk).filter(email=email).exists():
             raise forms.ValidationError("This email is already in use.")
         return email
+
+
+class LoginForm(AuthenticationForm):
+    username = forms.EmailField(
+        widget=forms.EmailInput(
+            attrs={
+                "class": "form-control", "id": "inputEmail", "placeholder": "Email address",
+                "required": "", "autofocus": "",
+            })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "form-control", "id": "inputPassword", "placeholder": "Password",
+                "required": "",
+            })
+    )
