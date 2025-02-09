@@ -1,4 +1,6 @@
 {% load static %}
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,17 +8,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link type="stylesheet" href="{% static 'css/styles.css' %}" rel="stylesheet">
-    <script src="{% static 'bootstrap.min.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}>">
     <title>{% block title %}{% endblock %}</title>
     {%  block style %} {% endblock %}
 </head>
-
 <body>
-{% block body %}
-{% endblock body %}
+
+<ul class="mainmenu">
+{%  for m in menu %}
+    <li> <a href="{{ m.url }}">{{ m.name }}</a></li>
+{% endfor %}
+</ul>
+
+
+{%  block content %}
+    <div class="content">
+    {%  if title  %}
+        <h1 style="text-align: center">{{ title }}</h1>
+    {% endif %}
+    </div>
+
+{% endblock content %}
 </body>
 
-{% include 'footer.html' %}
 
 </html>
+

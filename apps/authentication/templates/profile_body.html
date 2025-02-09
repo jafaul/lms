@@ -1,3 +1,4 @@
+{% load user_extras %}
 {% load i18n %}
 
 <div>
@@ -5,7 +6,7 @@
     <fieldset>
 
         <ul>
-            <li>{%  trans "Fullname:" %} {{ user.first_name  }} {{ user.last_name }}</li>
+            <li>{%  trans "Fullname:" %} {{ user | fullname  }}</li>
             <li>{%  trans "Email:" %} {{ user.email }}</li>
             <li>{%  trans "Date joined: " %}{{ user.date_joined }}</li>
         </ul>

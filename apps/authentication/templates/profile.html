@@ -1,14 +1,11 @@
+{% extends 'base.html' %}
 {% load i18n %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{%  trans "Account Settings" %}</title>
-    {%  block style %} {% endblock %}
-</head>
-<body>
+
+{% block title %}
+    My Profile
+{% endblock %}
+
+{% block body %}
 {% include "profile_body.html" with user=user %}
 
 <div>
@@ -19,6 +16,4 @@
 <hr>
 <a href="{% url "apps.home:home-page" %}">Back to home</a>
 
-
-</body>
-</html>
+{% endblock %}

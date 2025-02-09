@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',  # data manipulations
     'django.contrib.sessions',  # data saving inside session
     'django.contrib.messages',  # sending msg from server to client
-    'django.contrib.staticfiles',  # allowing static files (html, css)
+    'django.contrib.staticfiles',  # allowing staticfiles files (html, css)
 
     'tinymce',
 
@@ -81,6 +81,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'user_extras': 'apps.authentication.templatetags.user_extras'
+            }
         },
     },
 ]
@@ -143,9 +146,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')
+    os.path.join(BASE_DIR, 'staticfiles')
 ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 MEDIA_URL = 'media/'

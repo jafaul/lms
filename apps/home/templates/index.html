@@ -1,24 +1,22 @@
+{% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% trans title %}</title>
-    {%  block style %} {% endblock %}
-</head>
-<body>
+
+{% block title %}
+    My Profile
+{% endblock %}
+
+{% block body %}
+
 <h1>{% trans "Welcome to our school!" %}</h1>
      <img class="welcome-picture" src="{% static '/home/Stay.jpg' %}" alt="There had to be a picture">
-</body>
-<br>
+
+    <br>
 
 <a href="{% url "management:all-courses" %}">{% trans "Courses available" %}</a><br>
 
 {% if user.is_authenticated %}
-        <p>{% trans "Hello" %}, {{ user.position|capfirst }}, {{ user.username }}</p> <br>
+        <p>{% trans "Hello" %}, {{ user.position|capfirst }}, {{ user.email }}</p> <br>
 
         <a href="{% url 'management:my-courses' %}">{% trans "My Courses" %}</a> <br>
         <hr>
@@ -36,7 +34,4 @@
     <a href="{% url "authentication:register" %}">{% trans "Sign up" %}</a> <br>
 {% endif %}
 
-
-{% include 'footer.html' %}
-
-</html>
+{% endblock %}
