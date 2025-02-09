@@ -7,31 +7,13 @@
 {% endblock %}
 
 {% block body %}
-
-<h1>{% trans "Welcome to our school!" %}</h1>
+{% if user.is_authenticated %}
+    <h1>{% trans "We are glad to see you again, " %}{{ user.email }} </h1>
+{% else %}
+    <h1>{% trans "Welcome to our school!" %}</h1>
+{% endif %}
      <img class="welcome-picture" src="{% static '/home/Stay.jpg' %}" alt="There had to be a picture">
 
     <br>
-
-<a href="{% url "management:all-courses" %}">{% trans "Courses available" %}</a><br>
-
-{% if user.is_authenticated %}
-        <p>{% trans "Hello" %}, {{ user.position|capfirst }}, {{ user.email }}</p> <br>
-
-        <a href="{% url 'management:my-courses' %}">{% trans "My Courses" %}</a> <br>
-        <hr>
-
-        <a href="{% url 'authentication:profile' %}">{% trans "Profile" %}</a> <br>
-        <a href="{% url 'authentication:settings' %}">{% trans "Settings" %}</a> <br>
-
-        {% if user.position == "admin" %}
-            <hr>
-            <a href="{% url 'authentication:users-profiles' %}">{% trans "Users Profiles" %}</a> <br>
-        {% endif %}
-
-{% else %}
-    <a href="{% url "authentication:login" %}">{% trans "Login" %}</a> <br>
-    <a href="{% url "authentication:register" %}">{% trans "Sign up" %}</a> <br>
-{% endif %}
 
 {% endblock %}
