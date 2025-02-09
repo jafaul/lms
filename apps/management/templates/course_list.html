@@ -2,52 +2,59 @@
 {% load i18n %}
 
 {% block title %}
-    My Profile
+    {%  trans "My Courses" %}
 {% endblock %}
 
 {% block body %}
 
 <h1>{% trans self.title %}</h1>
-<div class="container first-container col-sm-12 pull-left">
-  <table class="table">
-    <thead class="thead-light">
-      <tr>
-        <th scope='col' id="id-column">ID</th>
-        <th scope='col' id="title-column">Title</th>
-        <th scope='col' id="teacher-column">Teacher</th>
-        <th scope='col' id="desc-column">Description</th>
-        <th scope='col' id="stud-column">Students</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for course in object_list %}
-        <tr>
-            <th scope="row" id="id-column">
-                <a href="{% url "apps.management:course-detail" course.id %}">{{ course.id }}</a>
-            </th>
-            <td id="title-column">
-                {{ course.title }}
-            </td>
-            <td id="teacher-column">
-                {{ course.teacher.email}}
-            </td>
 
-            <td id="desc-column">{{ course.description }}</td>
-            <td id="stud-column">
-            {% if course.students.all %}
-                <ul id="students-list">
-                    {% for student in course.students.all %}
-                        <li>{{ student.email}}</li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                No students
-            {% endif %}
-            </td>
-        </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-</div>
+{% if object_list %}
+    <div class="container first-container col-sm-12 pull-left">
+      <table class="table">
+        <thead class="thead-light">
+          <tr>
+            <th scope='col' id="id-column">ID</th>
+            <th scope='col' id="title-column">Title</th>
+            <th scope='col' id="teacher-column">Teacher</th>
+            <th scope='col' id="desc-column">Description</th>
+            <th scope='col' id="stud-column">Students</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for course in object_list %}
+            <tr>
+                <th scope="row" id="id-column">
+                    <a href="{% url "apps.management:course-detail" course.id %}">{{ course.id }}</a>
+                </th>
+                <td id="title-column">
+                    {{ course.title }}
+                </td>
+                <td id="teacher-column">
+                    {{ course.teacher.email}}
+                </td>
 
+                <td id="desc-column">{{ course.description }}</td>
+                <td id="stud-column">
+                {% if course.students.all %}
+                    <ul id="students-list">
+                        {% for student in course.students.all %}
+                            <li>{{ student.email}}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    No students
+                {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+{% else %}
+    <div class="alert alert-warning" role="alert">
+    {% trans "You have not registered to any course yet. Check our courses " %}
+    <a href="{% url "management:all-courses" %}">{% trans "here" %}</a>
+    </div>
+{% endif %}
 {% endblock %}
