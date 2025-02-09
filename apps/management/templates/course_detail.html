@@ -54,18 +54,18 @@
             <fieldset id='students' class="sub-course-info">
             <legend style="font-size: 30px;"><strong>Our Students</strong></legend>
             {% if course.students.all %}
-                <table class="table table-condensed">
-                    <thead>
+                <table class="table">
+                    <thead class="thead-light">
                       <tr>
-                        <th>Fullname</th>
+                        <th scope="col">Fullname</th>
                       {% if user.is_staff %}
-                        <th>Email</th>
+                        <th scope="col">Email</th>
                       {% endif %}
                       </tr>
                     </thead>
                     <tbody>
                     {% for student in course.students.all %}
-                        <tr class="row">
+                        <tr>
                             <td>{{ student | fullname}}</td>
                         {% if user.is_staff %}
                             <td>{{ student.email }}</td>
@@ -106,14 +106,14 @@
                         {% if task.answers.all %}
                             <hr>
 
-                            <table  class="table table-condensed">
-                            <thead>
+                            <table class="table">
+                            <thead class="thead-light">
                             <tr>
-                                <th>Student</th>
-                                <th>Student answer</th>
-                                <th>Date</th>
-                                <th>Teacher</th>
-                                <th>Mark</th>
+                                <th scope="col"> {% trans "Student" %}</th>
+                                <th scope="col">{% trans "Answer" %}</th>
+                                <th scope="col">{% trans "Date" %}</th>
+                                <th scope="col">{% trans "Teacher" %}</th>
+                                <th scope="col">{% trans "Mark" %}</th>
                             </tr>
                             </thead>
                             <tbody>

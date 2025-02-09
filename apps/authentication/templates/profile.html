@@ -8,12 +8,5 @@
 {% block body %}
 {% include "profile_body.html" with user=user %}
 
-<div>
-<a href="{% url "management:my-courses" %}"> My courses </a><br>
-<a href="{% url 'authentication:settings' %}">{% trans "Settings" %}</a> <br>
-
-</div>
-<hr>
-<a href="{% url "apps.home:home-page" %}">Back to home</a>
 
 {% endblock %}

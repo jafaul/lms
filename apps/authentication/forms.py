@@ -99,7 +99,7 @@ class UserUpdateForm(forms.ModelForm):
 
 
 class LoginForm(AuthenticationForm):
-    email = forms.EmailField(
+    username = forms.EmailField(
         widget=forms.EmailInput(
             attrs={
                 "class": "form-control", "id": "inputEmail", "placeholder": "Email address",

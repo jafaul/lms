@@ -9,22 +9,22 @@
 
 <h1>{% trans self.title %}</h1>
 <div class="container first-container col-sm-12 pull-left">
-  <table class="table table-condensed">
-    <thead>
+  <table class="table">
+    <thead class="thead-light">
       <tr>
-        <th id="id-column">ID</th>
-        <th id="title-column">Title</th>
-        <th id="teacher-column">Teacher</th>
-        <th id="desc-column">Description</th>
-        <th id="stud-column">Students</th>
+        <th scope='col' id="id-column">ID</th>
+        <th scope='col' id="title-column">Title</th>
+        <th scope='col' id="teacher-column">Teacher</th>
+        <th scope='col' id="desc-column">Description</th>
+        <th scope='col' id="stud-column">Students</th>
       </tr>
     </thead>
     <tbody>
     {% for course in object_list %}
-        <tr class="row">
-            <td id="id-column">
+        <tr>
+            <th scope="row" id="id-column">
                 <a href="{% url "apps.management:course-detail" course.id %}">{{ course.id }}</a>
-            </td>
+            </th>
             <td id="title-column">
                 {{ course.title }}
             </td>

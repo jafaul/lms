@@ -3,7 +3,7 @@
 {% load i18n %}
 
 {% block title %}
-    Login
+    {% trans "Sign in" %}
 {% endblock %}
 
 {% block body %}
@@ -12,10 +12,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="{%  static "brightened_logo.png" %}">
-
-
-    <title>Signin</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/sign-in/">
 
@@ -28,16 +24,21 @@
     <form class="form-signin" method="post">
         {% csrf_token %}
       <a href="{% url "home:home-page" %}">
-      <img class="mb-4" src="{%  static "brightened_logo.png" %}" alt="" width="72" height="72">
+      <img class="mb-4" src="{%  static 'brightened_logo.png' %}" alt="" width="72" height="72">
       </a>
       <h1 class="h3 mb-3 font-weight-normal"> {%  trans "Please sign in" %}</h1>
-
+        {% include "form_errors.html" with form=form %}
       <label for="inputEmail" class="sr-only">{%  trans "Email address" %}</label>
-        {{ form.email }}
+        {{ form.username }}
+        {% include "form_errors.html" with form=form %}
+
       <label for="inputPassword" class="sr-only">{% trans "Password" %}</label>
         {{ form.password }}
+            {% include "form_errors.html" with form=form %}
+
       <button class="btn btn-lg btn-primary btn-block" type="submit">{% trans "Sign in" %}</button>
       <p class="mt-5 mb-3 text-muted">© 2025</p>
+
     </form>
 
 
