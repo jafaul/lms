@@ -17,12 +17,12 @@
         <div class="text-end">
         {% if request.resolver_match.url_name != 'login' %}
           <button type="button" class="btn btn-outline-light me-2">
-            <a href="{% url "authentication:login" %}" class="btn btn-info" role="button">{% trans "Login" %}</a>
+            <a href="{% url "authentication:login" %}" class="nav-link px-2 text-white" role="button">{% trans "Login" %}</a>
           </button>
         {% endif %}
             {% if request.resolver_match.url_name != 'register' %}
           <button type="button" class="btn btn-warning">
-              <a href="{% url "authentication:register" %}" class="btn btn-info" role="button">
+              <a href="{% url "authentication:register" %}" class="nav-link px-2 text-white" role="button">
                 {% trans "Sign-up" %}</a>
           </button>
             {% endif %}
@@ -30,3 +30,5 @@
       </div>
     </div>
   </header>
+
+\

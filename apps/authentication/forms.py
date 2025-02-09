@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import AuthenticationForm
 
@@ -9,11 +9,51 @@ User = get_user_model()
 
 
 class UserRegistrationForm(UserCreationForm):
-    email = forms.EmailField(help_text=_('Required. Inform a valid email address.'), required=True)
+    first_name = forms.CharField(
+        # label=_('First Name'),
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control", "id": "inputFirstName", "placeholder": "First Name",
+                "required": True,
+            })
+    )
+    last_name = forms.CharField(
+        # label=_('Last Name'),
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control", "id": "inputLastName", "placeholder": "Last Name",
+                "required": True,
+            })
+    )
+    email = forms.EmailField(
+        widget=forms.EmailInput(
+            attrs={
+                "class": "form-control", "id": "inputEmail", "placeholder": "Email address",
+                "required": "", "autofocus": "",
+            })
+    )
+
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "form-control", "id": "inputPassword", "placeholder": "Password",
+                "required": "",
+            })
+    )
+
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "form-control", "id": "inputPassword1", "placeholder": "Repeat Password",
+                "required": "",
+            })
+    )
+
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'password1', 'password2', 'photo']
+        fields = ['first_name', 'last_name', 'email', 'password1', 'password2']
+        exclude = ["photo"]
 
     def save(self, commit=True):
         user = super(UserRegistrationForm, self).save(commit=False)
@@ -59,7 +99,7 @@ class UserUpdateForm(forms.ModelForm):
 
 
 class LoginForm(AuthenticationForm):
-    username = forms.EmailField(
+    email = forms.EmailField(
         widget=forms.EmailInput(
             attrs={
                 "class": "form-control", "id": "inputEmail", "placeholder": "Email address",

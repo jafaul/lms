@@ -8,16 +8,16 @@
     <script src="{% static 'bootstrap.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}>">
     <title>{% block title %}{% endblock %}</title>
+    {% block bootstrap_configs %}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+    {% endblock %}
     {%  block style %} {% endblock %}
     {% block extras %} {% endblock %}
 
 </head>
-{#    <p>The current URL is: {{ request.resolver_match.url_name }}</p>#}
-{#    <p>Perms are: {{perms.name}} </p>#}
+
 {% block header %}
     {% include 'header.html' %}
 {% endblock %}
