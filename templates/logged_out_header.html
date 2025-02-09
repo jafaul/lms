@@ -1,0 +1,32 @@
+{% load static %}
+{% load i18n %}
+
+<header class="p-3 text-bg-dark">
+    <div class="container">
+      <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+        <a href="{% url 'home:home-page' %}" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+            <img src="{%  static "brightened_logo.png" %}" alt="Custom Logo" width="40" height="32">
+        </a>
+
+        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+          <li><a href="{% url 'home:home-page' %}" class="nav-link px-2 text-secondary">{%  trans 'Home' %}</a></li>
+          <li><a href="{% url 'management:all-courses' %}" class="nav-link px-2 text-white">{%  trans 'Our courses' %}</a></li>
+        </ul>
+
+
+        <div class="text-end">
+        {% if request.resolver_match.url_name != 'login' %}
+          <button type="button" class="btn btn-outline-light me-2">
+            <a href="{% url "authentication:login" %}" class="btn btn-info" role="button">{% trans "Login" %}</a>
+          </button>
+        {% endif %}
+            {% if request.resolver_match.url_name != 'register' %}
+          <button type="button" class="btn btn-warning">
+              <a href="{% url "authentication:register" %}" class="btn btn-info" role="button">
+                {% trans "Sign-up" %}</a>
+          </button>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+  </header>

@@ -4,6 +4,7 @@
 <div>
     <h2>{{ user.position|capfirst }}{%  trans " account" %}</h2>
     <fieldset>
+        <img src="{{ request.user.photo.url }}" alt="mdo" width="500" class="rounded-circle">
 
         <ul>
             <li>{%  trans "Fullname:" %} {{ user | fullname  }}</li>

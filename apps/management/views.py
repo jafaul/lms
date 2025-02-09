@@ -108,7 +108,7 @@ class UpdateCourseView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Update"
+        context["title"] = "Update course"
         context["action_url"] = reverse_lazy("management:update-course", kwargs={"pk": self.kwargs['pk']})
         context["btn_name"] = "Register"
         return context

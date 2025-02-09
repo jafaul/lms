@@ -5,18 +5,28 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link type="stylesheet" href="{% static 'css/styles.css' %}" rel="stylesheet">
     <script src="{% static 'bootstrap.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}>">
     <title>{% block title %}{% endblock %}</title>
     {%  block style %} {% endblock %}
 </head>
+{#    <p>The current URL is: {{ request.resolver_match.url_name }}</p>#}
+{#    <p>Perms are: {{perms.name}} </p>#}
+{% block header %}
+    {% include 'header.html' %}
+{% endblock %}
 
 <body>
 {% block body %}
 {% endblock body %}
 </body>
 
+
+{% block footer %}
 {% include 'footer.html' %}
+{% endblock %}
+
+<script src="{% static 'bootstrap.min.js' %}" ></script>
+{% block extra_js %} {% endblock %}
 
 </html>

@@ -12,8 +12,8 @@ from django.views.generic import TemplateView, FormView, UpdateView, ListView
 
 from apps.authentication import forms
 
+User = get_user_model()
 
-# Create your views here.
 
 class LoginView(BaseLoginView):
     redirect_authenticated_user = True
@@ -24,8 +24,14 @@ class LoginView(BaseLoginView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-class UserSettingsView(LoginRequiredMixin, TemplateView):
+class UserSettingsView(LoginRequiredMixin, UpdateView):
     template_name = 'settings.html'
+    form_class = forms.UserUpdateForm
+    model = User
+    success_url = reverse_lazy("authentication:settings")
+
+    def get_object(self, queryset=None):
+        return self.request.user
 
 
 class UserProfileView(LoginRequiredMixin, TemplateView):
@@ -91,6 +97,7 @@ class PositionAddView(PermissionRequiredMixin, UpdateView):
         context["btn_name"] = "Assign position"
         context["title"] = "Assign position"
         return context
+
 
 class UsersProfilesView(PermissionRequiredMixin, ListView):
     permission_required = "authentication.view_user"

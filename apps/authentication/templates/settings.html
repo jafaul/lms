@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block title %}
-    Settings
+    {%  trans "Settings" %}
 {% endblock %}
 
 {% block body %}
@@ -10,6 +10,14 @@
     <h1>{%  trans "Settings" %}</h1>
 
 </div>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">{% trans "Update Info" %}</button>
+</form>
+
+
 <form method="post" action="{% url 'apps.authentication:logout' %}">
     {% csrf_token %}
     <button type="submit">{% trans "Logout" %}</button>
