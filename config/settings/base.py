@@ -14,6 +14,8 @@ from pathlib import Path
 
 import boto3
 
+from django.conf.global_settings import LOGIN_REDIRECT_URL
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -25,7 +27,8 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', "default-secret-key")
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'True'
 
 ALLOWED_HOSTS = ["*"]
 
@@ -102,6 +105,7 @@ DATABASES = {
         'OPTIONS': {
             'timeout': 20,
         }
+
     }
 }
 
@@ -125,6 +129,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+
 ]
 
 
@@ -140,6 +145,7 @@ USE_I18N = True
 USE_TZ = True
 
 # todo check multilang
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
