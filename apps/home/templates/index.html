@@ -1,42 +1,19 @@
+{% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% trans title %}</title>
-    {%  block style %} {% endblock %}
-</head>
-<body>
-<h1>{% trans "Welcome to our school!" %}</h1>
-     <img class="welcome-picture" src="{% static 'Stay.jpg' %}" alt="There had to be a picture">
-</body>
-<br>
 
-<a href="{% url "management:all-courses" %}">{% trans "Courses available" %}</a><br>
+{% block title %}
+    My Profile
+{% endblock %}
 
-{% if user.is_authenticated %}
-        <p>{% trans "Hello" %}, {{ user.position|capfirst }}, {{ user.username }}</p> <br>
+{% block body %}
 
-        <a href="{% url 'management:my-courses' %}">{% trans "My Courses" %}</a> <br>
-        <hr>
-
-        <a href="{% url 'authentication:profile' %}">{% trans "Profile" %}</a> <br>
-        <a href="{% url 'authentication:settings' %}">{% trans "Settings" %}</a> <br>
-
-        {% if user.position == "admin" %}
-            <hr>
-            <a href="{% url 'authentication:users-profiles' %}">{% trans "Users Profiles" %}</a> <br>
-        {% endif %}
-
-{% else %}
-    <a href="{% url "authentication:login" %}">{% trans "Login" %}</a> <br>
-    <a href="{% url "authentication:register" %}">{% trans "Sign up" %}</a> <br>
-{% endif %}
+  <div class="my-3 py-3 text-center ">
+    <h2 class="display-5">{% trans "Welcome at our school!" %}</h2>
+  </div>
+<div class="bg-light shadow-sm mx-auto p-5" style="min-height: 100vh; border-radius: 21px 21px 0 0; overflow-y: auto;  color: #3f4137">
+       <img class="rounded" src="{% static '/home/Stay.jpg' %}" alt="There had to be a picture">
+      </div>
 
 
-{% include 'footer.html' %}
-
-</html>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load user_extras %}
+{% load i18n %}
+
+{% block title %}
+    {% trans "Add Task" %}
+{% endblock %}
+{%  block style %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.0/mdb.min.css" />
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.0/mdb.min.js"></script>
+<script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script>
+{% endblock %}
+
+{% block background %}
+{% block body %}
+<div class="me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden" style="background-color: #5f59f7">
+      <div class="my-3 py-3">
+    <h2 class="display-6">{% trans "Add Task" %}</h2>
+
+      </div>
+
+<div class="bg-light shadow-sm mx-auto p-5" style="min-height: 100vh; border-radius: 21px 21px 0 0; overflow-y: auto;  color: #3f4137">
+
+
+<div class="container">
+  <main>
+    <div class="row g-6 justify-content-center">
+      <div class="col-md-7 col-lg-8">
+        <form class="needs-validation" novalidate="" action="{{ action_url }}" method="POST">
+          {% csrf_token %}
+
+          <div class="row g-3">
+            <div class="col-sm-12">
+            <div class="form-group">
+              <label for="{{ form.title.id_for_label }}" class="form-label">{% trans "Title" %}</label>
+              {{ form.title }}
+              <div class="invalid-feedback">
+                {% trans "Valid title is required"  %}
+              </div>
+            </div>
+            </div>
+            <div class="form-group">
+            <div class="col-12">
+              <label for="{{ form.description.id_for_label }}" class="form-label">{% trans 'Description' %}
+                  <span class="text-muted"></span></label>
+                {{ form.description }}
+            </div>
+            </div>
+
+          </div>
+          <div class="row g-3 p-3">
+
+              <div class="col-sm-6">
+                  <label class="form-label" for="{{ form.description.id_for_label }}" style="margin-left: 0px;">{% trans "Max mark" %}</label>
+                  {{ form.max_mark }}
+              </div>
+              <div class="col-sm-6">
+                  <label class="form-label" for="{{ form.description.id_for_label }}" style="margin-left: 0px;">{% trans "Max mark" %}</label>
+                  {{ form.deadline }}
+              </div>
+          </div>
+          <hr class="my-4">
+
+          <button class="w-50 btn btn-primary btn-lg" type="submit" style="background-color: #5f59f7; border: none">{% trans "create" %}</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}
+{% endblock %}

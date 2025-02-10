@@ -1,16 +1,59 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.forms import AuthenticationForm
+
+
+User = get_user_model()
 
 
 class UserRegistrationForm(UserCreationForm):
-    email = forms.EmailField(help_text=_('Required. Inform a valid email address.'), required=True)
+    first_name = forms.CharField(
+        # label=_('First Name'),
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control", "id": "inputFirstName", "placeholder": "First Name",
+                "required": True,
+            })
+    )
+    last_name = forms.CharField(
+        # label=_('Last Name'),
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control", "id": "inputLastName", "placeholder": "Last Name",
+                "required": True,
+            })
+    )
+    email = forms.EmailField(
+        widget=forms.EmailInput(
+            attrs={
+                "class": "form-control", "id": "inputEmail", "placeholder": "Email address",
+                "required": "", "autofocus": "",
+            })
+    )
+
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "form-control", "id": "inputPassword", "placeholder": "Password",
+                "required": "",
+            })
+    )
+
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "form-control", "id": "inputPassword1", "placeholder": "Repeat Password",
+                "required": "",
+            })
+    )
+
 
     class Meta:
-        model = get_user_model()
+        model = User
         fields = ['first_name', 'last_name', 'email', 'password1', 'password2']
+        exclude = ["photo"]
 
     def save(self, commit=True):
         user = super(UserRegistrationForm, self).save(commit=False)
@@ -26,10 +69,47 @@ class UserAssignmentRoleForm(forms.ModelForm):
     position = forms.ChoiceField(
         choices=get_user_model().Position.choices,
         required=True,
-        label=_("Select user role")
+        label=_("Select user role"),
     )
 
     class Meta:
-        model = get_user_model()
+        model = User
         fields = ['position']
 
+
+class UserUpdateForm(forms.ModelForm):
+    email = forms.EmailField(help_text=_('Required. Inform a valid email address.'), required=True)
+    first_name = forms.CharField(help_text=_('Required. Inform a valid first name.'), required=True)
+    last_name = forms.CharField(help_text=_('Required. Inform a valid last name.'), required=True)
+    photo = forms.ClearableFileInput(attrs={'multiple': False, "required": False})
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'photo']
+
+        help_texts = {
+            "photo": "Upload a profile picture (optional).",
+        }
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if email and User.objects.exclude(pk=self.instance.pk).filter(email=email).exists():
+            raise forms.ValidationError("This email is already in use.")
+        return email
+
+
+class LoginForm(AuthenticationForm):
+    username = forms.EmailField(
+        widget=forms.EmailInput(
+            attrs={
+                "class": "form-control", "id": "inputEmail", "placeholder": "Email address",
+                "required": "", "autofocus": "",
+            })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "form-control", "id": "inputPassword", "placeholder": "Password",
+                "required": "",
+            })
+    )

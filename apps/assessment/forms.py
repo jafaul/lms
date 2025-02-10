@@ -4,6 +4,16 @@ from apps.assessment import models
 
 
 class AnswerForm(forms.ModelForm):
+
+    description = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            "class": "form-control",
+            "rows": 4,
+            "id": "desc",
+        })
+    )
+
     class Meta:
         model = models.Answer
         fields = ["description"]

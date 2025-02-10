@@ -2,7 +2,7 @@ from django.urls import path
 
 from apps.assessment import views
 
-app_name = "apps.management"
+app_name = "apps.assessment"
 
 
 urlpatterns = [

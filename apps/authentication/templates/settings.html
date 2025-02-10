@@ -1,21 +1,25 @@
+{% extends 'base.html' %}
 {% load i18n %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{%  trans "Account Settings" %}</title>
-    {%  block style %} {% endblock %}
-</head>
-<body>
+
+{% block title %}
+    {%  trans "Settings" %}
+{% endblock %}
+
+{% block body %}
 <div>
     <h1>{%  trans "Settings" %}</h1>
 
 </div>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">{% trans "Update Info" %}</button>
+</form>
+
+
 <form method="post" action="{% url 'apps.authentication:logout' %}">
     {% csrf_token %}
     <button type="submit">{% trans "Logout" %}</button>
 </form>
-</body>
-</html>
+{% endblock %}

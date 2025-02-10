@@ -1,0 +1,9 @@
+{% if request.user.is_authenticated %}
+    {% block logged_in_header %}
+        {% include 'logged_in_header.html' %}
+    {% endblock %}
+{% else %}
+    {% block logged_out_header %}
+        {% include 'logged_out_header.html' %}
+    {% endblock %}
+{% endif %}

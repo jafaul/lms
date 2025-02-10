@@ -1,0 +1,49 @@
+{% load static %}
+{% load i18n %}
+
+<div class="container">
+  <main>
+    <div class="row g-6 justify-content-center">
+      <div class="col-md-7 col-lg-8">
+        <form class="needs-validation" novalidate="" action="{% url 'management:create_course' %}" method="POST">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-sm-12">
+              <label for="{{ form.title.id_for_label }}" class="form-label">{% trans "Title" %}</label>
+              {{ form.title }}
+              <div class="invalid-feedback">
+                {% trans "Valid title is required"  %}
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label for="{{ form.description.id_for_label }}" class="form-label">{% trans 'Description' %}
+                  <span class="text-muted">{%  trans '(Optional)' %}</span></label>
+                {{ form.description }}
+            </div>
+
+            <div class="col-md-6">
+              <label for="{{ form.teacher.id_for_label }}" class="form-label">{% trans "Teacher" %}</label>
+              {{ form.teacher }}
+            </div>
+
+            <div class="col-md-6">
+              <label for="{{ form.students.id_for_label }}" class="form-label">{% trans "Students" %}</label>
+              {{ form.students }}
+            </div>
+
+          </div>
+
+          <hr class="my-4">
+
+          <button class="w-50 btn btn-primary btn-lg" type="submit" style="background-color: #5f59f7; border: none">{% trans "create" %}</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+
+
+

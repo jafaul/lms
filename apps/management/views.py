@@ -1,13 +1,16 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
-from django.db.models import Q
+from django.db.models import Q, Value, Avg, F, FloatField
+from django.db.models.functions import Round, Coalesce
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 
 from django.urls import reverse_lazy
 
-from django.views.generic import ListView, CreateView, DetailView, UpdateView
+from django.views.generic import ListView, CreateView, DetailView, UpdateView, TemplateView
 
+from apps.assessment.forms import MarkForm
 from apps.management import models, forms
 from django.utils.translation import gettext_lazy as _
 
@@ -53,6 +56,11 @@ class CourseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     model = models.Course
     context_object_name = 'course'  # to use "course" obj in template
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["mark_form"] = MarkForm
+        return context
+
     def get_permission_required(self):
         course = self.get_object()
         permissions = [
@@ -82,7 +90,7 @@ class CourseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
 
 class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     model = models.Course
-    template_name = 'form.html'
+    template_name = 'create_course.html'
     permission_required = ["apps.management.add_course", ]
     form_class = forms.CourseCreateForm
 
@@ -100,7 +108,7 @@ class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
 class UpdateCourseView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     model = models.Course
     form_class = forms.CourseUpdateForm
-    template_name = 'form.html'
+    template_name = 'update_course.html'
     permission_required = ('apps.management.change_course',)
 
     def get_success_url(self):
@@ -108,7 +116,8 @@ class UpdateCourseView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Update"
+        context["course"] = self.object
+        context["title"] = "Update course"
         context["action_url"] = reverse_lazy("management:update-course", kwargs={"pk": self.kwargs['pk']})
         context["btn_name"] = "Register"
         return context
@@ -152,6 +161,8 @@ class TaskCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView
     action_url_name = "management:create-task"
     btn_name = _("Add task")
 
+    template_name = "create_task.html"
+
     def get_permission_required(self):
         permissions = [
             f"management.can_access_{self.kwargs['pk']}_course_as_teacher",
@@ -167,7 +178,59 @@ class LectureCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateV
     action_url_name = "management:create-lecture"
     btn_name = _("Create lecture")
 
+    template_name = "create_lecture.html"
+
     permission_required = ("management.add_lecture", )
+
     def has_permission(self):
         return super().has_permission()
+
+
+
+
+User = get_user_model()
+
+
+class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
+    template_name = "ratings.html"
+
+    def get_permission_required(self):
+        course_id = self.kwargs.get("pk")
+        permissions = [
+            "management.view_course",
+            f"management.can_access_{course_id}_course_as_teacher",
+            f"management.can_access_{course_id}_course_as_student",
+        ]
+        return permissions
+
+    def has_permission(self):
+        permissions = self.get_permission_required()
+        return any(self.request.user.has_perm(perm) for perm in permissions)
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        course_id = self.kwargs.get("pk")
+
+        results = (
+            User.objects.filter(courses_as_student__id=course_id)
+            .annotate(
+                avg_mark=Coalesce(
+                    Round(Avg("answers__mark__mark_value", filter=F("answers__task__course_id") == course_id,
+                    output_field=FloatField()), 2),
+                    Value(0.0, output_field=FloatField())
+                ),
+            )
+            .order_by(F("avg_mark").desc())
+            .select_related("answers__mark")
+            .values("id", "first_name", "last_name", "avg_mark")
+        )
+
+        results = [
+            {"id": result["id"], "first_name":  result["first_name"], "last_name": result["last_name"],
+                 "avg_mark":result["avg_mark"]}
+            for result in results
+        ]
+        context["ratings"] = results
+        return context
 
