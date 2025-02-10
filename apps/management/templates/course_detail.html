@@ -9,23 +9,50 @@
 {% block body %}
 
 <div>
-    <h1>{{ course.title }}</h1>
-    {% if course.teacher %}
-    <h3>{% trans "Head teacher:" %} {{ course.teacher | fullname }}</h3>
-        <h4>{%  trans "Teacher contact" %} {{course.teacher.email}} </h4>
-    {% endif %}
+    <section class="pb-4">
+      <div class="border rounded-5">
+
+        <section class="w-100 px-4 py-5" style="background-color: #5f59f7; border-radius: .5rem .5rem 0 0;">
+          <div class="row d-flex justify-content-center">
+            <div class="col col-xl-10">
+              <div class="card mb-5" style="border-radius: 15px;">
+                <div class="card-body p-4">
+                  <h3 class="mb-3">{{ course.title }}</h3>
+                  {% if course.description %}
+                   <p class="small mb-0"><i class="far fa-star fa-lg"></i> <span class="mx-2">{%  trans "About course:  " %}</span>
+                    <em>{{ course.description | safe }}</em></p>
+                  {% endif %}
+                  {% if course.teacher %}
+                  <p class="small mb-0"><i class="far fa-star fa-lg"></i> <span class="mx-2">{%  trans "Head Teacher " %}</span>
+                    <strong>{{ course.teacher | fullname }}</strong></p>
+                  <p class="small mb-0">
+                  <i class="far fa-star fa-lg"></i> <span class="mx-2">{%  trans "Teacher email:  " %}</span>
+                    <strong>{{ course.teacher.email }}</strong>
+                  </p>
+                  {% else %}
+                  <p class="small mb-0"><i class="far fa-star fa-lg"></i> <span class="mx-2">{%  trans "No teacher assigned yet" %}</span>
+                    {% endif %}
+                  <hr class="my-4">
+                  <div class="d-flex justify-content-start align-items-center">
+                      {% if perms.management.update_course %}
+                      <a href="{% url 'management:update-course' pk=course.id %}" class="text-muted small mb-0 text-uppercase">
+                        {% trans 'settings' %}
+                      </a>
+                      <span class="ms-3 me-4">|</span>
+                      {% endif %}
+                    <img src="{{ course.teacher.photo.url }}" alt="avatar" class="img-fluid rounded-circle me-3" width="35">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </section>
 </div>
 
 <div class="container">
-        <div class="course-header" style="text-align: center; margin-bottom: 50px; margin-top: -30px">
-            {% if course.description|safe %}<p>
-                <em>{{ course.description|safe }} </em>
-            </p> <br>
-        {% endif %}
-            {% if user.position == "admin" %}
-                <a href="{% url "management:update-course" pk=course.id %}" id="add-task-btn">Update course</a> <br>
-            {% endif %}
-        </div>
 
         <div style="margin-bottom: 40px;" >
             <fieldset id='lectures' class="sub-course-info">
@@ -169,6 +196,5 @@
     </div>
 
 <hr>
-<a href="{% url "home:home-page" %}">{% trans "Back to home" %}</a>
 
 {% endblock %}

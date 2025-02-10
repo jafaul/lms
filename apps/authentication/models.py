@@ -1,10 +1,15 @@
+import os
+
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.core.files.storage import default_storage
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from storages.backends.s3boto3 import S3Boto3Storage
+
+from config.settings import base
 
 
 class SchoolUserManager(BaseUserManager):
@@ -45,7 +50,8 @@ class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     objects = SchoolUserManager()
     position = models.CharField(max_length=20, choices=Position.choices, default=Position.STUDENT)
-    photo = models.ImageField(_("Photo"), null=True, blank=True, upload_to='photos/%Y/%m/%d', storage=S3Boto3Storage())
+    photo = models.ImageField(_("Photo"), null=True, blank=True, upload_to='photos/%Y/%m/%d', storage=S3Boto3Storage(),
+                              default="photos/default-avatar.png")
 
     def get_role_permissions(self):
         if self.position == self.Position.ADMIN:
@@ -62,6 +68,19 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         if not self.username:
             self.username = self.email
+
+        if not self.photo:
+            default_image_s3_path = 'photos/default-avatar.png'
+            local_image_path = os.path.join(base.STATIC_ROOT, 'default-avatar.jpg')
+            if not default_storage.exists(default_image_s3_path):
+                try:
+                    with open(local_image_path, 'rb') as image_file:
+                        default_storage.save(default_image_s3_path, image_file)
+                    print(f'Default image uploaded to S3: {default_image_s3_path}')
+                except FileNotFoundError:
+                    print(f'Error: Default image not found in {local_image_path}')
+
+            self.photo = default_image_s3_path
 
         super(User, self).save(*args, **kwargs)
 

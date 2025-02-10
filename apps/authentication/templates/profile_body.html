@@ -5,8 +5,8 @@
 <div>
     <h2>{{ user.position|capfirst }}{%  trans " account" %}</h2>
     <fieldset>
-        {% if request.user.photo %}
-        <img src="{{ request.user.photo.url }}" alt="mdo" width="500" class="rounded-circle">
+        {% if user.photo %}
+        <img src="{{ user.photo.url }}" alt="mdo" width="500" class="rounded-circle">
         {% else %}
         <img src="{% static "default-avatar.jpg" %}" alt="not found photo"  width="500"  class="rounded-circle">
         {% endif %}
