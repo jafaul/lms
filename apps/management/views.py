@@ -211,10 +211,6 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         course_id = self.kwargs.get("pk")
-        #
-        results = User.objects.filter(courses_as_student__id=course_id)
-        print(course_id)
-        print(results)
 
         results = (
             User.objects.filter(courses_as_student__id=course_id)
@@ -235,9 +231,6 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
                  "avg_mark":result["avg_mark"]}
             for result in results
         ]
-        # print(results)
-        # Pass to context
         context["ratings"] = results
-        # context["title"] = f"Ratings of '{course.title}' course "
         return context
 
