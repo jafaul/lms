@@ -7,16 +7,13 @@
 {% endblock %}
 
 {% block body %}
-{% if user.is_authenticated %}
-    <h1>{% trans "We are glad to see you again, " %}{{ user.email }} </h1>
-{% else %}
-    <h1>{% trans "Welcome to our school!" %}</h1>
-{% endif %}
-    <div class="text-center">
 
-     <img class="rounded" src="{% static '/home/Stay.jpg' %}" alt="There had to be a picture">
+  <div class="my-3 py-3 text-center ">
+    <h2 class="display-5">{% trans "Welcome at our school!" %}</h2>
+  </div>
+<div class="bg-light shadow-sm mx-auto p-5" style="min-height: 100vh; border-radius: 21px 21px 0 0; overflow-y: auto;  color: #3f4137">
+       <img class="rounded" src="{% static '/home/Stay.jpg' %}" alt="There had to be a picture">
+      </div>
 
-    <br>
-<div>
 
 {% endblock %}

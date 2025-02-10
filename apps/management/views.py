@@ -82,7 +82,7 @@ class CourseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
 
 class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     model = models.Course
-    template_name = 'form.html'
+    template_name = 'create_course.html'
     permission_required = ["apps.management.add_course", ]
     form_class = forms.CourseCreateForm
 
@@ -100,7 +100,7 @@ class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
 class UpdateCourseView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     model = models.Course
     form_class = forms.CourseUpdateForm
-    template_name = 'form.html'
+    template_name = 'update_course.html'
     permission_required = ('apps.management.change_course',)
 
     def get_success_url(self):
@@ -108,6 +108,7 @@ class UpdateCourseView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["course"] = self.object
         context["title"] = "Update course"
         context["action_url"] = reverse_lazy("management:update-course", kwargs={"pk": self.kwargs['pk']})
         context["btn_name"] = "Register"
@@ -152,6 +153,8 @@ class TaskCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView
     action_url_name = "management:create-task"
     btn_name = _("Add task")
 
+    template_name = "create_task.html"
+
     def get_permission_required(self):
         permissions = [
             f"management.can_access_{self.kwargs['pk']}_course_as_teacher",
@@ -166,6 +169,8 @@ class LectureCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateV
     title = _("Create Lecture")
     action_url_name = "management:create-lecture"
     btn_name = _("Create lecture")
+
+    template_name = "create_lecture.html"
 
     permission_required = ("management.add_lecture", )
     def has_permission(self):

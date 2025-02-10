@@ -69,7 +69,7 @@ class UserAssignmentRoleForm(forms.ModelForm):
     position = forms.ChoiceField(
         choices=get_user_model().Position.choices,
         required=True,
-        label=_("Select user role")
+        label=_("Select user role"),
     )
 
     class Meta:

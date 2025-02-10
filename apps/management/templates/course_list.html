@@ -6,8 +6,15 @@
 {% endblock %}
 
 {% block body %}
+{% block background %}
 
-<h1>{% trans self.title %}</h1>
+<div class="me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden" style="background-color: #5f59f7">
+      <div class="my-3 py-3">
+    <h2 class="display-6">{% trans "Our Courses" %}</h2>
+
+      </div>
+
+<div class="bg-light shadow-sm mx-auto p-5" style="min-height: 100vh; border-radius: 21px 21px 0 0; overflow-y: auto;  color: #3f4137">
 
 {% if object_list %}
     <div class="container first-container col-sm-12 pull-left">
@@ -57,4 +64,7 @@
     <a href="{% url "management:all-courses" %}">{% trans "here" %}</a>
     </div>
 {% endif %}
+</div>
+</div>
+{% endblock %}
 {% endblock %}

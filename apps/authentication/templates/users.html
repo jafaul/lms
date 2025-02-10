@@ -6,15 +6,16 @@
 {% endblock %}
 
 {% block body %}
-
+  <div class="my-3 py-2 text-center ">
+    <h2 class="display-5">{% trans "Manage Users" %}</h2>
+  </div>
 {% for user in users %}
+    {% if user != request.user %}
     {% include "profile_body.html" with user=user %}<br>
-     <a href="{% url "authentication:update-role" pk=user.id %}"> Edit permissions </a><br>
     <hr>
-
+    {% endif %}
 {% endfor %}
 
 <hr>
-<a href="{% url "apps.home:home-page" %}">Back to home</a>
 
 {% endblock %}

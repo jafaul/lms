@@ -105,3 +105,8 @@ class UsersProfilesView(PermissionRequiredMixin, ListView):
     template_name = "users.html"
     model = get_user_model()
     context_object_name = "users"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = forms.UserAssignmentRoleForm()
+        return context
