@@ -16,6 +16,8 @@
                 <div class="flex-grow-1 ms-3">
                   <h5 class="mb-1">{{ user | fullname }}</h5>
                   <p class="mb-2 pb-1">{{ user.position | capfirst }}</p>
+                  <p class="mb-2 pb-1">{{ user.email }}</p>
+
                     <p class="mb-3"><em>{%  trans "Date joined: " %}{{ user.date_joined }}</em></p>
 
 

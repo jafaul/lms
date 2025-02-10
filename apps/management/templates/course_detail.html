@@ -70,178 +70,181 @@
     </section>
 </div>
 <div class="container">
+    <div style="margin-bottom: 40px;" >
+        <fieldset id='lectures' class="sub-course-info">
+        <legend style="font-size: 30px;"><strong>Lectures</strong></legend>
+        {% if course.lectures.all %}
+            <dl class="items-list">
+            {% for lecture in course.lectures.all %}
+            <dt class='item-dt' style="counter-increment: dt-counter; color: #3f4137; font-weight: 300"><strong>{{ lecture.title }}</strong></dt>
+                {% if lecture.description %}
+                    <dd class="sub-item-list"><em>{{ lecture.description|safe }}</em></dd>
+                {% endif %}
+                <hr>
+            </dl>
 
-        <div style="margin-bottom: 40px;" >
-            <fieldset id='lectures' class="sub-course-info">
-            <legend style="font-size: 30px;"><strong>Lectures</strong></legend>
-            {% if course.lectures.all %}
-                <dl class="items-list">
-                {% for lecture in course.lectures.all %}
-                <dt class='item-dt' style="counter-increment: dt-counter; color: #3f4137; font-weight: 300"><strong>{{ lecture.title }}</strong></dt>
-                    {% if lecture.description %}
-                        <dd class="sub-item-list"><em>{{ lecture.description|safe }}</em></dd>
+            {% endfor %}
+        {% else %}
+            <p style="margin: 20px">No lectures available for this course.</p>
+        {% endif %}
+        </fieldset>
+    </div>
+
+    <div style="margin-bottom: 40px;" >
+        <fieldset id='students' class="sub-course-info">
+        <legend style="font-size: 30px;"><strong>Our Students</strong></legend>
+        {% if course.students.all %}
+            <table class="table">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">Fullname</th>
+                  {% if user.is_staff %}
+                    <th scope="col">Email</th>
+                  {% endif %}
+                  </tr>
+                </thead>
+                <tbody>
+                {% for student in course.students.all %}
+                    <tr>
+                        <td>{{ student | fullname}}</td>
+                    {% if user.is_staff %}
+                        <td>{{ student.email }}</td>
                     {% endif %}
-                    <hr>
-                </dl>
-
+                    </tr>
                 {% endfor %}
-            {% else %}
-                <p style="margin: 20px">No lectures available for this course.</p>
-            {% endif %}
-            </fieldset>
+                </tbody>
+              </table>
+
+        {% else %}
+         <div class="alert alert-warning" role="alert">
+            {% trans "No done homeworks yet" %}
+            <p style="margin: 20px"> {% trans "No students yet." %}</p>
         </div>
 
-        <div style="margin-bottom: 40px;" >
-            <fieldset id='students' class="sub-course-info">
-            <legend style="font-size: 30px;"><strong>Our Students</strong></legend>
-            {% if course.students.all %}
-                <table class="table">
-                    <thead class="thead-light">
-                      <tr>
-                        <th scope="col">Fullname</th>
-                      {% if user.is_staff %}
-                        <th scope="col">Email</th>
-                      {% endif %}
-                      </tr>
-                    </thead>
-                    <tbody>
-                    {% for student in course.students.all %}
-                        <tr>
-                            <td>{{ student | fullname}}</td>
-                        {% if user.is_staff %}
-                            <td>{{ student.email }}</td>
-                        {% endif %}
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                  </table>
+        {% endif %}
 
-            {% else %}
-             <div class="alert alert-warning" role="alert">
-                {% trans "No done homeworks yet" %}
-                <p style="margin: 20px"> {% trans "No students yet." %}</p>
-            </div>
+        </fieldset>
+    </div>
 
-            {% endif %}
+    <div>
+    <fieldset id="tasks" class="sub-course-info">
 
-            </fieldset>
-        </div>
-
-        <div>
-        <fieldset id="tasks" class="sub-course-info">
-
-            <legend style="font-size: 30px;"><strong>Tasks</strong></legend>
+        <legend style="font-size: 30px;"><strong>Tasks</strong></legend>
 
 
-            {% if course.tasks.all %}
-                <dl id="task-list"  class="items-list">
-                    {% for task in course.tasks.all %}
-                        <section class="w-100 px-4 py-5" style="border-radius: .5rem .5rem 0 0;">
-                              <div class="row d-flex justify-content-center">
-                                <div class="col col-xl-10">
-                                  <div class="card mb-5" style="border-radius: 15px;">
-                                    <div class="card-body p-4">
-                                      <h3 class="mb-3">{{ task.title }}</h3>
+        {% if course.tasks.all %}
+            <dl id="task-list"  class="items-list">
+                {% for task in course.tasks.all %}
+                    <section class="w-100 px-4 py-5" style="border-radius: .5rem .5rem 0 0;">
+                          <div class="row d-flex justify-content-center">
+                            <div class="col col-xl-10">
+                              <div class="card mb-5" style="border-radius: 15px;">
+                                <div class="card-body p-4">
+                                  <h3 class="mb-3">{{ task.title }}</h3>
 
-                                      <p class="small mb-0">
-                                      <i class="far fa-star fa-lg"></i> <span class="mx-2">{%  trans "Max Mark:  " %}</span>
-                                        <strong>{{ task.max_mark }}</strong>
-                                      </p>
+                                  <p class="small mb-0">
+                                  <i class="far fa-star fa-lg"></i> <span class="mx-2">{%  trans "Max Mark:  " %}</span>
+                                    <strong>{{ task.max_mark }}</strong>
+                                  </p>
 
-                                      {% if task.description %}
-                                       <p class="small mb-0"><i class="far fa-star fa-lg"></i> <span class="mx-2">{%  trans "Description:  " %}</span>
-                                        <em>{{ task.description | safe }}</em></p>
+                                  {% if task.description %}
+                                   <p class="small mb-0"><i class="far fa-star fa-lg"></i> <span class="mx-2">{%  trans "Description:  " %}</span>
+                                    <em>{{ task.description | safe }}</em></p>
+                                  {% endif %}
+
+                                  <hr class="my-4">
+                                  <div class="d-flex justify-content-start align-items-center">
+                                      {% if request.user.position == "student" %}
+                                      <a href="{% url 'assessment:create_answer' pk=course.id pktask=task.id %}" class="text-muted small mb-0 text-uppercase">
+                                        {% trans 'Send answer' %}
+                                      </a>
+                                      <span class="ms-3 me-4">|</span>
+                                    <hr class="my-4">
+
                                       {% endif %}
+                                  </div>
+                               <h5 class="display-7">{% trans "Answers" %}</h5>
 
-                                      <hr class="my-4">
-                                      <div class="d-flex justify-content-start align-items-center">
-                                          {% if request.user.position == "student" %}
-                                          <a href="{% url 'assessment:create_answer' pk=course.id %}" class="text-muted small mb-0 text-uppercase">
-                                            {% trans 'Send answer' %}
-                                          </a>
-                                          <span class="ms-3 me-4">|</span>
-                                        <hr class="my-4">
+                                  <div class="d-flex justify-content-start align-items-center">
+                                      {% if task.answers.all %}
+                                        <hr>
 
-                                          {% endif %}
-                                      </div>
-                                   <h5 class="display-7">{% trans "Answers" %}</h5>
-
-                                      <div class="d-flex justify-content-start align-items-center">
-                                          {% if task.answers.all %}
-                                            <hr>
-
-                                            <table class="table">
-                                            <thead class="thead-light">
+                                        <table class="table">
+                                        <thead class="thead-light">
+                                        <tr>
+                                            <th scope="col"> {% trans "Student" %}</th>
+                                            <th scope="col">{% trans "Answer" %}</th>
+                                            <th scope="col">{% trans "Date" %}</th>
+                                            <th scope="col">{% trans "Teacher" %}</th>
+                                            <th scope="col">{% trans "Mark" %}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for answer in task.answers.all %}
                                             <tr>
-                                                <th scope="col"> {% trans "Student" %}</th>
-                                                <th scope="col">{% trans "Answer" %}</th>
-                                                <th scope="col">{% trans "Date" %}</th>
-                                                <th scope="col">{% trans "Teacher" %}</th>
-                                                <th scope="col">{% trans "Mark" %}</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {% for answer in task.answers.all %}
-                                                <tr>
-                                                <td>{{ answer.student | fullname}}</td>
-                                                <td>{{ answer.description|safe }}</td>
-                                                <td>{{ answer.submission_datetime }}</td>
-                                                {% if answer.mark_id %}
-                                                <td>{{ answer.mark.teacher.first_name }} {{ answer.mark.teacher.last_name}}</td>
-                                                <td>{{ answer.mark.mark_value }}</td>
+                                            <td>{{ answer.student | fullname}}</td>
+                                            <td>{{ answer.description|safe }}</td>
+                                            <td>{{ answer.submission_datetime }}</td>
+                                            {% if answer.mark_id %}
+                                            <td>{{ answer.mark.teacher | fullname }}</td>
+                                            <td>{{ answer.mark.mark_value }}</td>
+                                            {% else %}
+                                            <td colspan="2">
+                                                {% if user.position == "teacher" or user.position == "admin"%}
+                                                <form class="needs-validation" novalidate="" method="post"
+                                                      action="{% url "assessment:create_mark" pk=course.id pktask=task.id pkanswer=answer.id %}">
+                                                     {% csrf_token %}
+
+                                                  <label for="{{ mark_form.mark_value.id_for_label }}" class="form-label outline-primary me-1 flex-grow-1">
+                                                      {% trans "Mark: " %}
+                                                  </label>
+                                                    <span class="ms-3 me-5"> </span>
+                                                        {{ mark_form.mark_value }}
+                                                      <span class="ms-3 me-5"> </span>
+                                                      <button type="submit"  class="btn btn-primary flex-grow-11" data-mdb-button-initialized="True">
+                                                          {% trans "Assign" %}
+                                                      </button>
+                                                </form>
                                                 {% else %}
-                                                <td colspan="2">
-                                                    {% if user.position == "teacher" or user.position == "admin"%}
-                                                    <a href="{% url "assessment:create_mark" pk=course.id pktask=task.id pkanswer=answer.id %}"
-                                                       id="add-task-btn">
-                                                        Assign a mark
-                                                    </a>
-                                                    {% else %}
-                                                       <div class="alert alert-danger" role="alert">
-                                                            <p> {% trans "No mark assigned yet." %}</p>
-                                                        </div>
-                                                    {% endif %}
-                                                </td>
+                                                   <div class="alert alert-danger" role="alert">
+                                                        <p> {% trans "No mark assigned yet." %}</p>
+                                                    </div>
                                                 {% endif %}
+                                            </td>
+                                            {% endif %}
 
-                                                </tr>
-                                            {% endfor %}
-                                            </tbody>
-                                            </table>
-                                        {% else %}
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                        </table>
+                                    {% else %}
 
-                                          <div class="alert alert-warning" role="alert">
-                                              {% trans "No done homeworks yet" %}
-                                            </div>
-                                        {% endif %}
+                                      <div class="alert alert-warning" role="alert">
+                                          {% trans "No done homeworks yet" %}
+                                        </div>
+                                    {% endif %}
 
-                                      </div>
-                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </section>
+                            </div>
+                          </div>
+                        </section>
 
-                        {% if user.position == "student" %}
-                        <a href="{% url "assessment:create_answer" pk=course.id pktask=task.id %}"
-                           id="add-task-btn">Create answer
-                        </a>
-                        {% endif %}
+                    <hr>
 
-                        <hr>
+                {% endfor %}
+                    <hr>
+            </dl>
+        {% else %}
+             <div class="alert alert-warning" role="alert">
+               <p style="margin: 20px" >{% trans "No lectures available for this course." %}</p>
+             </div>
 
-                    {% endfor %}
-                        <hr>
-                </dl>
-            {% else %}
-                 <div class="alert alert-warning" role="alert">
-                   <p style="margin: 20px" >{% trans "No lectures available for this course." %}</p>
-                 </div>
+        {% endif %}
 
-            {% endif %}
-
-        </fieldset>
-        </div>
+    </fieldset>
+    </div>
     </div>
 </div>
     </div>

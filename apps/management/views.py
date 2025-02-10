@@ -8,6 +8,7 @@ from django.urls import reverse_lazy
 
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
 
+from apps.assessment.forms import MarkForm
 from apps.management import models, forms
 from django.utils.translation import gettext_lazy as _
 
@@ -52,6 +53,11 @@ class CourseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     template_name = 'course_detail.html'
     model = models.Course
     context_object_name = 'course'  # to use "course" obj in template
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["mark_form"] = MarkForm
+        return context
 
     def get_permission_required(self):
         course = self.get_object()
@@ -173,6 +179,7 @@ class LectureCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateV
     template_name = "create_lecture.html"
 
     permission_required = ("management.add_lecture", )
+
     def has_permission(self):
         return super().has_permission()
 
