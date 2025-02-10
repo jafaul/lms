@@ -12,7 +12,7 @@ User = get_user_model()
 class Answer(models.Model):
     task = models.ForeignKey("management.Task", on_delete=models.CASCADE, related_name="answers")
     description = HTMLField(_("Description"), max_length=500)
-    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="answers")
     submission_datetime = models.DateTimeField(
         _("Submission datetime"), auto_now_add=True, blank=True, null=False)
     mark = models.OneToOneField(

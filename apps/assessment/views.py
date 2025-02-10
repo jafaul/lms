@@ -1,10 +1,13 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.db.models import Avg, Value, F
+from django.db.models.functions import Coalesce, Round
 from django.shortcuts import  get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView
+from django.views.generic import CreateView, TemplateView
 
 from apps.assessment import models, forms
-from apps.management.models import Task
+from apps.management.models import Task, Course
 
 
 class BaseCreateView(CreateView):

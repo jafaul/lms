@@ -57,6 +57,10 @@
                       <span class="ms-3 me-4">|</span>
 
                       {% endif %}
+                      <a href="{% url "management:ratings" pk=course.id %}" id="add-task-btn" class="text-muted small mb-0 text-uppercase">
+                            {% trans "Check ratings" %}
+                        </a>
+                      <span class="ms-3 me-4">|</span>
 
                     <img src="{{ course.teacher.photo.url }}" alt="avatar" class="img-fluid rounded-circle me-3" width="35">
                   </div>

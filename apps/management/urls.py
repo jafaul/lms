@@ -17,5 +17,7 @@ urlpatterns = [
     path("<int:pk>/lectures/add/", views.LectureCreateView.as_view(), name='create-lecture'),
     # update views
     path("<int:pk>/students/update", views.UpdateCourseView.as_view(), name='update-course'),
+    # template views
+    path("<int:pk>/ratings/", views.RatingView.as_view(), name='ratings'),
 
 ]

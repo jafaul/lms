@@ -1,12 +1,14 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
-from django.db.models import Q
+from django.db.models import Q, Value, Avg, F, FloatField
+from django.db.models.functions import Round, Coalesce
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 
 from django.urls import reverse_lazy
 
-from django.views.generic import ListView, CreateView, DetailView, UpdateView
+from django.views.generic import ListView, CreateView, DetailView, UpdateView, TemplateView
 
 from apps.assessment.forms import MarkForm
 from apps.management import models, forms
@@ -182,4 +184,60 @@ class LectureCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateV
 
     def has_permission(self):
         return super().has_permission()
+
+
+
+
+User = get_user_model()
+
+
+class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
+    template_name = "ratings.html"
+
+    def get_permission_required(self):
+        course_id = self.kwargs.get("pk")
+        permissions = [
+            "management.view_course",
+            f"management.can_access_{course_id}_course_as_teacher",
+            f"management.can_access_{course_id}_course_as_student",
+        ]
+        return permissions
+
+    def has_permission(self):
+        permissions = self.get_permission_required()
+        return any(self.request.user.has_perm(perm) for perm in permissions)
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        course_id = self.kwargs.get("pk")
+        #
+        results = User.objects.filter(courses_as_student__id=course_id)
+        print(course_id)
+        print(results)
+
+        results = (
+            User.objects.filter(courses_as_student__id=course_id)
+            .annotate(
+                avg_mark=Coalesce(
+                    Round(Avg("answers__mark__mark_value", filter=F("answers__task__course_id") == course_id,
+                    output_field=FloatField()), 2),
+                    Value(0.0, output_field=FloatField())
+                ),
+            )
+            .order_by(F("avg_mark").desc())
+            .select_related("answers__mark")
+            .values("id", "first_name", "last_name", "avg_mark")
+        )
+
+        results = [
+            {"id": result["id"], "first_name":  result["first_name"], "last_name": result["last_name"],
+                 "avg_mark":result["avg_mark"]}
+            for result in results
+        ]
+        # print(results)
+        # Pass to context
+        context["ratings"] = results
+        # context["title"] = f"Ratings of '{course.title}' course "
+        return context
 

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load user_extras %}
+{% load i18n %}
+
+{% block title %}
+    {% trans "Ratings" %}
+{% endblock %}
+
+{% block body %}
+{% block background %}
+
+<div class="me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden" style="background-color: #5f59f7">
+      <div class="my-3 py-3">
+    <h2 class="display-6">{% trans "Ratings" %}</h2>
+
+      </div>
+
+<div class="bg-light shadow-sm mx-auto p-5" style="min-height: 100vh; border-radius: 21px 21px 0 0; overflow-y: auto;  color: #3f4137">
+
+{% if ratings %}
+    <div class="container first-container col-sm-12 pull-left">
+      <table class="table">
+        <thead class="thead-light">
+          <tr>
+            <th scope='col' id="id-column">{% trans ID %}</th>
+            <th scope='col' id="title-column">{% trans Student %}</th>
+            <th scope='col' id="teacher-column">{% trans "Avg mark" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for user in ratings %}
+            <tr>
+                <th scope="row" id="id-column">
+                    {{ user.id }}
+                </th>
+                <td id="title-column">
+                   {{ user.first_name | capfirst }} {{ user.last_name | capfirst }}
+                </td>
+                <td id="teacher-column">
+                    {{ user.avg_mark}}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+{% else %}
+    <div class="alert alert-warning" role="alert">
+    {% trans "No students info" %}
+    </div>
+{% endif %}
+</div>
+</div>
+{% endblock %}
+{% endblock %}
