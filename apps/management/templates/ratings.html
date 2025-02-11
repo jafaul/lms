@@ -22,9 +22,12 @@
       <table class="table">
         <thead class="thead-light">
           <tr>
-            <th scope='col' id="id-column">{% trans ID %}</th>
-            <th scope='col' id="title-column">{% trans Student %}</th>
+            <th scope='col' id="id-column">{% trans "ID" %}</th>
+            <th scope='col' id="title-column">{% trans "Student" %}</th>
             <th scope='col' id="teacher-column">{% trans "Avg mark" %}</th>
+            <th scope='col'>{% trans "Scores" %}</th>
+            <th scope='col'>{% trans "Answers Send" %}</th>
+
           </tr>
         </thead>
         <tbody>
@@ -36,9 +39,10 @@
                 <td id="title-column">
                    {{ user.first_name | capfirst }} {{ user.last_name | capfirst }}
                 </td>
-                <td id="teacher-column">
-                    {{ user.avg_mark}}
-                </td>
+                <td>{{ user.avg_mark}}</td>
+                <td>{{ user.sum_mark}}</td>
+                <td>{{ user.answers_send}}</td>
+
             </tr>
         {% endfor %}
         </tbody>

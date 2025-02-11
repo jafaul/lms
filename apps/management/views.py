@@ -1,9 +1,7 @@
-from tracemalloc import Filter
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
-from django.db.models import Q, Value, Avg, F, FloatField
+from django.db.models import Q, Value, Avg, F, FloatField, Sum, IntegerField, Count
 from django.db.models.functions import Round, Coalesce
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -240,35 +238,42 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
             User.objects.filter(courses_as_student__id=course_id)
             .annotate(
                 avg_mark=Coalesce(
-                    Round(Avg("answers__mark__mark_value",
-                              filter=F("answers__task__course_id") == course_id,
-                    output_field=FloatField()), 2),
+                    Round(
+                        Avg("answers__mark__mark_value", filter=F("answers__task__course_id") == course_id),
+                        2
+                    ),
                     Value(0.0, output_field=FloatField())
                 ),
+                sum_mark=Coalesce(
+                    Sum("answers__mark__mark_value", filter=F("answers__task__course_id") == course_id),
+                    Value(0, output_field=IntegerField())
+                ),
+                answers_send=Coalesce(
+                    Count("answers", distinct=True, filter=F("answers__task__course_id") == course_id),
+                    Value(0, output_field=IntegerField())
+                )
             )
             .order_by(F("avg_mark").desc())
-            .select_related("answers__mark")
-            .values("id", "first_name", "last_name", "avg_mark")
+            .prefetch_related("answers__mark")
+            .values("id", "first_name", "last_name", "avg_mark", "sum_mark", "answers_send")
         )
-
         results = [
-            {"id": result["id"], "first_name":  result["first_name"], "last_name": result["last_name"],
-                 "avg_mark":result["avg_mark"]}
+            {"id": result["id"],
+             "first_name":  result["first_name"],
+             "last_name": result["last_name"],
+             "avg_mark": result["avg_mark"],
+             "sum_mark": result["sum_mark"],
+             "answers_send": result["answers_send"]
+             }
             for result in results
         ]
+        print(results)
         context["ratings"] = results
         return context
 
 
 
 """Додати до курсів:
-
-  * Дозволити фільтрувати курси за:
-  * викладачем
-  * тегами
-  * стартом
-
-📌 Завдання 2
 
 Додати можливість сортувати й фільтрувати студентів у курсі за сумою балів.
 

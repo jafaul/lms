@@ -60,3 +60,40 @@ class CourseFilterSet(django_filters.FilterSet):
     def filter_start(self, queryset, name, value):
         return queryset.filter(start_datetime__gte=value)
 
+
+class RatingFilter(django_filters.FilterSet):
+    avg_mark = django_filters.NumberFilter(
+        label=_("Avg Mark"),
+        method='filter_avg_mark',
+        widget=forms.NumberInput(attrs={
+            "class": "form-control",
+            "id": "avg-mark",
+        })
+    )
+    sum_mark = django_filters.NumberFilter(
+        label=_("Sum Mark"),
+        method='filter_sum_mark',
+        widget=forms.NumberInput(attrs={
+            "class": "form-control",
+            "id": "sum-mark",
+        })
+    )
+
+    tasks_done = django_filters.NumberFilter(
+        label=_("Tasks Done"),
+        method='filter_tasks_done',
+        widget=forms.NumberInput(attrs={
+            "class": "form-control",
+            "id": "tasks-done",
+        })
+    )
+
+    class Meta:
+        model = Course
+        fields = ['avg_mark', 'sum_mark', 'tasks_done']
+
+    def filter_avg_mark(self, queryset, name, value):
+        queryset.filter(
+
+        )
+
