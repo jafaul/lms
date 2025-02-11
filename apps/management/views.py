@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 
 from django.db.models import Q, Value, Avg, F, FloatField
 from django.db.models.functions import Round, Coalesce
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 
 from django.urls import reverse_lazy
@@ -104,6 +104,24 @@ class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
         context["btn_name"] = "Create"
         return context
 
+    def form_valid(self, form):
+        print(f"DEBUG: Form is valid. Cleaned data: {form.cleaned_data}")
+
+        course = form.save(commit=False)
+        print(course)# Don't save yet
+        print(f"DEBUG: Before saving - start_datetime = {course.start_datetime}")
+
+        if not course.start_datetime:
+            return JsonResponse({"error": "Start datetime is missing before saving!"}, status=400)
+
+        response = super().form_valid(form)  # Now save the form
+        print(f"DEBUG: Course saved successfully with start_datetime = {self.object.start_datetime}")
+        return response
+
+    def form_invalid(self, form):
+        print(f"DEBUG: Form is invalid. Errors: {form.errors}")
+        return super().form_invalid(form)
+
 
 class UpdateCourseView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     model = models.Course
@@ -186,8 +204,6 @@ class LectureCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateV
         return super().has_permission()
 
 
-
-
 User = get_user_model()
 
 
@@ -216,7 +232,8 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
             User.objects.filter(courses_as_student__id=course_id)
             .annotate(
                 avg_mark=Coalesce(
-                    Round(Avg("answers__mark__mark_value", filter=F("answers__task__course_id") == course_id,
+                    Round(Avg("answers__mark__mark_value",
+                              filter=F("answers__task__course_id") == course_id,
                     output_field=FloatField()), 2),
                     Value(0.0, output_field=FloatField())
                 ),
@@ -234,3 +251,18 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
         context["ratings"] = results
         return context
 
+
+
+"""Додати до курсів:
+
+* Tags (arrayfield) (python, крій та шиття etc.)
+* Дозволити фільтрувати курси за:
+  * викладачем
+  * тегами
+  * стартом
+
+📌 Завдання 2
+
+Додати можливість сортувати й фільтрувати студентів у курсі за сумою балів.
+
+"""

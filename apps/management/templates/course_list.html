@@ -21,30 +21,35 @@
       <table class="table">
         <thead class="thead-light">
           <tr>
-            <th scope='col' id="id-column">ID</th>
             <th scope='col' id="title-column">Title</th>
             <th scope='col' id="teacher-column">Teacher</th>
-            <th scope='col' id="desc-column">Description</th>
             <th scope='col' id="stud-column">Students</th>
+            <th scope='col'>Tags</th>
+            <th scope='col'>Start</th>
+
+
           </tr>
         </thead>
         <tbody>
         {% for course in object_list %}
             <tr>
-                <th scope="row" id="id-column">
-                    <a href="{% url "apps.management:course-detail" course.id %}">{{ course.id }}</a>
-                </th>
                 <td id="title-column">
-                    {{ course.title }}
+                    <p><a href="{% url "apps.management:course-detail" course.id %}"
+                          class="link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                     style="counter-increment: dt-counter; color: #212529;">
+                        {{ course.title }}
+                    </a></p>
                 </td>
                 <td id="teacher-column">
+                    {% if course.teacher %}
                     {{ course.teacher.email}}
+                    {% else %}
+                    No teacher assigned
+                    {% endif %}
                 </td>
-
-                <td id="desc-column">{{ course.description }}</td>
                 <td id="stud-column">
                 {% if course.students.all %}
-                    <ul id="students-list">
+                    <ul id="students-list" style="list-style: none">
                         {% for student in course.students.all %}
                             <li>{{ student.email}}</li>
                         {% endfor %}
@@ -53,6 +58,9 @@
                     No students
                 {% endif %}
                 </td>
+                <td>{{ course.tags|join:", " }}</td>
+                <td>{{ course.start_datetime }}</td>
+
             </tr>
         {% endfor %}
         </tbody>

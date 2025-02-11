@@ -1,5 +1,11 @@
+from datetime import datetime
+
 from django import forms
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
+from django.utils.timezone import make_aware, get_current_timezone, is_naive, now
 from django.utils.translation import gettext_lazy as _
 
 from apps.management.models import Task, Lecture, Course
@@ -95,6 +101,7 @@ class CourseUpdateForm(forms.ModelForm):
 
 User = get_user_model()
 
+
 class CourseCreateForm(forms.ModelForm):
     User = get_user_model()
     students = forms.ModelMultipleChoiceField(
@@ -135,12 +142,54 @@ class CourseCreateForm(forms.ModelForm):
         })
     )
 
+    start_datetime = forms.DateTimeField(
+        required=True,
+        widget=forms.DateTimeInput(attrs={
+            "type": "datetime-local",
+            "class": "form-control",
+            "id": "start-datetime",
+        })
+    )
+
+    tags = forms.CharField(
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+               'placeholder': _('Enter tags separated by commas'),
+               'class': 'form-control',
+               'id': 'tags',
+               }
+        ),
+        help_text=_("Enter tags separated by commas (e.g. python, django, programming)")
+    )
+
+
+    class Meta:
+        model = Course
+        fields = ["teacher", "title", "description", "students", "tags", "start_datetime"]
+
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         teachers = self.User.objects.filter(groups__name="teacher")
         self.fields['teacher'].queryset = teachers
         self.fields['teacher'].choices = [("", _(""))] + list(self.fields['teacher'].choices)[1:]
 
-    class Meta:
-        model = Course
-        fields = ["teacher", "title", "description", "students"]
+    def clean_tags(self):
+        tags = self.cleaned_data['tags']
+        if not tags:
+            return []
+        return [tag.strip() for tag in tags.split(',') if tag.strip()]
+
+    def clean_start_datetime(self):
+        start_datetime = self.cleaned_data.get('start_datetime')
+
+        if not start_datetime:
+            raise ValidationError("Start datetime is required.")
+
+        if is_naive(start_datetime):
+            start_datetime = make_aware(start_datetime)
+
+        if start_datetime <= now():
+            raise ValidationError("Start date cannot be today or in the past.")
+        return start_datetime

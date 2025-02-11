@@ -3,6 +3,7 @@ import datetime
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -20,6 +21,8 @@ class Course(models.Model):
     students = models.ManyToManyField(
         User, related_name='courses_as_student', default=[], blank=True
     )
+    start_datetime = models.DateTimeField(_('Start datetime'))
+    tags = ArrayField(models.CharField(_('Tags'), max_length=255), default=list)
 
     def __str__(self):
         return f'<Course: {self.title}>'

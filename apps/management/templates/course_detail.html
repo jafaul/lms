@@ -61,8 +61,9 @@
                             {% trans "Check ratings" %}
                         </a>
                       <span class="ms-3 me-4">|</span>
-
+                  {% if course.teacher %}
                     <img src="{{ course.teacher.photo.url }}" alt="avatar" class="img-fluid rounded-circle me-3" width="35">
+                  {% endif %}
                   </div>
                 </div>
               </div>
@@ -89,7 +90,9 @@
 
             {% endfor %}
         {% else %}
-            <p style="margin: 20px">No lectures available for this course.</p>
+             <div class="alert alert-warning" role="alert">
+               <p style="margin: 20px" >{% trans "No lectures available for this course." %}</p>
+             </div>
         {% endif %}
         </fieldset>
     </div>
@@ -121,7 +124,6 @@
 
         {% else %}
          <div class="alert alert-warning" role="alert">
-            {% trans "No done homeworks yet" %}
             <p style="margin: 20px"> {% trans "No students yet." %}</p>
         </div>
 
@@ -242,7 +244,7 @@
             </dl>
         {% else %}
              <div class="alert alert-warning" role="alert">
-               <p style="margin: 20px" >{% trans "No lectures available for this course." %}</p>
+               <p style="margin: 20px" >{% trans "No tasks available for this course." %}</p>
              </div>
 
         {% endif %}
