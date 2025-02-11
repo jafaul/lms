@@ -6,20 +6,49 @@
 {% endblock %}
 
 {% block body %}
-<div>
-    <h1>{%  trans "Settings" %}</h1>
 
-</div>
+
+<div class="me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden" style="background-color: #5f59f7">
+      <div class="my-3 py-3">
+    <h2 class="display-6">{% trans "Settings" %}</h2>
+
+      </div>
+
+<div class="bg-light shadow-sm mx-auto p-5" style="min-height: 100vh; border-radius: 21px 21px 0 0; overflow-y: auto;  color: #3f4137">
+
+
 
 <form method="post" enctype="multipart/form-data">
+
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">{% trans "Update Info" %}</button>
+
+    <div class="d-flex align-items-center">
+        <label class="form-label me-3">
+            <img src="{{ request.user.photo.url }}" alt="Profile Photo" width="50" height="50" class="rounded-circle">
+        </label>
+
+        <div>
+            {{ form.photo }}
+        </div>
+    </div>
+
+    {% for field in form %}
+        {% if field.name != "photo" %}
+            <p>{{ field.label_tag }} {{ field }}</p>
+        {% endif %}
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary me-1 flex-grow-1">{% trans "Update Info" %}</button>
+    <hr>
+
 </form>
 
-
-<form method="post" action="{% url 'apps.authentication:logout' %}">
+    <form method="post" action="{% url 'apps.authentication:logout' %}">
     {% csrf_token %}
-    <button type="submit">{% trans "Logout" %}</button>
-</form>
+    <button type="submit" class="btn btn-primary flex-grow-11" data-mdb-button-initialized="True">{% trans "Logout" %}</button>
+    </form>
+
+
+</div>
+</div>
 {% endblock %}

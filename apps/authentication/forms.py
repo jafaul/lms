@@ -10,7 +10,6 @@ User = get_user_model()
 
 class UserRegistrationForm(UserCreationForm):
     first_name = forms.CharField(
-        # label=_('First Name'),
         widget=forms.TextInput(
             attrs={
                 "class": "form-control", "id": "inputFirstName", "placeholder": "First Name",
@@ -18,7 +17,6 @@ class UserRegistrationForm(UserCreationForm):
             })
     )
     last_name = forms.CharField(
-        # label=_('Last Name'),
         widget=forms.TextInput(
             attrs={
                 "class": "form-control", "id": "inputLastName", "placeholder": "Last Name",
@@ -78,10 +76,44 @@ class UserAssignmentRoleForm(forms.ModelForm):
 
 
 class UserUpdateForm(forms.ModelForm):
-    email = forms.EmailField(help_text=_('Required. Inform a valid email address.'), required=True)
-    first_name = forms.CharField(help_text=_('Required. Inform a valid first name.'), required=True)
-    last_name = forms.CharField(help_text=_('Required. Inform a valid last name.'), required=True)
-    photo = forms.ClearableFileInput(attrs={'multiple': False, "required": False})
+    email = forms.EmailField(
+        help_text=_('Required. Inform a valid email address.'),
+        required=True,
+        widget=forms.EmailInput(
+            attrs={
+                "class": "form-control", "id": "inputEmail", "placeholder": "Email address",
+                "required": "", "autofocus": "",
+            })
+
+    )
+
+    first_name = forms.CharField(
+        help_text=_('Required. Inform a valid first name.'), required=True,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control", "id": "inputFirstName", "placeholder": "First Name",
+                "required": True,
+            })
+    )
+    last_name = forms.CharField(
+        help_text=_('Required. Inform a valid last name.'), required=True,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control", "id": "inputLastName", "placeholder": "Last Name",
+                "required": True,
+            })
+    )
+
+    photo = forms.FileField(
+        required=False,
+        widget=forms.ClearableFileInput(
+            attrs={
+                "class": "form-control-file",
+                "id": "inputFile",
+                "placeholder": "Upload Photo",
+            }
+        ),
+    )
 
     class Meta:
         model = User
