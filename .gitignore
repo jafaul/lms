@@ -289,6 +289,13 @@ dz1
 dz1_run.py
 
 *.pyc
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+=======
+>>>>>>> ecb2d78 (init)
+=======
+>>>>>>> auth
 .env
 
 
