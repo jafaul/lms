@@ -43,7 +43,7 @@
                         <th scope='col' id="id-column">{% trans "ID" %}</th>
                         <th scope='col' id="title-column">{% trans "Student" %}</th>
                         <th scope='col' id="teacher-column">{% trans "Avg mark" %}</th>
-                        <th scope='col'>{% trans "Scores" %}</th>
+                        <th scope='col'>{% trans "Total score" %}</th>
                         <th scope='col'>{% trans "Answers Send" %}</th>
                     </tr>
                 </thead>
@@ -57,7 +57,7 @@
                                 {{ user.first_name | capfirst }} {{ user.last_name | capfirst }}
                             </td>
                             <td>{{ user.avg_mark }}</td>
-                            <td>{{ user.sum_mark }}</td>
+                            <td>{{ user.total_score }}</td>
                             <td>{{ user.answers_send }}</td>
                         </tr>
                     {% endfor %}

@@ -73,8 +73,8 @@ class RatingFilter(django_filters.FilterSet):
             "step": "any",
         })
     )
-    scores = django_filters.NumberFilter(
-        label=_("Scores"),
+    total_score = django_filters.NumberFilter(
+        label=_("Total Score"),
         method='filter_sum_mark',
         widget=forms.NumberInput(attrs={
             "class": "form-control",
@@ -91,15 +91,26 @@ class RatingFilter(django_filters.FilterSet):
         })
     )
 
+    order_by = django_filters.ChoiceFilter(
+        label=_("Sort By"),
+        method='filter_order_by',
+        choices=[
+            ("answers_send", _("Total Answers Sent")),
+            ("total_score", _("Total Score")),
+            ("avg_mark", _("Average Mark")),
+        ],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         models = User
         fields = []
 
-    def filter_avg_mark(self, queryset, name, value):
-        return queryset
-
-    def filter_sum_mark(self, queryset, name, value):
-        return queryset
-
-    def filter_tasks_done(self, queryset, name, value):
-        return queryset
+    # def filter_avg_mark(self, queryset, name, value):
+    #     return queryset
+    #
+    # def filter_sum_mark(self, queryset, name, value):
+    #     return queryset
+    #
+    # def filter_total_score(self, queryset, name, value):
+    #     return queryset

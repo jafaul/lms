@@ -236,6 +236,7 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
         course_id = self.kwargs.get("pk")
         queryset = User.objects.filter(courses_as_student__id=course_id)
 
+        order_by = self.request.GET.get("order_by", "avg_mark")
 
         results = (queryset
             .annotate(
@@ -246,7 +247,7 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
                     ),
                     Value(0.0, output_field=FloatField())
                 ),
-                scores=Coalesce(
+                total_score=Coalesce(
                     Sum("answers__mark__mark_value", filter=F("answers__task__course_id") == course_id),
                     Value(0, output_field=IntegerField())
                 ),
@@ -255,16 +256,16 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
                     Value(0, output_field=IntegerField())
                 )
             )
-            .order_by(F("avg_mark").desc())
+            .order_by(F(order_by).desc())
             .prefetch_related("answers__mark")
-            .values("id", "first_name", "last_name", "avg_mark", "scores", "answers_send")
+            .values("id", "first_name", "last_name", "avg_mark", "total_score", "answers_send")
         )
 
         results = list(results)
         print(results)
 
         avg_mark_filter = self.request.GET.get("avg_mark", "")
-        sum_mark_filter = self.request.GET.get("scores", "")
+        sum_mark_filter = self.request.GET.get("total_score", "")
         answers_send_filter = self.request.GET.get("answers_send", "")
         print(f"DEBUG: {answers_send_filter=}")
 
@@ -275,7 +276,7 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
                 if avg_mark_filter:
                     condition = condition and r["avg_mark"] >= float(avg_mark_filter)
                 if sum_mark_filter:
-                    condition = condition and r["scores"] >= int(sum_mark_filter)
+                    condition = condition and r["total_score"] >= int(sum_mark_filter)
                 if answers_send_filter:
                     condition = condition and r["answers_send"] >= int(answers_send_filter)
                     print(f"DEBUG: {condition=}")
@@ -294,10 +295,5 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
         return context
 
 
+#todo add pagination in users, course detail, courses, add login with social networks
 
-"""Додати до курсів:
-
-Додати можливість сортувати й фільтрувати студентів у курсі за сумою балів.
-
-todo add pagination in users, course detail, courses
-"""
