@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load user_extras %}
 {% load i18n %}
 
 {% block title %}
@@ -11,13 +12,30 @@
 <div class="me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden" style="background-color: #5f59f7">
       <div class="my-3 py-3">
     <h2 class="display-6">{% trans "Our Courses" %}</h2>
-
       </div>
 
 <div class="bg-light shadow-sm mx-auto p-5" style="min-height: 100vh; border-radius: 21px 21px 0 0; overflow-y: auto;  color: #3f4137">
 
 {% if object_list %}
-    <div class="container first-container col-sm-12 pull-left">
+
+    <div class="container first-container mt-5 pull-left">
+      <div class="col">
+        <form>
+            <div class="col">
+                {% for field in filter.form %}
+                    <label class="form-label text-uppercase small text-muted">
+                        {{ field.label }}
+                        {{ field }}
+                    </label>
+                {% endfor %}
+            <button class="btn btn-sm btn-secondary px-4 py-1" type="submit">
+                {% trans "Apply filter" %}</button>
+            </div>
+        </form>
+      </div>
+
+    <div class="row">
+      <div class="col">
       <table class="table">
         <thead class="thead-light">
           <tr>
@@ -65,6 +83,8 @@
         {% endfor %}
         </tbody>
       </table>
+      </div>
+    </div>
     </div>
 {% else %}
     <div class="alert alert-warning" role="alert">
@@ -74,5 +94,23 @@
 {% endif %}
 </div>
 </div>
+
+{#<div class="pagination">#}
+{#<span class="step-links">#}
+{#    {% if page_obj.has_previous %}#}
+{#        <a href="?page=1">&laquo; first</a>#}
+{#        <a href="?page={{ page_obj.previous_page_number }}">previous</a>#}
+{#    {% endif %}#}
+{##}
+{#    <span class="current">#}
+{#        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.#}
+{#    </span>#}
+{##}
+{#    {% if page_obj.has_next %}#}
+{#        <a href="?page={{ page_obj.next_page_number }}">next</a>#}
+{#        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>#}
+{#    {% endif %}#}
+{#</span>#}
+{#</div>#}
 {% endblock %}
 {% endblock %}

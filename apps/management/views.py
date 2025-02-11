@@ -1,3 +1,5 @@
+from tracemalloc import Filter
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
@@ -9,15 +11,20 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, TemplateView
+from django_filters.views import FilterView
 
 from apps.assessment.forms import MarkForm
 from apps.management import models, forms
 from django.utils.translation import gettext_lazy as _
 
+from apps.management.filters import CourseFilterSet
 
-class CourseListView(ListView):
+
+class CourseListView(FilterView):
     model = models.Course
     template_name = 'course_list.html'
+    # paginate_by = 10
+    filterset_class = CourseFilterSet
 
     def get_queryset(self):
         return models.Course.objects.prefetch_related(
@@ -32,10 +39,11 @@ class CourseListView(ListView):
 
 
 # @login_required -- func based
-class MyCourseListView(LoginRequiredMixin, ListView):
+class MyCourseListView(LoginRequiredMixin, FilterView):
     model = models.Course
     redirect_field_name = 'next'
     template_name = 'course_list.html'
+    # paginate_by = 5
 
     def get_queryset(self):
         return models.Course.objects.prefetch_related(
@@ -255,8 +263,7 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
 
 """Додати до курсів:
 
-* Tags (arrayfield) (python, крій та шиття etc.)
-* Дозволити фільтрувати курси за:
+  * Дозволити фільтрувати курси за:
   * викладачем
   * тегами
   * стартом
@@ -265,4 +272,5 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
 
 Додати можливість сортувати й фільтрувати студентів у курсі за сумою балів.
 
+todo add pagination in users, course detail, courses
 """
