@@ -112,17 +112,13 @@ class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        print(f"DEBUG: Form is valid. Cleaned data: {form.cleaned_data}")
 
         course = form.save(commit=False)
-        print(course)# Don't save yet
-        print(f"DEBUG: Before saving - start_datetime = {course.start_datetime}")
 
         if not course.start_datetime:
             return JsonResponse({"error": "Start datetime is missing before saving!"}, status=400)
 
-        response = super().form_valid(form)  # Now save the form
-        print(f"DEBUG: Course saved successfully with start_datetime = {self.object.start_datetime}")
+        response = super().form_valid(form)
         return response
 
     def form_invalid(self, form):
