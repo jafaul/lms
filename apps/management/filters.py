@@ -2,6 +2,8 @@ import django_filters
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import ArrayField
+from django.db.models import F
+from django.db.models.functions import Coalesce, Round
 from django.utils.translation import gettext_lazy as _
 
 from .models import Course
@@ -68,10 +70,11 @@ class RatingFilter(django_filters.FilterSet):
         widget=forms.NumberInput(attrs={
             "class": "form-control",
             "id": "avg-mark",
+            "step": "any",
         })
     )
-    sum_mark = django_filters.NumberFilter(
-        label=_("Sum Mark"),
+    scores = django_filters.NumberFilter(
+        label=_("Scores"),
         method='filter_sum_mark',
         widget=forms.NumberInput(attrs={
             "class": "form-control",
@@ -79,21 +82,24 @@ class RatingFilter(django_filters.FilterSet):
         })
     )
 
-    tasks_done = django_filters.NumberFilter(
-        label=_("Tasks Done"),
+    answers_send = django_filters.NumberFilter(
+        label=_("Answers Send"),
         method='filter_tasks_done',
         widget=forms.NumberInput(attrs={
             "class": "form-control",
-            "id": "tasks-done",
+            "id": "answers-send",
         })
     )
 
     class Meta:
-        model = Course
-        fields = ['avg_mark', 'sum_mark', 'tasks_done']
+        models = User
+        fields = []
 
     def filter_avg_mark(self, queryset, name, value):
-        queryset.filter(
+        return queryset
 
-        )
+    def filter_sum_mark(self, queryset, name, value):
+        return queryset
 
+    def filter_tasks_done(self, queryset, name, value):
+        return queryset

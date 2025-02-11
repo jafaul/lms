@@ -15,7 +15,7 @@ from apps.assessment.forms import MarkForm
 from apps.management import models, forms
 from django.utils.translation import gettext_lazy as _
 
-from apps.management.filters import CourseFilterSet
+from apps.management.filters import CourseFilterSet, RatingFilter
 
 
 class CourseListView(FilterView):
@@ -41,6 +41,7 @@ class MyCourseListView(LoginRequiredMixin, FilterView):
     model = models.Course
     redirect_field_name = 'next'
     template_name = 'course_list.html'
+    filterset_class = CourseFilterSet
     # paginate_by = 5
 
     def get_queryset(self):
@@ -233,9 +234,10 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         course_id = self.kwargs.get("pk")
+        queryset = User.objects.filter(courses_as_student__id=course_id)
 
-        results = (
-            User.objects.filter(courses_as_student__id=course_id)
+
+        results = (queryset
             .annotate(
                 avg_mark=Coalesce(
                     Round(
@@ -244,7 +246,7 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
                     ),
                     Value(0.0, output_field=FloatField())
                 ),
-                sum_mark=Coalesce(
+                scores=Coalesce(
                     Sum("answers__mark__mark_value", filter=F("answers__task__course_id") == course_id),
                     Value(0, output_field=IntegerField())
                 ),
@@ -255,20 +257,40 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
             )
             .order_by(F("avg_mark").desc())
             .prefetch_related("answers__mark")
-            .values("id", "first_name", "last_name", "avg_mark", "sum_mark", "answers_send")
+            .values("id", "first_name", "last_name", "avg_mark", "scores", "answers_send")
         )
-        results = [
-            {"id": result["id"],
-             "first_name":  result["first_name"],
-             "last_name": result["last_name"],
-             "avg_mark": result["avg_mark"],
-             "sum_mark": result["sum_mark"],
-             "answers_send": result["answers_send"]
-             }
-            for result in results
-        ]
+
+        results = list(results)
         print(results)
-        context["ratings"] = results
+
+        avg_mark_filter = self.request.GET.get("avg_mark", "")
+        sum_mark_filter = self.request.GET.get("scores", "")
+        answers_send_filter = self.request.GET.get("answers_send", "")
+        print(f"DEBUG: {answers_send_filter=}")
+
+        if any([avg_mark_filter, sum_mark_filter, answers_send_filter]):
+            filtered_results = []
+            for r in results:
+                condition = True
+                if avg_mark_filter:
+                    condition = condition and r["avg_mark"] >= float(avg_mark_filter)
+                if sum_mark_filter:
+                    condition = condition and r["scores"] >= int(sum_mark_filter)
+                if answers_send_filter:
+                    condition = condition and r["answers_send"] >= int(answers_send_filter)
+                    print(f"DEBUG: {condition=}")
+
+                if condition:
+                    filtered_results.append(r)
+
+            context["ratings"] = filtered_results
+        else:
+            context["ratings"] = results
+        filterset = RatingFilter(
+            self.request.GET, queryset=queryset
+        )
+        context["filter"] = filterset
+
         return context
 
 
