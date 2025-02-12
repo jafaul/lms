@@ -5,6 +5,7 @@
 {% block title %}
     {{ course.title }}
 {% endblock %}
+
 {% block background %}
 <div class="me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden" style="background-color: #5f59f7;">
 {% block body %}
@@ -79,6 +80,14 @@
         <fieldset id='lectures' class="sub-course-info">
         <legend style="font-size: 30px;"><strong>Lectures</strong></legend>
         {% if course.lectures.all %}
+             <p>
+              <button class="btn btn-outline-light btn-block w-50" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLectures"
+                      aria-expanded="false" aria-controls="collapseLectures" style="background-color: #5f59f7">
+                  {% trans "Show Lectures" %}
+              </button>
+            </p>
+            <div class="collapse" id="collapseLectures">
+            <div class="card card-body">
             <dl class="items-list">
             {% for lecture in course.lectures.all %}
             <dt class='item-dt' style="counter-increment: dt-counter; color: #3f4137; font-weight: 300"><strong>{{ lecture.title }}</strong></dt>
@@ -89,6 +98,8 @@
             </dl>
 
             {% endfor %}
+            </div>
+            </div>
         {% else %}
              <div class="alert alert-warning" role="alert">
                <p style="margin: 20px" >{% trans "No lectures available for this course." %}</p>
@@ -101,7 +112,15 @@
         <fieldset id='students' class="sub-course-info">
         <legend style="font-size: 30px;"><strong>Our Students</strong></legend>
         {% if course.students.all %}
-            <table class="table">
+            <p>
+              <button class="btn btn-outline-light btn-block w-50" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStudents"
+                      aria-expanded="false" aria-controls="collapseStudents" style="background-color: #5f59f7">
+                  {% trans "Show Students" %}
+              </button>
+            </p>
+            <div class="collapse" id="collapseStudents">
+            <div class="card card-body">
+                <table class="table">
                 <thead class="thead-light">
                   <tr>
                     <th scope="col">Fullname</th>
@@ -121,6 +140,8 @@
                 {% endfor %}
                 </tbody>
               </table>
+            </div>
+            </div>
 
         {% else %}
          <div class="alert alert-warning" role="alert">
@@ -136,9 +157,17 @@
     <fieldset id="tasks" class="sub-course-info">
 
         <legend style="font-size: 30px;"><strong>Tasks</strong></legend>
-
-
         {% if course.tasks.all %}
+
+            <p>
+              <button class="btn btn-outline-light btn-block w-50" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample"
+                      aria-expanded="false" aria-controls="collapseExample" style="background-color: #5f59f7">
+                  {% trans "Show tasks" %}
+              </button>
+            </p>
+            <div class="collapse" id="collapseExample">
+            <div class="card card-body">
+
             <dl id="task-list"  class="items-list">
                 {% for task in course.tasks.all %}
                     <section class="w-100 px-4 py-5" style="border-radius: .5rem .5rem 0 0;">
@@ -242,6 +271,9 @@
                 {% endfor %}
                     <hr>
             </dl>
+            </div>
+            </div>
+
         {% else %}
              <div class="alert alert-warning" role="alert">
                <p style="margin: 20px" >{% trans "No tasks available for this course." %}</p>

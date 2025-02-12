@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
-from django.db.models import Q, Value, Avg, F, FloatField, Sum, IntegerField, Count
+from django.db.models import Q, Value, Avg, F, FloatField, Sum, IntegerField, Count, Prefetch
 from django.db.models.functions import Round, Coalesce
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -82,8 +82,8 @@ class CourseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
         return any(self.request.user.has_perm(perm) for perm in permissions)
 
     def get_queryset(self):
-        course = models.Course.objects.prefetch_related(
-            "students",
+        return models.Course.objects.select_related("teacher").prefetch_related(
+            Prefetch("students", queryset=models.User.objects.only("id", "username")),
             "lectures",
             "tasks",
             "tasks__answers",
@@ -91,8 +91,6 @@ class CourseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
             "tasks__answers__student",
             "tasks__answers__mark__teacher"
         ).select_related("teacher")
-
-        return course
 
 
 class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
