@@ -6,4 +6,4 @@ cp .env.example .env
 docker-compose up
 ```
 
-pylint -- similar to 
+run with defult port, open link with localhost

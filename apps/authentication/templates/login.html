@@ -36,6 +36,11 @@
         {{ form.password }}
             {% include "form_errors.html" with form=form %}
 
+      <a href="{% url 'social:begin' 'google-oauth2' %}"
+         class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+          {% trans "Sign in with Google" %}
+      </a>
+
       <button class="btn btn-lg btn-primary btn-block" type="submit">{% trans "Sign in" %}</button>
       <p class="mt-5 mb-3 text-muted">© 2025</p>
 

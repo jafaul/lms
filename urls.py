@@ -25,6 +25,7 @@ from config.settings import base
 # todo https://www.geeksforgeeks.org/software-engineering-coupling-and-cohesion/ ; two scoops of django
 # todo check pbkdf2 storage password standard; c
 # todo книжка искусство джанго
+# todo check oauth2
 
 
 urlpatterns = [
@@ -34,7 +35,10 @@ urlpatterns = [
     path('accounts/', include('apps.authentication.urls', namespace='authentication')),
     path('tinymce/', include('tinymce.urls')),
     path('courses/<int:pk>/tasks/<int:pktask>/', include('apps.assessment.urls', namespace='assessment')),
-] + static(base.MEDIA_URL, document_root=base.MEDIA_ROOT) + static(base.STATIC_URL, document_root=base.STATIC_ROOT)
+    path('', include('social_django.urls', namespace='social'))
+
+              ] + static(base.MEDIA_URL, document_root=base.MEDIA_ROOT) \
+    + static(base.STATIC_URL, document_root=base.STATIC_ROOT)
 
 if base.DEBUG:
     from debug_toolbar.toolbar import debug_toolbar_urls

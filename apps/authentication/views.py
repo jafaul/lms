@@ -57,7 +57,7 @@ class UserRegistrationView(View):
         if form.is_valid():
             user = form.save()
             user.is_active = True
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('apps.authentication:profile')
         else:
             for error in list(form.errors.values()):

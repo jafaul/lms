@@ -46,13 +46,14 @@ class AnswerCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateVi
     def form_valid(self, form):
         form.instance.student = self.request.user
         form.instance.task = get_object_or_404(Task, pk=self.kwargs['pktask'])
-        return super().form_valid(form)
+        form_valid = super().form_valid(form)
+
+        return form_valid
 
     def get_action_url(self):
         return reverse_lazy(
             'assessment:create_answer', kwargs={"pk": self.kwargs["pk"], "pktask": self.kwargs['pktask']}
         )
-
 
 class MarkCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView):
     model = models.Mark

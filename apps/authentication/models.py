@@ -13,17 +13,19 @@ from config.settings import base
 
 
 class SchoolUserManager(BaseUserManager):
-    def create_user(self, email, password, **extra_fields):
-        if not email:
-            raise ValueError('Users must have an email address')
+    def create_user(self, email,  password=None, **extra_fields):
+        # if not username:
+        #     raise ValueError('Users must have an email address')
 
-        user = self.model(email=self.normalize_email(email), **extra_fields)
+        user = self.model(
+            email=self.normalize_email(email), **extra_fields
+        )
         user.set_password(password)
 
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password, **extra_fields):
+    def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('position', User.Position.ADMIN)
 
         user = self.create_user(email, password, **extra_fields)
