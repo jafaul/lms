@@ -1,6 +1,6 @@
 from .docker import *
 
-# DEBUG = 'True'
+DEBUG = True
 
 INSTALLED_APPS += [
     'debug_toolbar',
@@ -15,3 +15,4 @@ AUTH_PASSWORD_VALIDATORS = []
 DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TOOLBAR_CALLBACK": lambda x: True
 }
+
