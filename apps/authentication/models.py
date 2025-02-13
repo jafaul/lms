@@ -60,11 +60,6 @@ class User(AbstractUser):
             return Permission.objects.all()
         elif self.position == self.Position.MANAGER:
             return Permission.objects.filter(Q(codename__endswith="_lecture")|Q(codename="view_course"))
-        elif self.position == self.Position.TEACHER:
-            return Permission.objects.none()
-        elif self.position == self.Position.STUDENT:
-            return Permission.objects.none()
-
         return Permission.objects.none()
 
     def save(self, *args, **kwargs):
@@ -74,13 +69,17 @@ class User(AbstractUser):
         if not self.photo:
             default_image_s3_path = 'photos/default-avatar.png'
             local_image_path = os.path.join(base.STATIC_ROOT, 'default-avatar.jpg')
-            if not default_storage.exists(default_image_s3_path):
+            exists = default_storage.exists(default_image_s3_path)
+            print(f"default avatar exists: {exists}")
+            if not exists:
                 try:
                     with open(local_image_path, 'rb') as image_file:
                         default_storage.save(default_image_s3_path, image_file)
                     print(f'Default image uploaded to S3: {default_image_s3_path}')
                 except FileNotFoundError:
                     print(f'Error: Default image not found in {local_image_path}')
+            else:
+                print("Default avatar is present in AWS")
 
             self.photo = default_image_s3_path
 
