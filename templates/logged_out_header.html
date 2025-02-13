@@ -1,6 +1,14 @@
 {% load static %}
 {% load i18n %}
 
+<style>
+    .btn-outline-light:hover {
+        background-color: #171717;
+        border-color: #666;
+    }
+
+</style>
+
 <header class="p-3 text-bg-dark">
     <div class="container">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
@@ -12,7 +20,6 @@
           <li><a href="{% url 'home:home-page' %}" class="nav-link px-2 text-secondary">{%  trans 'Home' %}</a></li>
           <li><a href="{% url 'management:all-courses' %}" class="nav-link px-2 text-white">{%  trans 'Our courses' %}</a></li>
         </ul>
-
 
         <div class="text-end">
         {% if request.resolver_match.url_name != 'login' %}
