@@ -186,6 +186,7 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL =  None
 AWS_S3_VERIFY = True
 AWS_QUERYSTRING_AUTH = False
+STATICFILES_STORAGE = "storages.backends.s3.S3Storage"
 
 
 # social auth django
