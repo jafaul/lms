@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.paginator import Paginator
 
 from django.db.models import Q, Value, Avg, F, FloatField, Sum, IntegerField, Count, Prefetch
 from django.db.models.functions import Round, Coalesce
@@ -83,7 +84,7 @@ class CourseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
 
     def get_queryset(self):
         return models.Course.objects.select_related("teacher").prefetch_related(
-            Prefetch("students", queryset=models.User.objects.only("id", "username")),
+            "students",
             "lectures",
             "tasks",
             "tasks__answers",

@@ -7,3 +7,6 @@ docker-compose up
 ```
 
 run with defult port, open link with localhost
+
+sudo sysctl vm.overcommit_memory=1
+

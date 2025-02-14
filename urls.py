@@ -26,6 +26,7 @@ from config.settings import base
 # todo check pbkdf2 storage password standard; c
 # todo книжка искусство джанго
 # todo check oauth2
+# todo dive deeper into celery, celery beat, celery beat for task with course data.
 
 
 urlpatterns = [

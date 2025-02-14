@@ -12,9 +12,48 @@ services:
       - ${DB_PORT}:${DB_PORT}
     volumes:
       - pgdata:/var/lib/postgresql/data
+      
+  redis:
+    image: redis:7.4.2
+
+  celery:
+#    deploy:
+#      replicas: 2  # workers amount
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes_from:
+      - django-web
+    entrypoint: ["/entrypoint.sh"]
+    command:
+      - "/bin/bash -c exec celery -A apps.celery_app worker"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - django-web
+
+  celery-beat:
+    #    deploy:
+    #      replicas: 2  # workers amount
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes_from:
+      - django-web
+    entrypoint: [ "/entrypoint.sh" ]
+    command:
+      - "/bin/bash -c exec celery -A apps.celery_app beat --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - django-web
 
   django-web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - DEBUG=${DEBUG}

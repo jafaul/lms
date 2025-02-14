@@ -1,4 +1,4 @@
-Hi, {{ request.user.get_full_name }}
+Hi, {{ user_full_name }}!
 
 {{ msg }}
 

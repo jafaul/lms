@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView
 
-from apps.assessment import models, forms
+from apps.assessment import models, forms, tasks
 from apps.management.models import Task
 
 
@@ -46,7 +46,7 @@ class AnswerCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateVi
         form.instance.student = self.request.user
         form.instance.task = get_object_or_404(Task, pk=self.kwargs["pktask"])
         form_valid = super().form_valid(form)
-
+        tasks.send_homework_accepted_email.delay(answer_id=form.instance.id)
         return form_valid
 
     def get_action_url(self):

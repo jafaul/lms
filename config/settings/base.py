@@ -42,8 +42,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",  # data saving inside session
     "django.contrib.messages",  # sending msg from server to client
     "django.contrib.staticfiles",  # allowing staticfiles files (html, css)
+
     "tinymce",
     "social_django",
+    "django_celery_beat",
+
     "apps.home",
     "apps.authentication",
     "apps.management",
@@ -78,6 +81,8 @@ TEMPLATES = [
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
+                "django_settings_export.settings_export",
+                # "django.template.context_processors.settings",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
@@ -202,3 +207,11 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True  # for gmail provider TLS is required
 EMAIL_USE_SSL = False
+
+SITE_URL = "https://s.com"
+
+CELERY_TIMEZONE = "Australia/Tasmania"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+
+
