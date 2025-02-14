@@ -178,9 +178,14 @@
                                   <h3 class="mb-3">{{ task.title }}</h3>
 
                                   <p class="small mb-0">
-                                  <i class="far fa-star fa-lg"></i> <span class="mx-2">{%  trans "Max Mark:  " %}</span>
+                                  <i class="far fa-star fa-lg"></i> <span class="mx-2">{%  trans "Max Mark: " %}</span>
                                     <strong>{{ task.max_mark }}</strong>
                                   </p>
+                                  <p class="small mb-0">
+                                  <i class="far fa-star fa-lg"></i> <span class="mx-2">{%  trans "Deadline: " %}</span>
+                                    <strong>{{ task.deadline }}</strong>
+                                  </p>
+
 
                                   {% if task.description %}
                                    <p class="small mb-0"><i class="far fa-star fa-lg"></i> <span class="mx-2">{%  trans "Description:  " %}</span>

@@ -202,11 +202,11 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 
 # email notifications
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL = 'lms.info+345@lms.com'
 
 EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", '587')) # Recommended
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", '587'))
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"  # Use EMAIL_PORT 587 for TLS
-EMAIL_USE_SSL = os.getenv("EMAIL_USE_TLS", "False") == "True"  # EUse MAIL_PORT 465 for SSL
-
+EMAIL_USE_TLS = True  # for gmail provider TLS is required
+EMAIL_USE_SSL = False

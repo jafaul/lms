@@ -1,0 +1,5 @@
+Hi, {{ request.user.get_full_name }}
+
+{{ msg }}
+
+Best luck, your S.

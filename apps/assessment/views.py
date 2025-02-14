@@ -1,13 +1,15 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
-from django.db.models import Avg, Value, F
-from django.db.models.functions import Coalesce, Round
-from django.shortcuts import  get_object_or_404
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, TemplateView
+from django.core.mail import EmailMultiAlternatives
+from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
+from django.urls import reverse_lazy, reverse
+from django.views.generic import CreateView
 
 from apps.assessment import models, forms
-from apps.management.models import Task, Course
+from apps.management.models import Task
+
+from django.utils.translation import gettext_lazy as _
+
 
 
 class BaseCreateView(CreateView):
@@ -47,6 +49,43 @@ class AnswerCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateVi
         form.instance.student = self.request.user
         form.instance.task = get_object_or_404(Task, pk=self.kwargs['pktask'])
         form_valid = super().form_valid(form)
+
+        # send_mail(
+        #     "Your homework has been approved",
+        #     f"Your homework has been approved: {form.instance.description}",
+        #     base.DEFAULT_FROM_EMAIL,
+        #     [self.request.user.email]
+        # )
+
+        # better for html msg
+        print(form.instance.task.title)
+        subject = _(f"Your homework for task '{form.instance.task.title.strip()}' is been received".replace("&#x27;", ""))
+        full_msg = f'''Please be informed that we have received your homework for the task '{form.instance.task.title}'.
+            It will be checked during 7 days.'''
+        email = EmailMultiAlternatives(
+            subject=render_to_string(
+                "emails/assessment/subject_answer_send.txt", context={"subject": subject}),
+            body=render_to_string(
+                "emails/assessment/message_answer_send.txt",
+                context={"msg": _(full_msg), "request": self.request}
+            ).strip(),
+            to=[self.request.user.email],
+        )
+        msg1, msg2 = full_msg.split(".\n", 2)
+        relative_url = reverse("management:course-detail", kwargs={"pk": self.kwargs['pk']})
+        course_url = self.request.build_absolute_uri(relative_url)
+        print(course_url)
+        email.attach_alternative(
+            render_to_string(
+                "emails/assessment/answer_send.html",
+                context={
+                    "msg2": _(msg2), "msg1": _(msg1), "request": self.request,
+                    "url_btn": course_url
+                },
+            ),
+            "text/html"
+        )
+        email.send()
 
         return form_valid
 
