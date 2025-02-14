@@ -170,6 +170,15 @@
 
             <dl id="task-list"  class="items-list">
                 {% for task in course.tasks.all %}
+                <p>
+                  <button class="btn btn-outline-light btn-block w-20" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTask{{ task.id }}"
+                          aria-expanded="false" aria-controls="collapseExample" style="background-color: #3f4137">
+                      {{ task.title }}
+                  </button>
+                </p>
+                <div class="collapse" id="collapseTask{{ task.id }}">
+                <div class="card card-body">
+
                     <section class="w-100 px-4 py-5" style="border-radius: .5rem .5rem 0 0;">
                           <div class="row d-flex justify-content-center">
                             <div class="col col-xl-10">
@@ -272,7 +281,8 @@
                         </section>
 
                     <hr>
-
+                </div>
+                </div>
                 {% endfor %}
                     <hr>
             </dl>

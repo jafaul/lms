@@ -11,17 +11,18 @@ from apps.management.models import Task
 from django.utils.translation import gettext_lazy as _
 
 
-
 class BaseCreateView(CreateView):
     btn_name = ""
     title = ""
-    template_name = 'form.html'
+    template_name = "form.html"
 
     def get_action_url(self):
         raise NotImplemented
 
     def get_success_url(self):
-        return reverse_lazy('management:course-detail', kwargs={"pk": self.kwargs['pk']})
+        return reverse_lazy(
+            "management:course-detail", kwargs={"pk": self.kwargs["pk"]}
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -37,7 +38,7 @@ class AnswerCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateVi
     form_class = forms.AnswerForm
     btn_name = "Send homework"
     title = "Apply homework"
-    template_name = 'create_answer.html'
+    template_name = "create_answer.html"
 
     def get_permission_required(self):
         permissions = [
@@ -47,7 +48,7 @@ class AnswerCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateVi
 
     def form_valid(self, form):
         form.instance.student = self.request.user
-        form.instance.task = get_object_or_404(Task, pk=self.kwargs['pktask'])
+        form.instance.task = get_object_or_404(Task, pk=self.kwargs["pktask"])
         form_valid = super().form_valid(form)
 
         # send_mail(
@@ -59,31 +60,42 @@ class AnswerCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateVi
 
         # better for html msg
         print(form.instance.task.title)
-        subject = _(f"Your homework for task '{form.instance.task.title.strip()}' is been received".replace("&#x27;", ""))
-        full_msg = f'''Please be informed that we have received your homework for the task '{form.instance.task.title}'.
-            It will be checked during 7 days.'''
+
+        subject = f"Your homework for task '{form.instance.task.title.strip()}' is been received".replace(
+            "&#x27;", ""
+        )
+
+        full_msg = f"""Please be informed that we have received your homework for the task '{form.instance.task.title}'.
+            It will be checked during 7 days."""
         email = EmailMultiAlternatives(
             subject=render_to_string(
-                "emails/assessment/subject_answer_send.txt", context={"subject": subject}),
+                "emails/assessment/subject_answer_send.txt",
+                context={"subject": subject},
+            ),
             body=render_to_string(
                 "emails/assessment/message_answer_send.txt",
-                context={"msg": _(full_msg), "request": self.request}
+                context={"msg": _(full_msg), "request": self.request},
             ).strip(),
             to=[self.request.user.email],
         )
         msg1, msg2 = full_msg.split(".\n", 2)
-        relative_url = reverse("management:course-detail", kwargs={"pk": self.kwargs['pk']})
+        relative_url = reverse(
+            "management:course-detail", kwargs={"pk": self.kwargs["pk"]}
+        )
+
         course_url = self.request.build_absolute_uri(relative_url)
         print(course_url)
         email.attach_alternative(
             render_to_string(
                 "emails/assessment/answer_send.html",
                 context={
-                    "msg2": _(msg2), "msg1": _(msg1), "request": self.request,
-                    "url_btn": course_url
+                    "msg2": _(msg2),
+                    "msg1": _(msg1),
+                    "request": self.request,
+                    "url_btn": course_url,
                 },
             ),
-            "text/html"
+            "text/html",
         )
         email.send()
 
@@ -91,8 +103,10 @@ class AnswerCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateVi
 
     def get_action_url(self):
         return reverse_lazy(
-            'assessment:create_answer', kwargs={"pk": self.kwargs["pk"], "pktask": self.kwargs['pktask']}
+            "assessment:create_answer",
+            kwargs={"pk": self.kwargs["pk"], "pktask": self.kwargs["pktask"]},
         )
+
 
 class MarkCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView):
     model = models.Mark
@@ -108,7 +122,7 @@ class MarkCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView
 
     def form_valid(self, form):
         form.instance.teacher = self.request.user
-        answer = get_object_or_404(models.Answer, pk=self.kwargs['pkanswer'])
+        answer = get_object_or_404(models.Answer, pk=self.kwargs["pkanswer"])
         mark = form.save()
         answer.mark = mark
         answer.save()
@@ -117,9 +131,10 @@ class MarkCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView
 
     def get_action_url(self):
         return reverse_lazy(
-            'assessment:create_mark', kwargs={
+            "assessment:create_mark",
+            kwargs={
                 "pk": self.kwargs["pk"],
-                "pktask": self.kwargs['pktask'],
-                "pkanswer": self.kwargs['pkanswer'],
-            }
+                "pktask": self.kwargs["pktask"],
+                "pkanswer": self.kwargs["pkanswer"],
+            },
         )

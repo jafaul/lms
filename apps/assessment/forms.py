@@ -7,11 +7,13 @@ class AnswerForm(forms.ModelForm):
 
     description = forms.CharField(
         required=True,
-        widget=forms.Textarea(attrs={
-            "class": "form-control",
-            "rows": 4,
-            "id": "desc",
-        })
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "rows": 4,
+                "id": "desc",
+            }
+        ),
     )
 
     class Meta:
