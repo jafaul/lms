@@ -54,4 +54,5 @@ def activate_email(user_id):
         ),
         "text/html",
     )
-    return email.send()
+
+    email.send()

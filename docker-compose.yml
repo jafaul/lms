@@ -30,8 +30,7 @@ services:
       - .env
     volumes_from:
       - django-web
-    command: /bin/bash -c "cd /src; celery -A apps.celery_app worker"
-
+    command: /bin/bash -c "cd /src; celery -A apps.celery_app worker -E"
 
   celerybeat:
     build:
@@ -41,7 +40,7 @@ services:
       - .env
     volumes_from:
       - django-web
-    command: /bin/bash -c "cd /src; celery -A apps.celery_app beat  --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    command: /bin/bash -c "cd /src; celery -A apps.celery_app beat -l INFO  --scheduler django_celery_beat.schedulers:DatabaseScheduler"
 
   django-web:
     build:
