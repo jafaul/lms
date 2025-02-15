@@ -75,6 +75,8 @@ class MarkCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView
         answer.mark = mark
         answer.save()
 
+        tasks.send_mark_notification_email.delay(mark_id=mark.id)
+
         return super().form_valid(form)
 
     def get_action_url(self):

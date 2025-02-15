@@ -1,6 +1,8 @@
 from celery import shared_task
+from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.urls import reverse
 
 from apps.assessment.models import Answer, Mark
 from django.utils.translation import gettext_lazy as _
@@ -8,6 +10,10 @@ from django.utils.translation import gettext_lazy as _
 
 def create_email(full_msg, subject, course_id, user, end_msg, btn_name=''):
     user_fullname = user.get_full_name()
+
+    url = settings.SITE_URL + reverse(
+        'apps.management:course-detail',
+        kwargs={'pk': course_id})
 
     email = EmailMultiAlternatives(
         subject=render_to_string(
@@ -20,7 +26,11 @@ def create_email(full_msg, subject, course_id, user, end_msg, btn_name=''):
         ).strip(),
         to=[user.email],
     )
-    msg1, msg2 = full_msg.split(".\n", 2)
+    try:
+        msg1, msg2 = full_msg.split(".\n", 2)
+    except ValueError:
+        msg1 = full_msg
+        msg2 = ""
 
     email.attach_alternative(
         render_to_string(
@@ -29,7 +39,7 @@ def create_email(full_msg, subject, course_id, user, end_msg, btn_name=''):
                 "msg2": _(msg2 + "\n" + end_msg),
                 "msg1": _(msg1),
                 "full_name": user_fullname,
-                "course_id": course_id.id,
+                "url": url,
                 "btn_name": btn_name,
             },
         ),
@@ -60,12 +70,12 @@ def send_homework_accepted_email(answer_id):
 @shared_task
 def send_mark_notification_email(mark_id):
     mark = Mark.objects.select_related("answer__student", "answer__task", "answer__task__course").get(pk=mark_id)
-
-    subject = f"+{mark.mark_value}: score for HW, task {mark.task.id}"
-    full_msg = f"You've got a score for a homework for task '{mark.task.title}' course '{mark.task.course.title}'"
+    task = mark.answer.task
+    subject = f"+{mark.mark_value}: score for HW, task {task.id}"
+    full_msg = f"You've got a score for a homework for task '{task.title}' course '{task.course.title}'"
     btn_name = "Check score"
     end_msg = "Best Luck! \n Your S Team"
 
     create_email(
-        full_msg, subject, mark.answer.task.course_id, mark.answer.student, end_msg, btn_name
+        full_msg, subject, task.course.id, mark.answer.student, end_msg, btn_name
     )

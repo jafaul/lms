@@ -1,2 +1,1 @@
-{% url "management:course-detail" pk=course_id as course_url %}
-{% include "emails/email_base.html" with url=course_url msg2=msg2  msg1=msg1 full_name=full_name btn_name=btn_name%}
+{% include "emails/email_base.html" with url=url msg2=msg2  msg1=msg1 full_name=full_name btn_name=btn_name%}

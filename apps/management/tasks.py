@@ -95,7 +95,7 @@ def send_new_task_notification_email(task_id):
                 '''
     end_msg = "Good luck! \nYour S Team"
 
-    for student in task.students.all():
+    for student in task.course.students.all():
         create_email(
             course_id=task.course_id,
             subject=subject,
