@@ -1,12 +1,9 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import login, get_user_model
+from django.contrib.auth import login, get_user, get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView as BaseLoginView
-from django.contrib.auth.views import LogoutView as BaseLogoutView
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
@@ -17,6 +14,7 @@ from django.views import View
 from django.views.generic import TemplateView, FormView, UpdateView, ListView
 
 from apps.authentication.tokens import account_activation_token
+from apps.authentication.tasks import activate_email
 from apps.authentication import forms
 
 User = get_user_model()
@@ -62,17 +60,16 @@ class UserRegistrationView(View):
             return redirect('apps.authentication:profile')
         form = forms.UserRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            email_send = activate_email(user)
-            if email_send:
-                messages.success(
-                    request,
-                    f'Dear <b>{user}</b>, please go to you email <b>{user.email}</b> inbox and click on \
-                    received activation link to confirm and complete the registration. <b>Note:</b> Check your spam folder.')
-            else:
-                messages.error(request, f'Problem sending email to {user.email}, check if you typed it correctly.')
-
+            user = form.save(commit=False)
             user.is_active = False
+            user.save()
+
+            activate_email.delay(user_id=user.id)
+            messages.success(
+                request,
+                f'Dear <b>{user}</b>, please go to you email <b>{user.email}</b> inbox and click on \
+                received activation link to confirm and complete the registration. <b>Note:</b> Check your spam folder.')
+
             return redirect('apps.authentication:profile')
         else:
             for error in list(form.errors.values()):
@@ -86,7 +83,6 @@ class UserRegistrationView(View):
 
 class ActivateView(View):
     def get(self, request, uidb64, token):
-        User = get_user_model()
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
@@ -108,7 +104,7 @@ class PositionAddView(PermissionRequiredMixin, UpdateView):
     template_name = "form.html"
     form_class = forms.UserAssignmentRoleForm
     permission_required = "authentication.change_position"
-    model = get_user_model()
+    model = User
     queryset = model.objects.all()
 
     def get_success_url(self):
@@ -138,7 +134,7 @@ class PositionAddView(PermissionRequiredMixin, UpdateView):
 class UsersProfilesView(PermissionRequiredMixin, ListView):
     permission_required = "authentication.view_user"
     template_name = "users.html"
-    model = get_user_model()
+    model = User
     context_object_name = "users"
 
     def get_context_data(self, *, object_list=None, **kwargs):

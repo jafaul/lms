@@ -1,5 +1,6 @@
 from celery import shared_task
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -9,9 +10,12 @@ from django.utils.http import urlsafe_base64_encode
 from apps.authentication.tokens import account_activation_token
 from django.utils.translation import gettext_lazy as _
 
+User = get_user_model()
+
 
 @shared_task
-def activate_email(user):
+def activate_email(user_id):
+    user = User.objects.get(pk=user_id)
     subject = "Activate your user account."
 
     full_msg = f"Please click on the link below to confirm your registration: "
