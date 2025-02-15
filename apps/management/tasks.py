@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.template.loader import render_to_string
 from django.urls import reverse
 
-from apps.management.models import Course
+from apps.management.models import Course, Task
 
 User = get_user_model()
 
@@ -41,7 +41,7 @@ def create_email(course_id, subject, msg, user, end_msg):
                 "msg1": msg,
                 "full_name": user.get_full_name(),
                 "activate_url": url,
-                "end_msg": end_msg,
+                "msg2": end_msg,
             },
         ),
         "text/html",
@@ -79,3 +79,27 @@ def notify_course_starting():
                      User.objects.get(email='anastasiia.olifir.o@gmail.com'), end_msg
                      )
 
+
+@shared_task
+def send_new_task_notification_email(task_id):
+    task = (
+        Task.objects
+        .prefetch_related("course__students")
+        .get(id=task_id)
+    )
+
+    subject = "You've got a new task!"
+    full_msg = f'''Hey there! A new task '{task.title.strip()}' has been assigned to you. 
+                    The deadline is {task.deadline}. 
+                    Let us know if you need any help!
+                '''
+    end_msg = "Good luck! \nYour S Team"
+
+    for student in task.students.all():
+        create_email(
+            course_id=task.course_id,
+            subject=subject,
+            msg=full_msg,
+            user=student,
+            end_msg=end_msg,
+        )
