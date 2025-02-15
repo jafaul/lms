@@ -15,40 +15,33 @@ services:
       
   redis:
     image: redis:7.4.2
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 5s
 
   celery:
-#    deploy:
-#      replicas: 2  # workers amount
     build:
       context: .
       dockerfile: Dockerfile
-    volumes_from:
-      - django-web
-    entrypoint: ["/entrypoint.sh"]
-    command:
-      - "/bin/bash -c exec celery -A apps.celery_app worker"
     env_file:
       - .env
-    depends_on:
-      - redis
+    volumes_from:
       - django-web
+    command: /bin/bash -c "cd /src; celery -A apps.celery_app worker"
 
-  celery-beat:
-    #    deploy:
-    #      replicas: 2  # workers amount
+
+  celerybeat:
     build:
       context: .
       dockerfile: Dockerfile
-    volumes_from:
-      - django-web
-    entrypoint: [ "/entrypoint.sh" ]
-    command:
-      - "/bin/bash -c exec celery -A apps.celery_app beat --scheduler django_celery_beat.schedulers:DatabaseScheduler"
     env_file:
       - .env
-    depends_on:
-      - redis
+    volumes_from:
       - django-web
+    command: /bin/bash -c "cd /src; celery -A apps.celery_app beat  --scheduler django_celery_beat.schedulers:DatabaseScheduler"
 
   django-web:
     build:

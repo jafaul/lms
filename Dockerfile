@@ -12,7 +12,6 @@ WORKDIR src/
 
 COPY pyproject.toml .
 COPY poetry.lock .
-COPY entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
 
