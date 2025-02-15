@@ -12,29 +12,29 @@ class UserRegistrationForm(UserCreationForm):
     first_name = forms.CharField(
         widget=forms.TextInput(
             attrs={
-                "class": "form-control", "id": "inputFirstName", "placeholder": "First Name",
+                "class": "form-control form-control-lg", "id": "inputFirstName",
                 "required": True,
             })
     )
     last_name = forms.CharField(
         widget=forms.TextInput(
             attrs={
-                "class": "form-control", "id": "inputLastName", "placeholder": "Last Name",
+                "class": "form-control form-control-lg", "id": "inputLastName",
                 "required": True,
             })
     )
     email = forms.EmailField(
         widget=forms.EmailInput(
             attrs={
-                "class": "form-control", "id": "inputEmail", "placeholder": "Email address",
-                "required": "", "autofocus": "",
+                "class": "form-control form-control-lg", "id": "inputEmail",
+                "required": "",
             })
     )
 
     password1 = forms.CharField(
         widget=forms.PasswordInput(
             attrs={
-                "class": "form-control", "id": "inputPassword", "placeholder": "Password",
+                "class": "form-control form-control-lg", "id": "inputPassword",
                 "required": "",
             })
     )
@@ -42,7 +42,7 @@ class UserRegistrationForm(UserCreationForm):
     password2 = forms.CharField(
         widget=forms.PasswordInput(
             attrs={
-                "class": "form-control", "id": "inputPassword1", "placeholder": "Repeat Password",
+                "class": "form-control form-control-lg", "id": "inputPassword1",
                 "required": "",
             })
     )
@@ -134,14 +134,14 @@ class LoginForm(AuthenticationForm):
     username = forms.EmailField(
         widget=forms.EmailInput(
             attrs={
-                "class": "form-control", "id": "inputEmail", "placeholder": "Email address",
-                "required": "", "autofocus": "",
+                "class": "form-control form-control-lg", "id": "typeEmailX",
+                "required": "", "autofocus": "", "type": "email"
             })
     )
     password = forms.CharField(
         widget=forms.PasswordInput(
             attrs={
-                "class": "form-control", "id": "inputPassword", "placeholder": "Password",
+                "class": "form-control form-control-lg", "id": "inputPassword",
                 "required": "",
             })
     )

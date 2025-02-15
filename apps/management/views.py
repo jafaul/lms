@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.paginator import Paginator
 
 from django.db.models import Q, Value, Avg, F, FloatField, Sum, IntegerField, Count, Prefetch
 from django.db.models.functions import Round, Coalesce
@@ -12,7 +13,7 @@ from django.views.generic import ListView, CreateView, DetailView, UpdateView, T
 from django_filters.views import FilterView
 
 from apps.assessment.forms import MarkForm
-from apps.management import models, forms
+from apps.management import models, forms, tasks
 from django.utils.translation import gettext_lazy as _
 
 from apps.management.filters import CourseFilterSet, RatingFilter
@@ -83,7 +84,7 @@ class CourseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
 
     def get_queryset(self):
         return models.Course.objects.select_related("teacher").prefetch_related(
-            Prefetch("students", queryset=models.User.objects.only("id", "username")),
+            "students",
             "lectures",
             "tasks",
             "tasks__answers",
@@ -187,6 +188,11 @@ class TaskCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView
             f"management.can_access_{self.kwargs['pk']}_course_as_teacher",
         ]
         return permissions
+
+    def form_valid(self, form):
+        form_valid = super().form_valid(form)
+        tasks.send_new_task_notification_email.delay(form.instance.id)
+        return form_valid
 
 
 class LectureCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView):

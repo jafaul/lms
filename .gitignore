@@ -295,15 +295,10 @@ dz1_run.py
 
 
 # Secure files
-.env
 .env.template
-db.sqlite3
-
-# Python cache files
-*.pyc
-__pycache__/
 
 # IDE-related files
 .idea/
 
 static
+poetry.lock

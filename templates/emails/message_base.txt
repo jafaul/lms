@@ -1,0 +1,5 @@
+Hi, {{ user_full_name }}!
+
+{{ msg }}
+
+{{ end_msg }}

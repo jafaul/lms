@@ -1,15 +1,17 @@
 from django.contrib import messages
 from django.contrib.auth import login, get_user_model
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView as BaseLoginView
-from django.contrib.auth.views import LogoutView as BaseLogoutView
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.utils.encoding import  force_str
+from django.utils.http import urlsafe_base64_decode
 from django.views import View
-from django.views.generic import TemplateView, FormView, UpdateView, ListView
+from django.views.generic import TemplateView, UpdateView, ListView
 
+from apps.authentication.tokens import account_activation_token
+from apps.authentication.tasks import activate_email
 from apps.authentication import forms
 
 User = get_user_model()
@@ -55,13 +57,20 @@ class UserRegistrationView(View):
             return redirect('apps.authentication:profile')
         form = forms.UserRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            user.is_active = True
-            login(request, user)
+            user = form.save(commit=False)
+            user.is_active = False
+            user.save()
+
+            activate_email.delay(user_id=user.id)
+            messages.success(
+                request,
+                f'Dear <b>{user}</b>, please go to you email <b>{user.email}</b> inbox and click on \
+                received activation link to confirm and complete the registration. <b>Note:</b> Check your spam folder.')
+
             return redirect('apps.authentication:profile')
         else:
             for error in list(form.errors.values()):
-                print(request, error)
+                messages.error(request, error)
             return render(
                 request=request,
                 template_name='register.html',
@@ -69,11 +78,30 @@ class UserRegistrationView(View):
             )
 
 
+class ActivateView(View):
+    def get(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user and account_activation_token.check_token(user, token):
+            user.is_active = True
+            user.save()
+            messages.success(request, "Thank you for confirming your email.")
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            return redirect('home:home-page')
+
+        messages.error(request, "Activation link is invalid!")
+        return redirect('home:home-page')
+
+
 class PositionAddView(PermissionRequiredMixin, UpdateView):
     template_name = "form.html"
     form_class = forms.UserAssignmentRoleForm
     permission_required = "authentication.change_position"
-    model = get_user_model()
+    model = User
     queryset = model.objects.all()
 
     def get_success_url(self):
@@ -103,7 +131,7 @@ class PositionAddView(PermissionRequiredMixin, UpdateView):
 class UsersProfilesView(PermissionRequiredMixin, ListView):
     permission_required = "authentication.view_user"
     template_name = "users.html"
-    model = get_user_model()
+    model = User
     context_object_name = "users"
 
     def get_context_data(self, *, object_list=None, **kwargs):

@@ -7,15 +7,21 @@
 {% endblock %}
 
 {% block background %}
-<div class="me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden" style="background-color: #5f59f7;">
+<section class="min-vh-100 gradient-custom" style="background-color: #6a11cb;
+     background: -webkit-linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+     background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1))">
+<div class="me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
+
+
 {% block body %}
-<div class="bg-light shadow-sm mx-auto p-5" style="min-height: 100vh; border-radius: 21px 21px 0 0; overflow-y: auto;  color: #3f4137">
+<div class="bg-light shadow-sm mx-auto p-5" style="min-height: 100vh; border-radius: 21px 21px 0 0; overflow-y: auto;
+color: #3f4137">
 
 <div>
     <section class="pb-4">
       <div class="border rounded-5">
 
-        <section class="w-100 px-4 py-5" style="background-color: #5f59f7; border-radius: .5rem .5rem 0 0;">
+        <section class="w-100 px-4 py-5" style="border-radius: .5rem .5rem 0 0;">
           <div class="row d-flex justify-content-center">
             <div class="col col-xl-10">
               <div class="card mb-5" style="border-radius: 15px;">
@@ -170,6 +176,15 @@
 
             <dl id="task-list"  class="items-list">
                 {% for task in course.tasks.all %}
+                <p>
+                  <button class="btn btn-outline-light btn-block w-20" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTask{{ task.id }}"
+                          aria-expanded="false" aria-controls="collapseExample" style="background-color: #3f4137">
+                      {{ task.title }}
+                  </button>
+                </p>
+                <div class="collapse" id="collapseTask{{ task.id }}">
+                <div class="card card-body">
+
                     <section class="w-100 px-4 py-5" style="border-radius: .5rem .5rem 0 0;">
                           <div class="row d-flex justify-content-center">
                             <div class="col col-xl-10">
@@ -178,9 +193,14 @@
                                   <h3 class="mb-3">{{ task.title }}</h3>
 
                                   <p class="small mb-0">
-                                  <i class="far fa-star fa-lg"></i> <span class="mx-2">{%  trans "Max Mark:  " %}</span>
+                                  <i class="far fa-star fa-lg"></i> <span class="mx-2">{%  trans "Max Mark: " %}</span>
                                     <strong>{{ task.max_mark }}</strong>
                                   </p>
+                                  <p class="small mb-0">
+                                  <i class="far fa-star fa-lg"></i> <span class="mx-2">{%  trans "Deadline: " %}</span>
+                                    <strong>{{ task.deadline }}</strong>
+                                  </p>
+
 
                                   {% if task.description %}
                                    <p class="small mb-0"><i class="far fa-star fa-lg"></i> <span class="mx-2">{%  trans "Description:  " %}</span>
@@ -267,7 +287,8 @@
                         </section>
 
                     <hr>
-
+                </div>
+                </div>
                 {% endfor %}
                     <hr>
             </dl>
@@ -286,6 +307,7 @@
     </div>
 </div>
     </div>
+    </section>
 <hr>
 {% endblock %}
 {% endblock %}

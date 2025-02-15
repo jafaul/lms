@@ -1,8 +1,13 @@
 {% load i18n %}
 {% load static %}
+<style>
+    .dropdown-item:focus, .dropdown-item:hover {
+        color: black !important;
+        background-color: white !important;
+    }
+</style>
 
-
-<header class="p-3 mb-3 border-bottom">
+<header class="p-3 text-bg-dark">
     <div class="container">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
 
@@ -12,25 +17,26 @@
 
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
           <li><a href="{% url 'home:home-page' %}" class="nav-link px-2 link-secondary">{% trans "Home" %}</a></li>
-          <li><a href="{% url 'management:all-courses' %}" class="nav-link px-2 link-body-emphasis">{%  trans 'All courses' %}</a></li>
+          <li><a href="{% url 'management:all-courses' %}" class="nav-link px-2 text-white">{%  trans 'All courses' %}</a></li>
 
           {% if request.user.position == "student" or request.user.position == "teacher" %}
-          <li><a href="{% url 'management:my-courses' %}" class="nav-link px-2 link-body-emphasis">{%  trans 'My courses' %}</a></li>
+          <li><a href="{% url 'management:my-courses' %}" class="nav-link px-2 text-white">{%  trans 'My courses' %}</a></li>
           {% endif %}
 
           {% if perms.management.add_course %}
-            <li><a href="{% url "management:create_course" %}" class="nav-link px-2 link-body-emphasis">{% trans "Add course" %}</a></li>
+            <li><a href="{% url "management:create_course" %}" class="nav-link px-2 text-white">{% trans "Add course" %}</a></li>
 
           {% endif %}
 
           {% if perms.view_user %}
-              <li><a href="{% url "authentication:users-profiles" %}" class="nav-link px-2 link-body-emphasis">{% trans "Manage Users" %}</a></li>
+              <li><a href="{% url "authentication:users-profiles" %}" class="nav-link px-2 text-white">{% trans "Manage Users" %}</a></li>
           {% endif %}
         </ul>
 
 
-        <div class="dropdown text-end">
-          <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        <div class="dropdown text-end theme-light">
+          <a href="{% url "apps.authentication:profile" %}"
+             class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                 {% if request.user.photo %}
                 <img src="{{ request.user.photo.url }}" alt="mdo" width="32" height="32" class="rounded-circle">
                 {% else %}
@@ -38,10 +44,11 @@
                 {% endif %}
           </a>
 
-          <ul class="dropdown-menu text-small">
-            <li><a class="dropdown-item" href="{% url "authentication:settings" %}">Settings</a></li>
-            <li><a class="dropdown-item" href="{% url "authentication:profile" %}">Profile</a></li>
-            <li><hr class="dropdown-divider"></li>
+          <ul class="dropdown-menu text-small bg-black text-white ">
+
+            <li><a class="dropdown-item  text-white" href="{% url "authentication:settings" %}">Settings</a></li>
+            <li><a class="dropdown-item  text-white" href="{% url "authentication:profile" %}">Profile</a></li>
+            <li><hr class="dropdown-divider theme-light"></li>
             <li>
                  <form method="post" action="{% url 'apps.authentication:logout' %}" style="display:inline;">
                     {% csrf_token %}

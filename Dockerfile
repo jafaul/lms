@@ -22,3 +22,4 @@ RUN if [ "$DEBUG" = "False" ]; then \
     fi
 
 COPY . .
+

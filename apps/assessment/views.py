@@ -1,25 +1,24 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
-from django.db.models import Avg, Value, F
-from django.db.models.functions import Coalesce, Round
-from django.shortcuts import  get_object_or_404
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, TemplateView
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy, reverse
+from django.views.generic import CreateView
 
-from apps.assessment import models, forms
-from apps.management.models import Task, Course
+from apps.assessment import models, forms, tasks
+from apps.management.models import Task
 
 
 class BaseCreateView(CreateView):
     btn_name = ""
     title = ""
-    template_name = 'form.html'
+    template_name = "form.html"
 
     def get_action_url(self):
         raise NotImplemented
 
     def get_success_url(self):
-        return reverse_lazy('management:course-detail', kwargs={"pk": self.kwargs['pk']})
+        return reverse_lazy(
+            "management:course-detail", kwargs={"pk": self.kwargs["pk"]}
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -35,7 +34,7 @@ class AnswerCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateVi
     form_class = forms.AnswerForm
     btn_name = "Send homework"
     title = "Apply homework"
-    template_name = 'create_answer.html'
+    template_name = "create_answer.html"
 
     def get_permission_required(self):
         permissions = [
@@ -45,12 +44,15 @@ class AnswerCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateVi
 
     def form_valid(self, form):
         form.instance.student = self.request.user
-        form.instance.task = get_object_or_404(Task, pk=self.kwargs['pktask'])
-        return super().form_valid(form)
+        form.instance.task = get_object_or_404(Task, pk=self.kwargs["pktask"])
+        form_valid = super().form_valid(form)
+        tasks.send_homework_accepted_email.delay(answer_id=form.instance.id)
+        return form_valid
 
     def get_action_url(self):
         return reverse_lazy(
-            'assessment:create_answer', kwargs={"pk": self.kwargs["pk"], "pktask": self.kwargs['pktask']}
+            "assessment:create_answer",
+            kwargs={"pk": self.kwargs["pk"], "pktask": self.kwargs["pktask"]},
         )
 
 
@@ -68,18 +70,21 @@ class MarkCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView
 
     def form_valid(self, form):
         form.instance.teacher = self.request.user
-        answer = get_object_or_404(models.Answer, pk=self.kwargs['pkanswer'])
+        answer = get_object_or_404(models.Answer, pk=self.kwargs["pkanswer"])
         mark = form.save()
         answer.mark = mark
         answer.save()
+
+        tasks.send_mark_notification_email.delay(mark_id=mark.id)
 
         return super().form_valid(form)
 
     def get_action_url(self):
         return reverse_lazy(
-            'assessment:create_mark', kwargs={
+            "assessment:create_mark",
+            kwargs={
                 "pk": self.kwargs["pk"],
-                "pktask": self.kwargs['pktask'],
-                "pkanswer": self.kwargs['pkanswer'],
-            }
+                "pktask": self.kwargs["pktask"],
+                "pkanswer": self.kwargs["pkanswer"],
+            },
         )

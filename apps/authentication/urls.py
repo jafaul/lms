@@ -2,7 +2,7 @@ from django.contrib.auth.views import LogoutView
 from django.urls import path
 
 from apps.authentication.views import LoginView, UserSettingsView, UserRegistrationView, UserProfileView, \
-    UsersProfilesView, PositionAddView
+    UsersProfilesView, PositionAddView, ActivateView
 
 app_name = "apps.authentication"
 
@@ -15,5 +15,5 @@ urlpatterns = [
     path('profile/', UserProfileView.as_view(), name='profile'),
     path('users/', UsersProfilesView.as_view(), name='users-profiles'),
     path('users/<int:pk>/position/', PositionAddView.as_view(), name='update-role'),
-
+    path('activate/<uidb64>/<token>', ActivateView.as_view(), name='activate'),
 ]

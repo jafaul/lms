@@ -1,68 +1,120 @@
-{#{% extends 'base.html' %}#}
-{#{% load i18n %}#}
-{##}
-{#{% block title %}#}
-{#    Sign up#}
-{#{% endblock %}#}
-{##}
-{#{% block body %}#}
-{#<form method="post" action="{% url 'apps.authentication:register' %}">#}
-{#    {% csrf_token %}#}
-{#    {{ form }}#}
-{#    <button type="submit" class="btn btn-primary">Sign up</button>#}
-{#</form>#}
-{#{% endblock %}#}
-
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
 
 {% block title %}
-    Login
+    {% trans "Sign in" %}
 {% endblock %}
 
 {% block body %}
+{% block style %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        input, input:focus, input:-webkit-autofill {
+            background-color: #222;
+            color: white;
+            border: 1px solid #444;
+        }
+       .form-outline input {
+           background-color: #222 !important;
+           color: white !important;
+       }
+    </style>
 
-{% block extras %}
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="{%  static "brightened_logo.png" %}">
-
-
-    <title>{% trans "Sing up" %}</title>
-
-    <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/sign-in/">
-
-    <link href="{% static 'bootstrap.min.css' %}" rel="stylesheet">
-
-    <link href="{%  static "signin.css" %}" rel="stylesheet">
 {% endblock %}
+
 {% block header %} {% endblock %}
-  <body class="text-center" data-new-gr-c-s-check-loaded="14.1221.0" data-gr-ext-installed="">
-    <form class="form-signin" method="post" action="{% url 'apps.authentication:register' %}">
-        {% csrf_token %}
-
-      <a href="{% url "home:home-page" %}">
-
-      <img class="mb-4" src="{%  static "brightened_logo.png" %}" alt="" width="72" height="72">
-      </a>
-      <h1 class="h3 mb-3 font-weight-normal"> {%  trans "Please sign up" %}</h1>
-      <label for="inputFirstName" class="sr-only">{%  trans "First Name" %}</label>
-        {{ form.first_name }}
-      <label for="LastName" class="sr-only">{%  trans "Last Name" %}</label>
-        {{ form.last_name }}
-      <label for="inputEmail" class="sr-only">{%  trans "Email address" %}</label>
-        {{ form.email }}
-      <label for="inputPassword" class="sr-only">{% trans "Password" %}</label>
-        {{ form.password1 }}
-      <label for="inputPassword1" class="sr-only">{% trans "Repeat password" %}</label>
-        {{ form.password2 }}
-      <button class="btn btn-lg btn-primary btn-block" type="submit">{% trans "Sign in" %}</button>
-      <p class="mt-5 mb-3 text-muted">© 2025</p>
-    </form>
 
 
-</body>
+{% block background %}
+<section class="min-vh-100 gradient-custom" style="background-color: #6a11cb;
+     background: -webkit-linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+     background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1))">
+<div class="me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
+  <div class="container h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-12 col-md-8 col-lg-6 col-xl-7">
+        <div class="card bg-dark text-white" style="border-radius: 1rem;">
+          <div class="card-body p-4 text-center">
+
+            <div class="mb-md-5 mt-md-4 pb-3">
+          <a href="{% url "home:home-page" %}">
+
+              <img class="mb-4" src="{%  static "brightened_logo.png" %}" alt="" width="72" height="72">
+              </a>
+
+              <h2 class="fw-bold mb-2 text-uppercase">{% trans "Sign up" %}</h2>
+
+              {% include "messages.html" with messages=messages %}
+
+            <form class="form-signin" method="post">
+                {% csrf_token %}
+
+              <div data-mdb-input-init class="form-outline form-white mb-4">
+                {{ form.email }}
+                <label class="form-label" for="{{ form.email.id_for_label }}">{% trans "Email" %}</label>
+              </div>
+
+              <div class="row">
+                  <div class="col-md-6">
+              <div data-mdb-input-init class="form-outline form-white mb-4">
+                {{ form.first_name }}
+                <label class="form-label" for="{{ form.email.id_for_label }}">{%  trans "First Name" %}</label>
+              </div>
+              </div>
+{#              <div class="col-1"></div>#}
+              <div class="col-md-6">
+             <div data-mdb-input-init class="form-outline form-white mb-4">
+                  {{ form.last_name }}
+                <label class="form-label" for="{{ form.password.id_for_label }}">{% trans "Last Name" %}</label>
+             </div>
+              </div>
+              </div>
+
+              <div data-mdb-input-init class="form-outline form-white mb-4">
+                  {{ form.password1 }}
+                <label class="form-label" for="{{ form.password.id_for_label }}">{% trans "Password" %}</label>
+              </div>
+
+              <div data-mdb-input-init class="form-outline form-white mb-4">
+                  {{ form.password2 }}
+                <label class="form-label" for="{{ form.password.id_for_label }}">{% trans "Check password" %}</label>
+              </div>
+
+
+              <button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5" type="submit">
+                  {% trans "Sign up" %}</button>
+              </form>
+
+                <div class="d-flex justify-content-center text-center mt-4 pt-1">
+                <a href="{% url 'social:begin' 'google-oauth2' %}" class="text-white"><i class="fab fa-google fa-lg">
+                </i></a>
+              </div>
+
+            </div>
+
+            <div>
+              <p class="mb-0">{% trans "Already have an account?"  %}
+                  <a href="{% url 'apps.authentication:login' %}" class="text-white-50 fw-bold">{%  trans "Log in" %}</a>
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+{% endblock %}
 {% endblock %}
 {%  block footer %} {% endblock %}
+
+
+{% block extra_js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.0/mdb.min.js"></script>
+    <script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script>
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'bootstrap.min.js' %}"></script>
+{% endblock %}
+
