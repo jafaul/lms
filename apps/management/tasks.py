@@ -74,10 +74,6 @@ def notify_course_starting():
             full_msg = (f"This is a reminder that your course '{course.title}' starts on {course.start_datetime}.\n "
                         f"Click on button to get more details:")
             create_email(course.id, subject, full_msg, student, end_msg)
-    if not courses:
-        create_email(2, "test", "test",
-                     User.objects.get(email='anastasiia.olifir.o@gmail.com'), end_msg
-                     )
 
 
 @shared_task

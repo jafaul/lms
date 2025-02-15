@@ -20,7 +20,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     "send-mail-every-day-at-8": {
         'task': 'apps.management.tasks.notify_course_starting',
-        'schedule': crontab(minute='06', hour='19'),
+        'schedule': crontab(minute='00', hour='08'),
         # 'args': (),
 
     }
