@@ -1,15 +1,22 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView as BaseLoginView
 from django.contrib.auth.views import LogoutView as BaseLogoutView
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.template.loader import render_to_string
+from django.urls import reverse_lazy, reverse
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views import View
 from django.views.generic import TemplateView, FormView, UpdateView, ListView
 
+from apps.authentication.tokens import account_activation_token
 from apps.authentication import forms
 
 User = get_user_model()
@@ -56,17 +63,45 @@ class UserRegistrationView(View):
         form = forms.UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            user.is_active = True
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            email_send = activate_email(user)
+            if email_send:
+                messages.success(
+                    request,
+                    f'Dear <b>{user}</b>, please go to you email <b>{user.email}</b> inbox and click on \
+                    received activation link to confirm and complete the registration. <b>Note:</b> Check your spam folder.')
+            else:
+                messages.error(request, f'Problem sending email to {user.email}, check if you typed it correctly.')
+
+            user.is_active = False
             return redirect('apps.authentication:profile')
         else:
             for error in list(form.errors.values()):
-                print(request, error)
+                messages.error(request, error)
             return render(
                 request=request,
                 template_name='register.html',
                 context={'form': form}
             )
+
+
+class ActivateView(View):
+    def get(self, request, uidb64, token):
+        User = get_user_model()
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user and account_activation_token.check_token(user, token):
+            user.is_active = True
+            user.save()
+            messages.success(request, "Thank you for confirming your email.")
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            return redirect('home:home-page')
+
+        messages.error(request, "Activation link is invalid!")
+        return redirect('home:home-page')
 
 
 class PositionAddView(PermissionRequiredMixin, UpdateView):

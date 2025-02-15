@@ -8,14 +8,6 @@ from django.utils.translation import gettext_lazy as _
 
 @shared_task
 def send_homework_accepted_email(answer_id):
-    # send_mail(
-    #     "Your homework has been approved",
-    #     f"Your homework has been approved: {form.instance.description}",
-    #     base.DEFAULT_FROM_EMAIL,
-    #     [self.request.user.email]
-    # )
-
-    # better for html msg
     answer = Answer.objects.select_related("task", "task__course").get(pk=answer_id)
     user = answer.student
     user_fullname = user.get_full_name()
@@ -26,14 +18,16 @@ def send_homework_accepted_email(answer_id):
     full_msg = f"""Please be informed that we have received your homework for the task '{answer.task.title}'.
         It will be checked during 7 days."""
 
+    end_msg = "Best luck, your S."
+
     email = EmailMultiAlternatives(
         subject=render_to_string(
-            "emails/assessment/subject_answer_send.txt",
+            "emails/subject_base.txt",
             context={"subject": subject},
         ),
         body=render_to_string(
-            "emails/assessment/message_answer_send.txt",
-            context={"msg": _(full_msg), "user_full_name": user_fullname},
+            "emails/message_base.txt",
+            context={"msg": _(full_msg), "user_full_name": user_fullname, "end_msg": end_msg},
         ).strip(),
         to=[user.email],
     )
@@ -43,7 +37,7 @@ def send_homework_accepted_email(answer_id):
         render_to_string(
             "emails/assessment/answer_send.html",
             context={
-                "msg2": _(msg2),
+                "msg2": _(msg2 + "\n" + end_msg),
                 "msg1": _(msg1),
                 "full_name": user_fullname,
                 "course_id": answer.task.course.id,

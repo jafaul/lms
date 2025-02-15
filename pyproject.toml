@@ -21,6 +21,7 @@ django-settings-export = "^1.2.1"
 redis = "^5.2.1"
 kombu = "^5.4.2"
 django-celery-beat = "^2.7.0"
+django-messages = "^0.6.0"
 
 [tool.poetry.group.dev.dependencies]
 django-debug-toolbar = "^5.0.1"

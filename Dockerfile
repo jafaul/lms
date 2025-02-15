@@ -13,8 +13,6 @@ WORKDIR src/
 COPY pyproject.toml .
 COPY poetry.lock .
 
-RUN chmod +x /entrypoint.sh
-
 RUN poetry config virtualenvs.create false
 
 RUN if [ "$DEBUG" = "False" ]; then \

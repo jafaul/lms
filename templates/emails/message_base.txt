@@ -2,4 +2,4 @@ Hi, {{ user_full_name }}!
 
 {{ msg }}
 
-Best luck, your S.
+{{ end_msg }}
