@@ -1,6 +1,9 @@
 from django import forms
-from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import get_user_model, password_validation
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm as BasePasswordResetForm, \
+    SetPasswordForm as BaseSetPasswordForm, SetPasswordMixin as BaseSetPasswordMixin
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import AuthenticationForm
 
@@ -61,6 +64,58 @@ class UserRegistrationForm(UserCreationForm):
             print("User saved!")
             user.save()
         return user
+
+
+class PasswordResetForm(BasePasswordResetForm):
+    email = forms.EmailField(
+        widget=forms.EmailInput(
+            attrs={
+                "class": "form-control form-control-lg", "id": "inputEmail",
+                "required": "",
+            })
+    )
+
+    def send_mail(self, subject_template_name, email_template_name, context, from_email, to_email,
+                  html_email_template_name=None):
+
+        subject = render_to_string(subject_template_name, context).strip()
+        message = render_to_string(email_template_name, context)
+
+        print(f"Sending email to: {to_email}")  # Debugging
+
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=from_email,
+            recipient_list=[to_email],
+            fail_silently=False,
+        )
+
+
+class SetPasswordMixin(BaseSetPasswordMixin):
+    @staticmethod
+    def create_password_fields(label1=_("Password"), label2=_("Password confirmation")):
+        password1 = forms.CharField(
+            label=label1,
+            required=True,
+            strip=False,
+            widget=forms.PasswordInput(attrs={"autocomplete": "new-password", "class": "form-control form-control-lg"}),
+            help_text=password_validation.password_validators_help_text_html(),
+        )
+        password2 = forms.CharField(
+            label=label2,
+            required=True,
+            widget=forms.PasswordInput(attrs={"autocomplete": "new-password", "class": "form-control form-control-lg"}),
+            strip=False,
+            help_text=_("Enter the same password as before, for verification."),
+        )
+        return password1, password2
+
+
+class SetPasswordForm(BaseSetPasswordForm):
+    new_password1, new_password2 = SetPasswordMixin.create_password_fields(
+        label1=_("New password"), label2=_("New password confirmation")
+    )
 
 
 class UserAssignmentRoleForm(forms.ModelForm):

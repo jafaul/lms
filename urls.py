@@ -25,7 +25,7 @@ from config.settings import base
 # todo https://www.geeksforgeeks.org/software-engineering-coupling-and-cohesion/ ; two scoops of django
 # todo check pbkdf2 storage password standard; c
 # todo книжка искусство джанго
-# todo check oauth2
+# todo check oauth2, jwt
 # todo dive deeper into celery, celery beat, celery beat for task with course data, celery results, caching with redis
 # todo check AJAX, GraphQL, jQuery
 # todo high scalability .com site to research microservices examples

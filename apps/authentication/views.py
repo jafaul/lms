@@ -1,7 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth import login, get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.auth.views import LoginView as BaseLoginView
+from django.contrib.auth.views import LoginView as BaseLoginView, PasswordResetView as BasePasswordResetView, \
+    PasswordResetDoneView as BasePasswordResetDoneView, PasswordResetConfirmView as BasePasswordResetConfirmView, \
+    PasswordResetCompleteView as BasePasswordResetCompleteView
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -139,3 +141,35 @@ class UsersProfilesView(PermissionRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["form"] = forms.UserAssignmentRoleForm()
         return context
+
+
+class PasswordResetView(BasePasswordResetView):
+    success_url = reverse_lazy("home:home-page")
+    email_template_name = "emails/registration/password_reset_email.html"
+
+    template_name="password_reset_form.html"
+    form_class = forms.PasswordResetForm
+
+    def form_valid(self, form):
+        form_valid = super().form_valid(form)
+
+        messages.add_message(
+            self.request, messages.SUCCESS,
+            "Password reset link sent! Please check your email for instructions to reset your password.")
+        messages.add_message(self.request, messages.WARNING,
+            "If you don’t see it, check your spam folder or ensure you entered the correct email."
+        )
+
+        return form_valid
+
+
+class PasswordResetConfirmView(BasePasswordResetConfirmView):
+    success_url = reverse_lazy("authentication:login")
+    template_name = "password_reset_confirm.html"
+    form_class = forms.SetPasswordForm
+
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS,
+            "Your password has been updated. You may go ahead and log in now."
+        )
+        return super().form_valid(form)

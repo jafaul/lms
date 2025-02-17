@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'account_base.html' %}
 {% load static %}
 {% load i18n %}
 
@@ -6,92 +6,54 @@
     {% trans "Sign in" %}
 {% endblock %}
 
-{% block body %}
-{% block style %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        input, input:focus, input:-webkit-autofill {
-            background-color: #222;
-            color: white;
-            border: 1px solid #444;
-        }
-       .form-outline input {
-           background-color: #222 !important;
-           color: white !important;
-       }
-    </style>
 
-{% endblock %}
+{% block form %}
+<div class="mb-md-4 mt-md-4 pb-5">
+  <a href="{% url "home:home-page" %}">
+      <img class="mb-4" src="{%  static "brightened_logo.png" %}" alt="" width="72" height="72">
+  </a>
 
-{% block header %} {% endblock %}
+  <h2 class="fw-bold mb-2 text-uppercase">{% trans "Login" %}</h2>
+  <p class="text-white-50 mb-5">{% trans "Please enter your login and password!" %}</p>
 
+  {% include "messages.html" with messages=messages %}
 
-{% block background %}
-<section class="min-vh-100 gradient-custom" style="background-color: #6a11cb;
-     background: -webkit-linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
-     background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1))">
-<div class="me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
-  <div class="container py-5 h-100">
-
-    <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-        <div class="card bg-dark text-white" style="border-radius: 1rem;">
-          <div class="card-body p-5 text-center">
-
-            <div class="mb-md-5 mt-md-4 pb-5">
-          <a href="{% url "home:home-page" %}">
-              <img class="mb-4" src="{%  static "brightened_logo.png" %}" alt="" width="72" height="72">
-          </a>
-
-              <h2 class="fw-bold mb-2 text-uppercase">{% trans "Login" %}</h2>
-              <p class="text-white-50 mb-5">{% trans "Please enter your login and password!" %}</p>
-              {% include "messages.html" with messages=messages %}
-
-
-            <form class="form-signin" method="post">
-                {% csrf_token %}
-              <div data-mdb-input-init class="form-outline form-white mb-4">
-                {{ form.username }}
-                <label class="form-label" for="{{ form.email.id_for_label }}">{% trans "Email" %}</label>
-              </div>
-
-              <div data-mdb-input-init class="form-outline form-white mb-4">
-                  {{ form.password }}
-                <label class="form-label" for="{{ form.password.id_for_label }}">{% trans "Password" %}</label>
-              </div>
-
-              <button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5" type="submit">
-                  {% trans "Login" %}</button>
-              </form>
-
-                <div class="d-flex justify-content-center text-center mt-4 pt-1">
-                <a href="{% url 'social:begin' 'google-oauth2' %}" class="text-white"><i class="fab fa-google fa-lg">
-                </i></a>
-              </div>
-
-            </div>
-
-            <div>
-              <p class="mb-0">{% trans "Don't have an account?"  %}
-                  <a href="{% url 'apps.authentication:register' %}" class="text-white-50 fw-bold">{%  trans "Sign Up" %}</a>
-              </p>
-            </div>
-
-          </div>
-        </div>
+  <form class="form-signin" method="post">
+        {% csrf_token %}
+      <div data-mdb-input-init class="form-outline form-white mb-4">
+        {{ form.username }}
+        <label class="form-label" for="{{ form.email.id_for_label }}">{% trans "Email" %}</label>
       </div>
-    </div>
+
+      <div data-mdb-input-init class="form-outline form-white mb-4">
+          {{ form.password }}
+        <label class="form-label" for="{{ form.password.id_for_label }}">{% trans "Password" %}</label>
+      </div>
+
+      <button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5" type="submit">
+          {% trans "Login" %}</button>
+  </form>
+
+  <div class="d-flex justify-content-center text-center mt-4 pt-1">
+    <a href="{% url 'social:begin' 'google-oauth2' %}" class="text-white"><i class="fab fa-google fa-lg">
+    </i></a>
   </div>
 </div>
-</section>
-{% endblock %}
-{% endblock %}
-{%  block footer %} {% endblock %}
 
+{% endblock form %}
 
-{% block extra_js %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.0/mdb.min.js"></script>
-    <script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script>
-      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="{% static 'bootstrap.min.js' %}"></script>
+{% block additional_info %}
+
+<div>
+  <p class="mb-3">{% trans "Don't have an account?"  %}
+      <a href="{% url 'apps.authentication:register' %}" class="text-white-50 fw-bold">{%  trans "Sign Up" %}</a>
+  </p>
+</div>
+
+<div>
+  <p class="mb-0">{% trans "Forgot your password?"  %}
+      <a href="{% url 'apps.authentication:reset-password' %}" class="text-white-50 fw-bold">{%  trans "Reset" %}</a>
+  </p>
+</div>
+
 {% endblock %}
