@@ -59,36 +59,44 @@ def activate_email(user_id):
     email.send()
 
 
-# @shared_task
-def _send_mail(
+@shared_task()
+def send_reset_password_mail(user_email, subject_template_name, email_template_name, html_email_template_name):
+    user = User.objects.filter(email=user_email).first()
+    if not user:
+        print(f"No user with email '{user_email}' found!")
+        return
+
+    print("Start task send_reset_password_mail")
+    print(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    token = account_activation_token.make_token(user)
+
+    url_confirmation = settings.SITE_URL + reverse(
+        'apps.authentication:password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+
+    context = {
+        "email": user.email,
+        "user": user,
+        "url_confirmation": url_confirmation,
+    }
+
+    subject = render_to_string(
         subject_template_name,
-        email_template_name,
-        context,
-        from_email,
-        to_email,
-        html_email_template_name=None,
-):
-    """
-    Send a django.core.mail.EmailMultiAlternatives to `to_email`.
-    """
-    subject = loader.render_to_string(subject_template_name, context)
-    # Email subject *must not* contain newlines
+        context
+    ).strip()
     subject = "".join(subject.splitlines())
-    body = loader.render_to_string(email_template_name, context)
+    body = render_to_string(email_template_name, context)
 
-    email_message = EmailMultiAlternatives(subject, body, from_email, [to_email])
-    if html_email_template_name is not None:
-        html_email = loader.render_to_string(html_email_template_name, context)
-        email_message.attach_alternative(html_email, "text/html")
+    email = EmailMultiAlternatives(subject, body, to=[user.email])
 
-    # try:
+    email.attach_alternative(
+        render_to_string(
+            html_email_template_name,
+            context=context
+        ),
+        "text/html",
+    )
 
-    email_message.send()
-# except Exception:
-    #     logger.exception(
-    #         "Failed to send password reset email to %s", context["user"].pk
-    #     )
+    print(f"Sending email to: {user_email}")
+    email.send()
 
-@shared_task
-def send_reset_password_mail(user_id):
-    user = User.objects.get(pk=user_id)

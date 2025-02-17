@@ -13,7 +13,7 @@ from django.views import View
 from django.views.generic import TemplateView, UpdateView, ListView
 
 from apps.authentication.tokens import account_activation_token
-from apps.authentication.tasks import activate_email
+from apps.authentication.tasks import activate_email, send_reset_password_mail
 from apps.authentication import forms
 
 User = get_user_model()
@@ -145,7 +145,9 @@ class UsersProfilesView(PermissionRequiredMixin, ListView):
 
 class PasswordResetView(BasePasswordResetView):
     success_url = reverse_lazy("home:home-page")
-    email_template_name = "emails/registration/password_reset_email.html"
+    html_email_template_name = "emails/registration/password_reset_email.html"
+    subject_template_name = "emails/registration/password_reset_subject.txt"
+    email_template_name = "emails/registration/password_reset_email.txt"
 
     template_name="password_reset_form.html"
     form_class = forms.PasswordResetForm
@@ -153,15 +155,27 @@ class PasswordResetView(BasePasswordResetView):
     def form_valid(self, form):
         form_valid = super().form_valid(form)
 
-        messages.add_message(
-            self.request, messages.SUCCESS,
-            "Password reset link sent! Please check your email for instructions to reset your password.")
-        messages.add_message(self.request, messages.WARNING,
-            "If you don’t see it, check your spam folder or ensure you entered the correct email."
-        )
+        send_reset_password_mail.delay(
+            form.cleaned_data["email"], self.subject_template_name, self.email_template_name, self.html_email_template_name)
+        if form.errors.values():
+            for error in list(form.errors.values()):
+                messages.add_message(self.request, messages.ERROR, error)
+        else:
+            messages.add_message(
+                self.request, messages.SUCCESS,
+                "Password reset link sent! Please check your email for instructions to reset your password.")
+            messages.add_message(self.request, messages.WARNING,
+                "If you don’t see it, check your spam folder or ensure you entered the correct email."
+            )
 
         return form_valid
 
+# class PasswordResetDoneView(BasePasswordResetDoneView):
+    # success_url = reverse_lazy("authentication:login")
+    # email_template_name = "emails/registration/password_reset_email.html"
+    # success_url = reverse_lazy("authentication:password_reset_complete")
+
+    # pass
 
 class PasswordResetConfirmView(BasePasswordResetConfirmView):
     success_url = reverse_lazy("authentication:login")
@@ -173,3 +187,7 @@ class PasswordResetConfirmView(BasePasswordResetConfirmView):
             "Your password has been updated. You may go ahead and log in now."
         )
         return super().form_valid(form)
+#
+# class PasswordResetCompleteView(BasePasswordResetCompleteView):
+#     success_url = reverse_lazy("authentication:login")
+#     template_name = "password_reset_complete.html"

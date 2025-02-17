@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
     "tinymce",
     "social_django",
+    'django_celery_results',
     "django_celery_beat",
 
     "apps.home",
@@ -82,7 +83,6 @@ TEMPLATES = [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django_settings_export.settings_export",
-                # "django.template.context_processors.settings",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
@@ -163,7 +163,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGOUT_REDIRECT_URL = "/"
 
-# S3 configs
+# storages configs
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -172,6 +172,8 @@ STORAGES = {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
+MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
+
 
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
@@ -216,7 +218,10 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
 
-MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
+CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_RESULT_BACKEND = 'django-db'
+
+CELERY_RESULT_EXTENDED = True
 
 
 REGRES_TEST_API_URL = 'https://reqres.in/api/'

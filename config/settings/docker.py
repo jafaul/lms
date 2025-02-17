@@ -13,4 +13,10 @@ DATABASES = {
 }
 
 CELERY_BROKER_URL = 'redis://redis/0'
-CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://redis/1",
+    }
+}

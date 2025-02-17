@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+{% block style %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        input, input:focus, input:-webkit-autofill {
+            background-color: #222;
+            color: white;
+            border: 1px solid #444;
+        }
+       .form-outline input {
+           background-color: #222 !important;
+           color: white !important;
+       }
+    </style>
+
+{% endblock %}
+
+{% block header %} {% endblock %}
+
+
+{% block background %}
+<section class="min-vh-100 gradient-custom" style="background-color: #6a11cb;
+     background: -webkit-linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+     background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1))">
+<div class="me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
+  <div class="container py-5 h-100">
+
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+        <div class="card bg-dark text-white" style="border-radius: 1rem;">
+          <div class="card-body p-5 text-center">
+
+           {% block form %}
+           {% endblock form %}
+
+           {% block additional_info %}
+           {% endblock additional_info %}
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+{% endblock %}
+{% endblock %}
+{%  block footer %} {% endblock %}
+
+
+{% block extra_js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.0/mdb.min.js"></script>
+    <script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script>
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'bootstrap.min.js' %}"></script>
+{% endblock %}

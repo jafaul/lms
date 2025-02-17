@@ -1,12 +1,18 @@
 from django import forms
+from django.conf import settings
 from django.contrib.auth import get_user_model, password_validation
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm as BasePasswordResetForm, \
     SetPasswordForm as BaseSetPasswordForm, SetPasswordMixin as BaseSetPasswordMixin
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.urls import reverse
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import AuthenticationForm
 
+from apps.authentication import tasks
+from apps.authentication.tokens import account_activation_token
 
 User = get_user_model()
 
@@ -77,20 +83,7 @@ class PasswordResetForm(BasePasswordResetForm):
 
     def send_mail(self, subject_template_name, email_template_name, context, from_email, to_email,
                   html_email_template_name=None):
-
-        subject = render_to_string(subject_template_name, context).strip()
-        message = render_to_string(email_template_name, context)
-
-        print(f"Sending email to: {to_email}")  # Debugging
-
-        send_mail(
-            subject=subject,
-            message=message,
-            from_email=from_email,
-            recipient_list=[to_email],
-            fail_silently=False,
-        )
-
+        pass
 
 class SetPasswordMixin(BaseSetPasswordMixin):
     @staticmethod
