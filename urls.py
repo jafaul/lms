@@ -26,8 +26,9 @@ from config.settings import base
 # todo check pbkdf2 storage password standard; c
 # todo книжка искусство джанго
 # todo check oauth2
-# todo dive deeper into celery, celery beat, celery beat for task with course data.
-
+# todo dive deeper into celery, celery beat, celery beat for task with course data, celery results, caching with redis
+# todo check AJAX, GraphQL, jQuery
+# todo high scalability .com site to research microservices examples
 
 urlpatterns = [
     path('admin/', admin.site.urls),

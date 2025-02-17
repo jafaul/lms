@@ -23,7 +23,7 @@ class LoginView(BaseLoginView):
     form_class = forms.LoginForm
 
     def form_invalid(self, form):
-        messages.error(self.request, 'Invalid username or password.')
+        messages.add_message(self.request, messages.ERROR, 'Invalid username or password.')
         return self.render_to_response(self.get_context_data(form=form))
 
 
@@ -62,15 +62,16 @@ class UserRegistrationView(View):
             user.save()
 
             activate_email.delay(user_id=user.id)
-            messages.success(
-                request,
-                f'Dear <b>{user}</b>, please go to you email <b>{user.email}</b> inbox and click on \
-                received activation link to confirm and complete the registration. <b>Note:</b> Check your spam folder.')
 
+            messages.add_message(
+                self.request, messages.SUCCESS,
+                f'Dear <b>{user}</b>, please go to you email <b>{user.email}</b> inbox and click on \
+                received activation link to confirm and complete the registration. <b>Note:</b> Check your spam folder.'
+            )
             return redirect('apps.authentication:profile')
         else:
             for error in list(form.errors.values()):
-                messages.error(request, error)
+                messages.add_message(self.request, messages.ERROR, error)
             return render(
                 request=request,
                 template_name='register.html',
@@ -89,11 +90,11 @@ class ActivateView(View):
         if user and account_activation_token.check_token(user, token):
             user.is_active = True
             user.save()
-            messages.success(request, "Thank you for confirming your email.")
+            messages.add_message(self.request, messages.SUCCESS, "Thank you for confirming your email.")
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('home:home-page')
 
-        messages.error(request, "Activation link is invalid!")
+        messages.add_message(self.request, messages.ERROR, "Activation link is invalid!")
         return redirect('home:home-page')
 
 
