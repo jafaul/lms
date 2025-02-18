@@ -51,7 +51,7 @@ def create_email(course_id, subject, msg, user, end_msg):
 
 
 @shared_task
-def notify_course_starting():
+def send_course_starts_tomorrow_email():
 
     end_msg = '''
     See you soon! 
@@ -64,7 +64,7 @@ def notify_course_starting():
         Course.objects
         .prefetch_related("students")
         .filter(
-            Q(start_datetime__lt=datetime.datetime.now() + datetime.timedelta(days=1))
+            Q(start_datetime__gte=datetime.datetime.now() + datetime.timedelta(days=1))
         )
         .all()
     )

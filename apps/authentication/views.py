@@ -121,6 +121,7 @@ class PositionAddView(PermissionRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        print(context)
 
         context["action_url"] = reverse_lazy(
             "apps.authentication:update-role",
@@ -139,6 +140,7 @@ class UsersProfilesView(PermissionRequiredMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+
         context["form"] = forms.UserAssignmentRoleForm()
         return context
 
@@ -151,6 +153,8 @@ class PasswordResetView(BasePasswordResetView):
 
     template_name="password_reset_form.html"
     form_class = forms.PasswordResetForm
+
+    token_generator = account_activation_token
 
     def form_valid(self, form):
         form_valid = super().form_valid(form)
@@ -170,24 +174,25 @@ class PasswordResetView(BasePasswordResetView):
 
         return form_valid
 
-# class PasswordResetDoneView(BasePasswordResetDoneView):
-    # success_url = reverse_lazy("authentication:login")
-    # email_template_name = "emails/registration/password_reset_email.html"
-    # success_url = reverse_lazy("authentication:password_reset_complete")
-
-    # pass
 
 class PasswordResetConfirmView(BasePasswordResetConfirmView):
     success_url = reverse_lazy("authentication:login")
     template_name = "password_reset_confirm.html"
     form_class = forms.SetPasswordForm
 
+    token_generator = account_activation_token
+
     def form_valid(self, form):
         messages.add_message(self.request, messages.SUCCESS,
             "Your password has been updated. You may go ahead and log in now."
         )
+        print("form")
+        print(form)
         return super().form_valid(form)
-#
-# class PasswordResetCompleteView(BasePasswordResetCompleteView):
-#     success_url = reverse_lazy("authentication:login")
-#     template_name = "password_reset_complete.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        print(context)
+        context["uidb64"] = self.kwargs.get("uidb64")
+        context["token"] = self.kwargs.get("token")
+        return context

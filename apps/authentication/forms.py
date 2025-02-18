@@ -85,6 +85,7 @@ class PasswordResetForm(BasePasswordResetForm):
                   html_email_template_name=None):
         pass
 
+
 class SetPasswordMixin(BaseSetPasswordMixin):
     @staticmethod
     def create_password_fields(label1=_("Password"), label2=_("Password confirmation")):
