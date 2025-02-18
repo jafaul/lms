@@ -18,38 +18,62 @@
 <div class="bg-light shadow-sm mx-auto p-5" style="min-height: 100vh; border-radius: 21px 21px 0 0; overflow-y: auto;  color: #3f4137">
 
 {% if ratings %}
-    <div class="container first-container col-sm-12 pull-left">
-      <table class="table">
-        <thead class="thead-light">
-          <tr>
-            <th scope='col' id="id-column">{% trans ID %}</th>
-            <th scope='col' id="title-column">{% trans Student %}</th>
-            <th scope='col' id="teacher-column">{% trans "Avg mark" %}</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for user in ratings %}
-            <tr>
-                <th scope="row" id="id-column">
-                    {{ user.id }}
-                </th>
-                <td id="title-column">
-                   {{ user.first_name | capfirst }} {{ user.last_name | capfirst }}
-                </td>
-                <td id="teacher-column">
-                    {{ user.avg_mark}}
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-      </table>
+<div class="container first-container mt-5">
+    <div class="col">
+        <form class="d-flex gap-2 align-items-end">
+            {% for field in filter.form %}
+                <div>
+                    <label class="form-label text-uppercase small text-muted">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                </div>
+            {% endfor %}
+            <button class="btn btn-sm btn-secondary px-4 py-1" type="submit">
+                {% trans "Apply filter" %}
+            </button>
+        </form>
     </div>
+
+    <div class="row mt-3">
+        <div class="col">
+            <table class="table">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope='col' id="id-column">{% trans "ID" %}</th>
+                        <th scope='col' id="title-column">{% trans "Student" %}</th>
+                        <th scope='col' id="teacher-column">{% trans "Avg mark" %}</th>
+                        <th scope='col'>{% trans "Total score" %}</th>
+                        <th scope='col'>{% trans "Answers Send" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in ratings %}
+                        <tr>
+                            <th scope="row" id="id-column">
+                                {{ user.id }}
+                            </th>
+                            <td id="title-column">
+                                {{ user.first_name | capfirst }} {{ user.last_name | capfirst }}
+                            </td>
+                            <td>{{ user.avg_mark }}</td>
+                            <td>{{ user.total_score }}</td>
+                            <td>{{ user.answers_send }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+
 {% else %}
     <div class="alert alert-warning" role="alert">
     {% trans "No students info" %}
     </div>
 {% endif %}
 </div>
-</div>
+
 {% endblock %}
 {% endblock %}

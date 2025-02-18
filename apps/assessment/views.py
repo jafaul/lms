@@ -35,9 +35,7 @@ class AnswerCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateVi
     form_class = forms.AnswerForm
     btn_name = "Send homework"
     title = "Apply homework"
-
     template_name = 'create_answer.html'
-
 
     def get_permission_required(self):
         permissions = [

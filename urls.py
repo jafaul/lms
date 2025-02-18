@@ -34,8 +34,9 @@ urlpatterns = [
     path('accounts/', include('apps.authentication.urls', namespace='authentication')),
     path('tinymce/', include('tinymce.urls')),
     path('courses/<int:pk>/tasks/<int:pktask>/', include('apps.assessment.urls', namespace='assessment')),
-] + static(base.MEDIA_URL, document_root=base.MEDIA_ROOT)
+] + static(base.MEDIA_URL, document_root=base.MEDIA_ROOT) + static(base.STATIC_URL, document_root=base.STATIC_ROOT)
 
 if base.DEBUG:
     from debug_toolbar.toolbar import debug_toolbar_urls
     urlpatterns += debug_toolbar_urls()
+

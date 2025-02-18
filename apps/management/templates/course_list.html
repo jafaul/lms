@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load user_extras %}
 {% load i18n %}
 
 {% block title %}
@@ -11,40 +12,61 @@
 <div class="me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden" style="background-color: #5f59f7">
       <div class="my-3 py-3">
     <h2 class="display-6">{% trans "Our Courses" %}</h2>
-
       </div>
 
 <div class="bg-light shadow-sm mx-auto p-5" style="min-height: 100vh; border-radius: 21px 21px 0 0; overflow-y: auto;  color: #3f4137">
 
 {% if object_list %}
-    <div class="container first-container col-sm-12 pull-left">
+
+    <div class="container first-container mt-5 pull-left">
+      <div class="col">
+        <form>
+            <div class="col">
+                {% for field in filter.form %}
+                    <label class="form-label text-uppercase small text-muted">
+                        {{ field.label }}
+                        {{ field }}
+                    </label>
+                {% endfor %}
+            <button class="btn btn-sm btn-secondary px-4 py-1" type="submit">
+                {% trans "Apply filter" %}</button>
+            </div>
+        </form>
+      </div>
+      <div class="row">
+      <div class="col">
       <table class="table">
         <thead class="thead-light">
           <tr>
-            <th scope='col' id="id-column">ID</th>
             <th scope='col' id="title-column">Title</th>
             <th scope='col' id="teacher-column">Teacher</th>
-            <th scope='col' id="desc-column">Description</th>
             <th scope='col' id="stud-column">Students</th>
+            <th scope='col'>Tags</th>
+            <th scope='col'>Start</th>
+
+
           </tr>
         </thead>
         <tbody>
         {% for course in object_list %}
             <tr>
-                <th scope="row" id="id-column">
-                    <a href="{% url "apps.management:course-detail" course.id %}">{{ course.id }}</a>
-                </th>
                 <td id="title-column">
-                    {{ course.title }}
+                    <p><a href="{% url "apps.management:course-detail" course.id %}"
+                          class="link-offset-2 link-underline-opacity-100 link-opacity-50-hover"
+                     style="counter-increment: dt-counter; color: #212529; text-decoration: underline">
+                        {{ course.title }}
+                    </a></p>
                 </td>
                 <td id="teacher-column">
+                    {% if course.teacher %}
                     {{ course.teacher.email}}
+                    {% else %}
+                    No teacher assigned
+                    {% endif %}
                 </td>
-
-                <td id="desc-column">{{ course.description }}</td>
                 <td id="stud-column">
                 {% if course.students.all %}
-                    <ul id="students-list">
+                    <ul id="students-list" style="list-style: none">
                         {% for student in course.students.all %}
                             <li>{{ student.email}}</li>
                         {% endfor %}
@@ -53,10 +75,15 @@
                     No students
                 {% endif %}
                 </td>
+                <td>{{ course.tags|join:", " }}</td>
+                <td>{{ course.start_datetime }}</td>
+
             </tr>
         {% endfor %}
         </tbody>
       </table>
+      </div>
+    </div>
     </div>
 {% else %}
     <div class="alert alert-warning" role="alert">
@@ -66,5 +93,25 @@
 {% endif %}
 </div>
 </div>
+
+{#<div class="pagination">#}
+{#<span class="step-links">#}
+{#    {% if page_obj.has_previous %}#}
+{#        <a href="?page=1">&laquo; first</a>#}
+{#        <a href="?page={{ page_obj.previous_page_number }}">previous</a>#}
+{#    {% endif %}#}
+{##}
+{#    <span class="current">#}
+{#        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.#}
+{#    </span>#}
+{##}
+{#    {% if page_obj.has_next %}#}
+{#        <a href="?page={{ page_obj.next_page_number }}">next</a>#}
+{#        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>#}
+{#    {% endif %}#}
+{#</span>#}
+{#</div>#}
+{#            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>#}
+
 {% endblock %}
 {% endblock %}

@@ -1,23 +1,28 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
-from django.db.models import Q, Value, Avg, F, FloatField
+from django.db.models import Q, Value, Avg, F, FloatField, Sum, IntegerField, Count, Prefetch
 from django.db.models.functions import Round, Coalesce
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 
 from django.urls import reverse_lazy
 
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, TemplateView
+from django_filters.views import FilterView
 
 from apps.assessment.forms import MarkForm
 from apps.management import models, forms
 from django.utils.translation import gettext_lazy as _
 
+from apps.management.filters import CourseFilterSet, RatingFilter
 
-class CourseListView(ListView):
+
+class CourseListView(FilterView):
     model = models.Course
     template_name = 'course_list.html'
+    # paginate_by = 10
+    filterset_class = CourseFilterSet
 
     def get_queryset(self):
         return models.Course.objects.prefetch_related(
@@ -32,10 +37,12 @@ class CourseListView(ListView):
 
 
 # @login_required -- func based
-class MyCourseListView(LoginRequiredMixin, ListView):
+class MyCourseListView(LoginRequiredMixin, FilterView):
     model = models.Course
     redirect_field_name = 'next'
     template_name = 'course_list.html'
+    filterset_class = CourseFilterSet
+    # paginate_by = 5
 
     def get_queryset(self):
         return models.Course.objects.prefetch_related(
@@ -75,8 +82,8 @@ class CourseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
         return any(self.request.user.has_perm(perm) for perm in permissions)
 
     def get_queryset(self):
-        course = models.Course.objects.prefetch_related(
-            "students",
+        return models.Course.objects.select_related("teacher").prefetch_related(
+            Prefetch("students", queryset=models.User.objects.only("id", "username")),
             "lectures",
             "tasks",
             "tasks__answers",
@@ -84,8 +91,6 @@ class CourseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
             "tasks__answers__student",
             "tasks__answers__mark__teacher"
         ).select_related("teacher")
-
-        return course
 
 
 class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
@@ -103,6 +108,20 @@ class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
         context["action_url"] = reverse_lazy("management:create_course")
         context["btn_name"] = "Create"
         return context
+
+    def form_valid(self, form):
+
+        course = form.save(commit=False)
+
+        if not course.start_datetime:
+            return JsonResponse({"error": "Start datetime is missing before saving!"}, status=400)
+
+        response = super().form_valid(form)
+        return response
+
+    def form_invalid(self, form):
+        print(f"DEBUG: Form is invalid. Errors: {form.errors}")
+        return super().form_invalid(form)
 
 
 class UpdateCourseView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
@@ -186,8 +205,6 @@ class LectureCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateV
         return super().has_permission()
 
 
-
-
 User = get_user_model()
 
 
@@ -211,26 +228,66 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         course_id = self.kwargs.get("pk")
+        queryset = User.objects.filter(courses_as_student__id=course_id)
 
-        results = (
-            User.objects.filter(courses_as_student__id=course_id)
+        order_by = self.request.GET.get("order_by", "avg_mark")
+
+        results = (queryset
             .annotate(
                 avg_mark=Coalesce(
-                    Round(Avg("answers__mark__mark_value", filter=F("answers__task__course_id") == course_id,
-                    output_field=FloatField()), 2),
+                    Round(
+                        Avg("answers__mark__mark_value", filter=F("answers__task__course_id") == course_id),
+                        2
+                    ),
                     Value(0.0, output_field=FloatField())
                 ),
+                total_score=Coalesce(
+                    Sum("answers__mark__mark_value", filter=F("answers__task__course_id") == course_id),
+                    Value(0, output_field=IntegerField())
+                ),
+                answers_send=Coalesce(
+                    Count("answers", distinct=True, filter=F("answers__task__course_id") == course_id),
+                    Value(0, output_field=IntegerField())
+                )
             )
-            .order_by(F("avg_mark").desc())
-            .select_related("answers__mark")
-            .values("id", "first_name", "last_name", "avg_mark")
+            .order_by(F(order_by).desc())
+            .prefetch_related("answers__mark")
+            .values("id", "first_name", "last_name", "avg_mark", "total_score", "answers_send")
         )
 
-        results = [
-            {"id": result["id"], "first_name":  result["first_name"], "last_name": result["last_name"],
-                 "avg_mark":result["avg_mark"]}
-            for result in results
-        ]
-        context["ratings"] = results
+        results = list(results)
+        print(results)
+
+        avg_mark_filter = self.request.GET.get("avg_mark", "")
+        sum_mark_filter = self.request.GET.get("total_score", "")
+        answers_send_filter = self.request.GET.get("answers_send", "")
+        print(f"DEBUG: {answers_send_filter=}")
+
+        if any([avg_mark_filter, sum_mark_filter, answers_send_filter]):
+            filtered_results = []
+            for r in results:
+                condition = True
+                if avg_mark_filter:
+                    condition = condition and r["avg_mark"] >= float(avg_mark_filter)
+                if sum_mark_filter:
+                    condition = condition and r["total_score"] >= int(sum_mark_filter)
+                if answers_send_filter:
+                    condition = condition and r["answers_send"] >= int(answers_send_filter)
+                    print(f"DEBUG: {condition=}")
+
+                if condition:
+                    filtered_results.append(r)
+
+            context["ratings"] = filtered_results
+        else:
+            context["ratings"] = results
+        filterset = RatingFilter(
+            self.request.GET, queryset=queryset
+        )
+        context["filter"] = filterset
+
         return context
+
+
+#todo add pagination in users, course detail, courses, add login with social networks
 
