@@ -2,7 +2,7 @@ from celery import shared_task
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.mail import EmailMultiAlternatives
-from django.template import loader
+
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.encoding import force_bytes

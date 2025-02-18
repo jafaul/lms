@@ -74,6 +74,8 @@ class Command(BaseCommand):
                 new_user.email, PasswordResetView.subject_template_name,
                 PasswordResetView.email_template_name,
                 PasswordResetView.html_email_template_name,
-
             )
+
+            self.stdout(f"Sent {len(users)} emails to each user to reset password. \n \
+                Please activate users by assigning a new password manually.")
 
