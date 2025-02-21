@@ -53,6 +53,15 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    """
+    {
+        "title": "new task",
+        "deadline": "2025-03-01",
+        "max_mark": 5,
+        "description": "desc"
+    }
+    """
+
     answers = assessment_serializers.AnswerSerializer(many=True, read_only=True)
 
     class Meta:
