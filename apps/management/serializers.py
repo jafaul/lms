@@ -1,11 +1,13 @@
-from rest_framework import serializers, viewsets
+from rest_framework import serializers
 
 from apps.assessment import serializers as assessment_serializers
 from apps.management.models import Course, Task, Lecture
+from apps.authentication.serializers import UserSerializer
 
 
 class CourseSerializer(serializers.ModelSerializer):
     students_amount = serializers.SerializerMethodField()
+    students = UserSerializer(many=True, read_only=True)
 
     class Meta:
         model = Course
@@ -29,3 +31,5 @@ class LectureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lecture
         fields = ["id", "title", "description"]
+
+
