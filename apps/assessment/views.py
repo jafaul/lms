@@ -2,8 +2,9 @@ from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMix
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView
+from rest_framework import generics
 
-from apps.assessment import models, forms, tasks
+from apps.assessment import models, forms, tasks, serializers
 from apps.management.models import Task
 
 
@@ -88,3 +89,28 @@ class MarkCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView
                 "pkanswer": self.kwargs["pkanswer"],
             },
         )
+
+
+class AnswerCreateAPIView(generics.CreateAPIView):
+    serializer_class = serializers.AnswerSerializer
+
+    def perform_create(self, serializer):
+        answer = serializer.save(
+            student=self.request.user,
+            task=get_object_or_404(Task, pk=self.kwargs["pktask"])
+        )
+        tasks.send_homework_accepted_email.delay(answer_id=answer.id)
+
+
+class MarkCreateAPIView(generics.CreateAPIView):
+    serializer_class = serializers.MarkSerializer
+
+    def perform_create(self, serializer):
+        mark = serializer.save(teacher=self.request.user)
+        answer = get_object_or_404(models.Answer, pk=self.kwargs["pkanswer"])
+        answer.mark = mark
+        answer.save()
+
+        tasks.send_mark_notification_email.delay(mark_id=mark.id)
+
+

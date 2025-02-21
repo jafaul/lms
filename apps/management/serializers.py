@@ -1,5 +1,6 @@
 from rest_framework import serializers, viewsets
 
+from apps.assessment import serializers as assessment_serializers
 from apps.management.models import Course, Task, Lecture
 
 
@@ -10,6 +11,8 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    answers = assessment_serializers.AnswerSerializer(many=True, read_only=True)
+
     class Meta:
         model = Task
         fields = [

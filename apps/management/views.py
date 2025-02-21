@@ -379,5 +379,5 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
         return context
 
 
-#todo add pagination in users, course detail, courses, add login with social networks
+#todo add pagination in users, course detail, courses, add login with social networks, move permissions into signals
 

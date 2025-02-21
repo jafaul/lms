@@ -22,7 +22,8 @@ from rest_framework.schemas import get_schema_view
 from config.settings import base
 
 api_urls = [
-    path('courses/', include("apps.management.api_urls"))
+    path('courses/', include("apps.management.api_urls")),
+    path('courses/<int:pk>/tasks/<int:pktask>/', include("apps.assessment.api_urls")),
 ]
 
 urlpatterns = [
@@ -35,7 +36,6 @@ urlpatterns = [
     path('', include('social_django.urls', namespace='social')),
 
     path('api/', include(api_urls)),
-    path('openapi/', get_schema_view(title="API Schema", description="API for all endpoints"), name='openapi-schema'),
 
 ] + static(base.MEDIA_URL, document_root=base.MEDIA_ROOT) \
     + static(base.STATIC_URL, document_root=base.STATIC_ROOT)
