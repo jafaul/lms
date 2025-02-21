@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "social_django",
     'django_celery_results',
     "django_celery_beat",
+    'rest_framework',
 
     "apps.home",
     "apps.authentication",

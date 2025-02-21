@@ -19,6 +19,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 from config.settings import base
+from apps.management.api_urls import router as management_router
 
 # todo https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Django/Sessions
 # todo try to do data migrations (DML) while dividing app for a few new apps
@@ -37,9 +38,11 @@ urlpatterns = [
     path('accounts/', include('apps.authentication.urls', namespace='authentication')),
     path('tinymce/', include('tinymce.urls')),
     path('courses/<int:pk>/tasks/<int:pktask>/', include('apps.assessment.urls', namespace='assessment')),
-    path('', include('social_django.urls', namespace='social'))
+    path('', include('social_django.urls', namespace='social')),
 
-              ] + static(base.MEDIA_URL, document_root=base.MEDIA_ROOT) \
+    path('api/', include(management_router.urls), name='api'),
+
+] + static(base.MEDIA_URL, document_root=base.MEDIA_ROOT) \
     + static(base.STATIC_URL, document_root=base.STATIC_ROOT)
 
 if base.DEBUG:
