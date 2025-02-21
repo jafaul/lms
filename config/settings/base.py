@@ -98,18 +98,19 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USERNAME"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
         "ATOMIC_REQUESTS": True,
-        "OPTIONS": {
-            "timeout": 20,
-        },
     }
 }
 
+print(DATABASES)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -211,7 +212,7 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True  # for gmail provider TLS is required
 EMAIL_USE_SSL = False
 
-SITE_URL = "https://s.com"
+SITE_URL = "https://0.0.0.0:8080"
 
 CELERY_TIMEZONE = "Europe/Kyiv"
 CELERY_TASK_TRACK_STARTED = True
@@ -224,5 +225,8 @@ CELERY_RESULT_BACKEND = 'django-db'
 
 CELERY_RESULT_EXTENDED = True
 
-
 REGRES_TEST_API_URL = 'https://reqres.in/api/'
+
+REDIS_ADDR = os.getenv("REDIS_ADDR", "127.0.0.1:6379")
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'

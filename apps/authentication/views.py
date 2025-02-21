@@ -186,13 +186,24 @@ class PasswordResetConfirmView(BasePasswordResetConfirmView):
         messages.add_message(self.request, messages.SUCCESS,
             "Your password has been updated. You may go ahead and log in now."
         )
-        print("form")
-        print(form)
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        for error in list(form.errors.values()):
+            messages.add_message(self.request, messages.ERROR, error)
+        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         print(context)
         context["uidb64"] = self.kwargs.get("uidb64")
         context["token"] = self.kwargs.get("token")
+
+        try:
+            uid = urlsafe_base64_decode(context["uidb64"]).decode()
+            user = get_user_model().objects.get(pk=uid)
+            print(user)  # Should return a valid user
+        except Exception as e:
+            print(f"Decoding error: {e}")
+
         return context

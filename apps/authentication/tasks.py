@@ -1,10 +1,14 @@
+from datetime import timedelta
+
 from celery import shared_task
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.mail import EmailMultiAlternatives
+from django.db.models import Q
 
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
@@ -27,6 +31,7 @@ def activate_email(user_id):
 
     url_confirmation = settings.SITE_URL + reverse(
         'apps.authentication:activate', kwargs={'uidb64': uid, 'token': token})
+    print(url_confirmation)
 
     email = EmailMultiAlternatives(
         subject=render_to_string(
@@ -73,6 +78,7 @@ def send_reset_password_mail(user_email, subject_template_name, email_template_n
 
     url_confirmation = settings.SITE_URL + reverse(
         'apps.authentication:password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+    print(url_confirmation)
 
     context = {
         "email": user.email,
@@ -99,4 +105,13 @@ def send_reset_password_mail(user_email, subject_template_name, email_template_n
 
     print(f"Sending email to: {user_email}")
     email.send()
+
+
+@shared_task()
+def clean_usable_users():
+    User.objects.filter(
+     Q(password='') &  Q(last_login__isnull=True) & Q(date_joined__lte=timezone.now() - timedelta(hours=15))).delete()
+
+    User.objects.filter(
+        Q(is_active=False) & Q(date_joined__lte=timezone.now() - timedelta(hours=15))).delete()
 

@@ -3,6 +3,8 @@ import os
 from celery import Celery
 from celery.schedules import crontab
 
+from config.settings.base import REDIS_ADDR
+
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.base')
 
@@ -15,7 +17,7 @@ app = Celery('lms-proj')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.conf.update(
-    broker_url='redis://localhost:6379/0',
+    broker_url=f'redis://{REDIS_ADDR}/0',
     broker_connection_retry_on_startup=True,
     broker_connection_max_retries=5,
     broker_connection_retry=True,
@@ -30,6 +32,9 @@ app.conf.beat_schedule = {
         'task': 'apps.management.tasks.send_course_starts_tomorrow_email',
         'schedule': crontab(minute='00', hour='08'),
         # 'args': (),
-
+    },
+    "clean-non-usable-test-users": {
+        'task': 'apps.authentication.tasks.clean_usable_users',
+        'schedule': crontab(minute="38"),
     }
 }

@@ -12,11 +12,13 @@ DATABASES = {
     }
 }
 
-CELERY_BROKER_URL = 'redis://redis/0'
+# print(DATABASES)
+
+# CELERY_BROKER_URL = 'redis://redis/0'
 
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://redis/1",
+        "LOCATION": f"redis://{REDIS_ADDR}/1",
     }
 }
