@@ -1,8 +1,9 @@
 import io
+import random
 
+from boto3.s3.inject import upload_file
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.files.base import ContentFile
 from django.core.files.images import ImageFile
 from django.core.management import BaseCommand
 import requests
@@ -14,20 +15,28 @@ User = get_user_model()
 
 
 class Command(BaseCommand):
-    help = f"generate 12 fake users. Default role 'student'."
+    help = f"generate fake users. Default role is 'student', default amount is '12'."
 
     def add_arguments(self, parser):
         position_choices = {choice[0] for choice in User.Position.choices}
         parser.add_argument(
             '--position',
             type=str,
+            default="student",
             choices=position_choices,
             help=f'Specify a position (available positions: {position_choices}).)'
+        )
+        parser.add_argument(
+            '-n',
+            type=int,
+            choices = list(range(1, 13)),
+            default=12,
+            help=f'Specify amount of users.'
         )
 
     def handle(self, *args, **options):
         position = options.get('position')
-        if not position: position = 'student'
+        number_of_users = options.get('n')
 
         url = settings.REGRES_TEST_API_URL + "users?page=1"
         response = requests.request("GET", url, headers={}, data={})
@@ -45,6 +54,10 @@ class Command(BaseCommand):
             response.raise_for_status()
 
             users.extend(response.json()["data"])
+
+        random.shuffle(users)
+
+        user_created_counter = 0
 
         for user in users:
             email = user["email"] + position
@@ -75,6 +88,10 @@ class Command(BaseCommand):
                 PasswordResetView.email_template_name,
                 PasswordResetView.html_email_template_name,
             )
+
+            user_created_counter += 1
+            if user_created_counter == number_of_users:
+                break
 
         self.stdout.write(f"Sent {len(users)} emails to each user to reset password.\n "
                           f" Please activate users by assigning a new password manually.")

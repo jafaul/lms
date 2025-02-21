@@ -50,11 +50,10 @@ class Course(models.Model):
 
         self.refresh_from_db()
 
-        if self.students.exists():
-            for student in self.students.all():
-                if not student.has_perm(students_perm):
-                    student.user_permissions.add(students_perm)
-                    print(f"added permission for student {student.email}: {self.teacher.get_all_permissions()}")
+        for student in self.students.all():
+            if not student.has_perm(students_perm):
+                student.user_permissions.add(students_perm)
+                print(f"added permission for student {student.email}: {self.teacher.get_all_permissions()}")
         print("saving ... ")
         super().save(*args, **kwargs)
 
