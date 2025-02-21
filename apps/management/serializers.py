@@ -1,6 +1,6 @@
 from rest_framework import serializers, viewsets
 
-from apps.management.models import Course
+from apps.management.models import Course, Task, Lecture
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -9,6 +9,15 @@ class CourseSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "description", "start_datetime", "tags", "teacher", "students"]
 
 
-class CourseListViewSet(viewsets.ModelViewSet):
-    queryset = Course.objects.prefetch_related("students").select_related("teacher").order_by("start_datetime").all()
-    serializer_class = CourseSerializer
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = [
+            "id", "title", "deadline", "max_mark", "description", "answers"
+        ]
+
+
+class LectureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lecture
+        fields = ["id", "title", "description"]

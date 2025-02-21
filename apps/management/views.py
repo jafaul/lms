@@ -11,9 +11,10 @@ from django.urls import reverse_lazy
 
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, TemplateView
 from django_filters.views import FilterView
+from rest_framework import generics
 
 from apps.assessment.forms import MarkForm
-from apps.management import models, forms, tasks
+from apps.management import models, forms, tasks, serializers
 from django.utils.translation import gettext_lazy as _
 
 from apps.management.filters import CourseFilterSet, RatingFilter
@@ -123,6 +124,89 @@ class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     def form_invalid(self, form):
         print(f"DEBUG: Form is invalid. Errors: {form.errors}")
         return super().form_invalid(form)
+
+
+class CourseCreateAPIView(generics.CreateAPIView):
+    serializer_class = serializers.CourseSerializer
+
+
+class CourseListViewSet(generics.ListAPIView):
+    queryset = (
+        models.Course.objects
+        .prefetch_related("students")
+        .select_related("teacher")
+        .order_by("start_datetime")
+        .all()
+    )
+    serializer_class = serializers.CourseSerializer
+
+
+class CourseRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.Course.objects.select_related("teacher").prefetch_related(
+            "students",
+            "lectures",
+            "tasks",
+        ).select_related("teacher")
+    serializer_class = serializers.CourseSerializer
+
+
+class TaskRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.TaskSerializer
+    lookup_field = "id"
+    lookup_url_kwarg = "pktask"
+
+    def get_queryset(self):
+        queryset = (
+            models.Task.objects
+            .prefetch_related(
+                "answers",
+            )
+            .filter(course_id=self.kwargs["pk"])
+        )
+        return queryset
+
+
+class TaskListViewSet(generics.ListAPIView):
+    serializer_class = serializers.TaskSerializer
+
+    def get_queryset(self):
+        return models.Task.objects.filter(
+            course_id=self.kwargs["pk"]).prefetch_related("answers").all()
+
+
+class TaskCreateAPIView(generics.CreateAPIView):
+    serializer_class = serializers.TaskSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(course_id=self.kwargs["pk"])
+
+
+class LectureCreateAPIView(generics.CreateAPIView):
+    serializer_class = serializers.LectureSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(course_id=self.kwargs["pk"])
+
+
+class LectureListViewSet(generics.ListAPIView):
+    serializer_class = serializers.LectureSerializer
+
+    def get_queryset(self):
+        return models.Lecture.objects.filter(
+            course_id=self.kwargs["pk"]).all()
+
+
+class LectureRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.LectureSerializer
+    lookup_field = "id"
+    lookup_url_kwarg = "pklecture"
+
+    def get_queryset(self):
+        queryset = (
+            models.Lecture.objects
+            .filter(course_id=self.kwargs["pk"])
+        )
+        return queryset
 
 
 class UpdateCourseView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
