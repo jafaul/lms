@@ -5,7 +5,7 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db import models
+from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 from tinymce.models import HTMLField
 
@@ -29,7 +29,9 @@ class Course(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+        transaction.on_commit(self.assign_permissions)
 
+    def assign_permissions(self):
         content_type = ContentType.objects.get_for_model(Course)
 
         teacher_perm, created = Permission.objects.get_or_create(
@@ -50,13 +52,10 @@ class Course(models.Model):
 
         self.refresh_from_db()
 
-        if self.students.exists():
-            for student in self.students.all():
-                if not student.has_perm(students_perm):
-                    student.user_permissions.add(students_perm)
-                    print(f"added permission for student {student.email}: {self.teacher.get_all_permissions()}")
-        print("saving ... ")
-        super().save(*args, **kwargs)
+        for student in self.students.all():
+            if not student.has_perm(students_perm):
+                student.user_permissions.add(students_perm)
+                print(f"added permission for student {student.email}: {student.get_all_permissions()}")
 
 
 class Task(models.Model):

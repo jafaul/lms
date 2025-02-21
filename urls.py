@@ -17,8 +17,36 @@ Including another URLconf
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.schemas import get_schema_view
 
 from config.settings import base
+
+api_urls = [
+    path('courses/', include("apps.management.api_urls")),
+    path('courses/<int:pk>/tasks/<int:pktask>/', include("apps.assessment.api_urls")),
+]
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('apps.home.urls', namespace='home')),
+    path('courses/', include('apps.management.urls', namespace='management')),
+    path('accounts/', include('apps.authentication.urls', namespace='authentication')),
+    path('tinymce/', include('tinymce.urls')),
+    path('courses/<int:pk>/tasks/<int:pktask>/', include('apps.assessment.urls', namespace='assessment')),
+    path('', include('social_django.urls', namespace='social')),
+
+    path('api/', include(api_urls)),
+
+] + static(base.MEDIA_URL, document_root=base.MEDIA_ROOT) \
+    + static(base.STATIC_URL, document_root=base.STATIC_ROOT)
+
+
+if base.DEBUG:
+    from debug_toolbar.toolbar import debug_toolbar_urls
+    urlpatterns += debug_toolbar_urls()
+
+
+
 
 # todo https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Django/Sessions
 # todo try to do data migrations (DML) while dividing app for a few new apps
@@ -29,20 +57,3 @@ from config.settings import base
 # todo dive deeper into celery, celery beat, celery beat for task with course data, celery results, caching with redis
 # todo check AJAX, GraphQL, jQuery
 # todo high scalability .com site to research microservices examples
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('apps.home.urls', namespace='home')),
-    path('courses/', include('apps.management.urls', namespace='management')),
-    path('accounts/', include('apps.authentication.urls', namespace='authentication')),
-    path('tinymce/', include('tinymce.urls')),
-    path('courses/<int:pk>/tasks/<int:pktask>/', include('apps.assessment.urls', namespace='assessment')),
-    path('', include('social_django.urls', namespace='social'))
-
-              ] + static(base.MEDIA_URL, document_root=base.MEDIA_ROOT) \
-    + static(base.STATIC_URL, document_root=base.STATIC_ROOT)
-
-if base.DEBUG:
-    from debug_toolbar.toolbar import debug_toolbar_urls
-    urlpatterns += debug_toolbar_urls()
-
