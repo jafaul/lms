@@ -5,9 +5,14 @@ from apps.management.models import Course, Task, Lecture
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    students_amount = serializers.SerializerMethodField()
+
     class Meta:
         model = Course
-        fields = ["id", "title", "description", "start_datetime", "tags", "teacher", "students"]
+        fields = ["id", "title", "description", "start_datetime", "tags", "teacher", "students", "students_amount"]
+
+    def get_students_amount(self, obj):
+        return obj.students.count()
 
 
 class TaskSerializer(serializers.ModelSerializer):
