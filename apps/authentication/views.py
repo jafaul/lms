@@ -10,7 +10,14 @@ from django.urls import reverse_lazy
 from django.utils.encoding import  force_str
 from django.utils.http import urlsafe_base64_decode
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView, UpdateView, ListView
+from rest_framework import permissions
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+
+from datetime import timedelta
 
 from apps.authentication.tokens import account_activation_token
 from apps.authentication.tasks import activate_email, send_reset_password_mail
@@ -207,3 +214,23 @@ class PasswordResetConfirmView(BasePasswordResetConfirmView):
             print(f"Decoding error: {e}")
 
         return context
+
+
+# class LogoutBlackListAPIView(APIView):
+
+#     def post(self, request):
+#         refresh_token = self.request.data.get("refresh")
+#         access_token = self.request.auth
+#
+#         if access_token:
+#             access = AccessToken(access_token)
+#             access.set_exp(lifetime=timedelta(milliseconds=0))
+#
+#         try:
+#             token = RefreshToken(refresh_token)
+#             token.blacklist()
+#             return Response({"message": "Logout is successful."}, status=200)
+#         except Exception as e:
+#             return Response({"error": str(e), "message": "Please ensure refresh token is valid"}, status=400)
+#
+#

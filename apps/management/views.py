@@ -11,13 +11,14 @@ from django.urls import reverse_lazy
 
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, TemplateView
 from django_filters.views import FilterView
-from rest_framework import generics
+from rest_framework import generics, permissions
 
 from apps.assessment.forms import MarkForm
 from apps.management import models, forms, tasks, serializers
 from django.utils.translation import gettext_lazy as _
 
 from apps.management.filters import CourseFilterSet, RatingFilter
+from apps.management import permissions as custom_perms
 
 
 class CourseListView(FilterView):
@@ -296,8 +297,11 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
         return context
 
 
+# RESTAPI views
+
 class CourseCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.CourseSerializer
+    permission_classes = [custom_perms.CourseAccessPermission]
 
 
 class CourseListViewSet(generics.ListAPIView):
@@ -309,6 +313,26 @@ class CourseListViewSet(generics.ListAPIView):
         .all()
     )
     serializer_class = serializers.CourseSerializer
+    permission_classes = [permissions.AllowAny]
+
+    filterset_fields = ['teacher', "start_datetime"]
+
+
+class MyCourseListViewSet(generics.ListAPIView):
+    serializer_class = serializers.CourseSerializer
+
+    def get_queryset(self):
+        return (
+            models.Course.objects
+            .prefetch_related("students")
+            .select_related("teacher")
+            .filter(
+                Q(students=self.request.user) |
+                Q(teacher=self.request.user)
+            )
+            .order_by("start_datetime")
+            .distinct().all()
+        )
 
 
 class CourseRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -318,12 +342,14 @@ class CourseRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
             "tasks",
         ).select_related("teacher")
     serializer_class = serializers.CourseSerializer
+    permission_classes = [custom_perms.CourseAccessPermission]
 
 
 class TaskRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.TaskSerializer
     lookup_field = "id"
     lookup_url_kwarg = "pktask"
+    permission_classes = [custom_perms.CourseAccessPermission]
 
     def get_queryset(self):
         queryset = (
@@ -338,6 +364,7 @@ class TaskRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 class TaskListViewSet(generics.ListAPIView):
     serializer_class = serializers.TaskSerializer
+    permission_classes = [custom_perms.TaskAccessPermission]
 
     def get_queryset(self):
         return models.Task.objects.filter(
@@ -346,6 +373,7 @@ class TaskListViewSet(generics.ListAPIView):
 
 class TaskCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.TaskSerializer
+    permission_classes = [custom_perms.TaskAccessPermission]
 
     def perform_create(self, serializer):
         serializer.save(course_id=self.kwargs["pk"])
@@ -353,6 +381,7 @@ class TaskCreateAPIView(generics.CreateAPIView):
 
 class LectureCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.LectureSerializer
+    permission_classes = [custom_perms.LectureAccessPermission]
 
     def perform_create(self, serializer):
         serializer.save(course_id=self.kwargs["pk"])
@@ -360,6 +389,7 @@ class LectureCreateAPIView(generics.CreateAPIView):
 
 class LectureListViewSet(generics.ListAPIView):
     serializer_class = serializers.LectureSerializer
+    permission_classes = [custom_perms.LectureAccessPermission]
 
     def get_queryset(self):
         return models.Lecture.objects.filter(
@@ -368,6 +398,8 @@ class LectureListViewSet(generics.ListAPIView):
 
 class LectureRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.LectureSerializer
+    permission_classes = [custom_perms.LectureAccessPermission]
+
     lookup_field = "id"
     lookup_url_kwarg = "pklecture"
 

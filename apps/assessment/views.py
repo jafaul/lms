@@ -2,10 +2,11 @@ from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMix
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView
-from rest_framework import generics
+from rest_framework import generics, permissions
 
 from apps.assessment import models, forms, tasks, serializers
 from apps.management.models import Task
+from apps.assessment import permissions as custom_perms
 
 
 class BaseCreateView(CreateView):
@@ -93,6 +94,7 @@ class MarkCreateView(PermissionRequiredMixin, LoginRequiredMixin, BaseCreateView
 
 class AnswerCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.AnswerSerializer
+    permission_classes = [custom_perms.AnswerAccessPermission]
 
     def perform_create(self, serializer):
         answer = serializer.save(
@@ -104,6 +106,7 @@ class AnswerCreateAPIView(generics.CreateAPIView):
 
 class MarkCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.MarkSerializer
+    permission_classes = [custom_perms.MarkAccessPermission]
 
     def perform_create(self, serializer):
         mark = serializer.save(teacher=self.request.user)
