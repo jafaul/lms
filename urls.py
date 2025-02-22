@@ -26,9 +26,7 @@ api_urls = [
     path('courses/', include("apps.management.api_urls")),
     path('courses/<int:pk>/tasks/<int:pktask>/', include("apps.assessment.api_urls")),
 
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-
+    path('accounts/', include("apps.authentication.api_urls")),
 ]
 
 urlpatterns = [

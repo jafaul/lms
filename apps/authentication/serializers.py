@@ -12,14 +12,14 @@ class UserSerializer(serializers.ModelSerializer):
 
     fullname = serializers.CharField(source="get_full_name")
 
-# use black list token to log out
+
 class JWTTokenSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
 
         token['email'] = user.email
-        token['date_joined'] = user.date_joined
+        token['date_joined'] = user.date_joined.isoformat()
 
         return token
 

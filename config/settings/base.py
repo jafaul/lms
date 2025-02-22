@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 
 import boto3
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
     'django_celery_results',
     "django_celery_beat",
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
 
     "apps.home",
     "apps.authentication",
@@ -235,9 +237,18 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
-    "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework_simplejwt.authentication.JWTAuthentication"],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        # "rest_framework.authentication.SessionAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication"
+    ],
 }
 
 SIMPLE_JWT = {
     "TOKEN_OBTAIN_SERIALIZER": "apps.authentication.serializers.JWTTokenSerializer",
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=2),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    #
+    # "ROTATE_REFRESH_TOKENS": True,
+    # "BLACKLIST_AFTER_ROTATION": True,
+    # "AUTH_HEADER_TYPES": ("Bearer",),
 }

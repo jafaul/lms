@@ -311,7 +311,7 @@ class CourseListViewSet(generics.ListAPIView):
         .all()
     )
     serializer_class = serializers.CourseSerializer
-    permission_classes = permissions.AllowAny
+    permission_classes = [permissions.AllowAny]
 
 
 class MyCourseListViewSet(generics.ListAPIView):
