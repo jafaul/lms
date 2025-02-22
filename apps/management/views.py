@@ -313,6 +313,8 @@ class CourseListViewSet(generics.ListAPIView):
     serializer_class = serializers.CourseSerializer
     permission_classes = [permissions.AllowAny]
 
+    filterset_fields = ['teacher', "start_datetime"]
+
 
 class MyCourseListViewSet(generics.ListAPIView):
     serializer_class = serializers.CourseSerializer

@@ -217,7 +217,7 @@ class PasswordResetConfirmView(BasePasswordResetConfirmView):
 
 
 # class LogoutBlackListAPIView(APIView):
-#     permission_classes = (permissions.IsAuthenticated,)
+
 #     def post(self, request):
 #         refresh_token = self.request.data.get("refresh")
 #         access_token = self.request.auth
