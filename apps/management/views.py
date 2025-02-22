@@ -18,6 +18,7 @@ from apps.management import models, forms, tasks, serializers
 from django.utils.translation import gettext_lazy as _
 
 from apps.management.filters import CourseFilterSet, RatingFilter
+from apps.management import permissions as custom_perms
 
 
 class CourseListView(FilterView):
@@ -300,6 +301,7 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
 
 class CourseCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.CourseSerializer
+    permission_classes = [custom_perms.CourseAccessPermission]
 
 
 class CourseListViewSet(generics.ListAPIView):
@@ -340,12 +342,14 @@ class CourseRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
             "tasks",
         ).select_related("teacher")
     serializer_class = serializers.CourseSerializer
+    permission_classes = [custom_perms.CourseAccessPermission]
 
 
 class TaskRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.TaskSerializer
     lookup_field = "id"
     lookup_url_kwarg = "pktask"
+    permission_classes = [custom_perms.CourseAccessPermission]
 
     def get_queryset(self):
         queryset = (
@@ -360,6 +364,7 @@ class TaskRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 class TaskListViewSet(generics.ListAPIView):
     serializer_class = serializers.TaskSerializer
+    permission_classes = [custom_perms.TaskAccessPermission]
 
     def get_queryset(self):
         return models.Task.objects.filter(
@@ -368,6 +373,7 @@ class TaskListViewSet(generics.ListAPIView):
 
 class TaskCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.TaskSerializer
+    permission_classes = [custom_perms.TaskAccessPermission]
 
     def perform_create(self, serializer):
         serializer.save(course_id=self.kwargs["pk"])
@@ -375,6 +381,7 @@ class TaskCreateAPIView(generics.CreateAPIView):
 
 class LectureCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.LectureSerializer
+    permission_classes = [custom_perms.LectureAccessPermission]
 
     def perform_create(self, serializer):
         serializer.save(course_id=self.kwargs["pk"])
@@ -382,6 +389,7 @@ class LectureCreateAPIView(generics.CreateAPIView):
 
 class LectureListViewSet(generics.ListAPIView):
     serializer_class = serializers.LectureSerializer
+    permission_classes = [custom_perms.LectureAccessPermission]
 
     def get_queryset(self):
         return models.Lecture.objects.filter(
@@ -390,6 +398,8 @@ class LectureListViewSet(generics.ListAPIView):
 
 class LectureRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.LectureSerializer
+    permission_classes = [custom_perms.LectureAccessPermission]
+
     lookup_field = "id"
     lookup_url_kwarg = "pklecture"
 

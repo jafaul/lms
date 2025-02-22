@@ -20,6 +20,7 @@ from django.urls import path, include
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from config.settings import base
 
@@ -32,9 +33,17 @@ schema_view = get_schema_view(
         contact=openapi.Contact(email="contact@lms.com"),
     ),
     public=True,
-    permission_classes=(permissions.AllowAny,),
+    permission_classes=[permissions.AllowAny,],
+    authentication_classes=[JWTAuthentication]
 )
 
+# swagger_schema = schema_view.with_ui("swagger", cache_timeout=0)
+#
+# swagger_schema.security = [
+#     {
+#         "Bearer": []
+#     }
+# ]
 
 api_urls = [
     path('courses/', include("apps.management.api_urls")),
