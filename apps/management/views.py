@@ -126,89 +126,6 @@ class CourseCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
         return super().form_invalid(form)
 
 
-class CourseCreateAPIView(generics.CreateAPIView):
-    serializer_class = serializers.CourseSerializer
-
-
-class CourseListViewSet(generics.ListAPIView):
-    queryset = (
-        models.Course.objects
-        .prefetch_related("students")
-        .select_related("teacher")
-        .order_by("start_datetime")
-        .all()
-    )
-    serializer_class = serializers.CourseSerializer
-
-
-class CourseRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.Course.objects.select_related("teacher").prefetch_related(
-            "students",
-            "lectures",
-            "tasks",
-        ).select_related("teacher")
-    serializer_class = serializers.CourseSerializer
-
-
-class TaskRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = serializers.TaskSerializer
-    lookup_field = "id"
-    lookup_url_kwarg = "pktask"
-
-    def get_queryset(self):
-        queryset = (
-            models.Task.objects
-            .prefetch_related(
-                "answers",
-            )
-            .filter(course_id=self.kwargs["pk"])
-        )
-        return queryset
-
-
-class TaskListViewSet(generics.ListAPIView):
-    serializer_class = serializers.TaskSerializer
-
-    def get_queryset(self):
-        return models.Task.objects.filter(
-            course_id=self.kwargs["pk"]).prefetch_related("answers").all()
-
-
-class TaskCreateAPIView(generics.CreateAPIView):
-    serializer_class = serializers.TaskSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(course_id=self.kwargs["pk"])
-
-
-class LectureCreateAPIView(generics.CreateAPIView):
-    serializer_class = serializers.LectureSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(course_id=self.kwargs["pk"])
-
-
-class LectureListViewSet(generics.ListAPIView):
-    serializer_class = serializers.LectureSerializer
-
-    def get_queryset(self):
-        return models.Lecture.objects.filter(
-            course_id=self.kwargs["pk"]).all()
-
-
-class LectureRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = serializers.LectureSerializer
-    lookup_field = "id"
-    lookup_url_kwarg = "pklecture"
-
-    def get_queryset(self):
-        queryset = (
-            models.Lecture.objects
-            .filter(course_id=self.kwargs["pk"])
-        )
-        return queryset
-
-
 class UpdateCourseView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     model = models.Course
     form_class = forms.CourseUpdateForm
@@ -377,6 +294,91 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
         context["filter"] = filterset
 
         return context
+
+
+class CourseCreateAPIView(generics.CreateAPIView):
+    serializer_class = serializers.CourseSerializer
+
+
+class CourseListViewSet(generics.ListAPIView):
+    queryset = (
+        models.Course.objects
+        .prefetch_related("students")
+        .select_related("teacher")
+        .order_by("start_datetime")
+        .all()
+    )
+    serializer_class = serializers.CourseSerializer
+
+
+class CourseRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.Course.objects.select_related("teacher").prefetch_related(
+            "students",
+            "lectures",
+            "tasks",
+        ).select_related("teacher")
+    serializer_class = serializers.CourseSerializer
+
+
+class TaskRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.TaskSerializer
+    lookup_field = "id"
+    lookup_url_kwarg = "pktask"
+
+    def get_queryset(self):
+        queryset = (
+            models.Task.objects
+            .prefetch_related(
+                "answers",
+            )
+            .filter(course_id=self.kwargs["pk"])
+        )
+        return queryset
+
+
+class TaskListViewSet(generics.ListAPIView):
+    serializer_class = serializers.TaskSerializer
+
+    def get_queryset(self):
+        return models.Task.objects.filter(
+            course_id=self.kwargs["pk"]).prefetch_related("answers").all()
+
+
+class TaskCreateAPIView(generics.CreateAPIView):
+    serializer_class = serializers.TaskSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(course_id=self.kwargs["pk"])
+
+
+class LectureCreateAPIView(generics.CreateAPIView):
+    serializer_class = serializers.LectureSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(course_id=self.kwargs["pk"])
+
+
+class LectureListViewSet(generics.ListAPIView):
+    serializer_class = serializers.LectureSerializer
+
+    def get_queryset(self):
+        return models.Lecture.objects.filter(
+            course_id=self.kwargs["pk"]).all()
+
+
+class LectureRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.LectureSerializer
+    lookup_field = "id"
+    lookup_url_kwarg = "pklecture"
+
+    def get_queryset(self):
+        queryset = (
+            models.Lecture.objects
+            .filter(course_id=self.kwargs["pk"])
+        )
+        return queryset
+
+
 
 
 #todo add pagination in users, course detail, courses, add login with social networks, move permissions into signals
