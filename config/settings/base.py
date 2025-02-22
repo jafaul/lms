@@ -231,3 +231,13 @@ REGRES_TEST_API_URL = 'https://reqres.in/api/'
 REDIS_ADDR = os.getenv("REDIS_ADDR", "127.0.0.1:6379")
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework_simplejwt.authentication.JWTAuthentication"],
+}
+
+SIMPLE_JWT = {
+    "TOKEN_OBTAIN_SERIALIZER": "apps.authentication.serializers.JWTTokenSerializer",
+}

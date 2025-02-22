@@ -18,12 +18,17 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.schemas import get_schema_view
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from config.settings import base
 
 api_urls = [
     path('courses/', include("apps.management.api_urls")),
     path('courses/<int:pk>/tasks/<int:pktask>/', include("apps.assessment.api_urls")),
+
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
 ]
 
 urlpatterns = [

@@ -8,6 +8,7 @@ from apps.management import views
 
 urlpatterns = [
     path("", views.CourseListViewSet.as_view(), name="course-list"),
+    path("my/", views.MyCourseListViewSet.as_view(), name="my-course-list"),
     path("add/", views.CourseCreateAPIView.as_view(), name="course-create"),
     path("<int:pk>/", views.CourseRetrieveUpdateDestroyAPIView.as_view(), name="course-details"),
 

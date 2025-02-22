@@ -25,6 +25,7 @@ django-messages = "^0.6.0"
 requests = "^2.32.3"
 django-celery-results = "^2.5.1"
 djangorestframework = "^3.15.2"
+djangorestframework-simplejwt = "^5.4.0"
 
 [tool.poetry.group.dev.dependencies]
 django-debug-toolbar = "^5.0.1"

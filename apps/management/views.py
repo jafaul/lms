@@ -11,7 +11,7 @@ from django.urls import reverse_lazy
 
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, TemplateView
 from django_filters.views import FilterView
-from rest_framework import generics
+from rest_framework import generics, permissions
 
 from apps.assessment.forms import MarkForm
 from apps.management import models, forms, tasks, serializers
@@ -296,6 +296,8 @@ class RatingView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
         return context
 
 
+# RESTAPI views
+
 class CourseCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.CourseSerializer
 
@@ -309,6 +311,24 @@ class CourseListViewSet(generics.ListAPIView):
         .all()
     )
     serializer_class = serializers.CourseSerializer
+    permission_classes = permissions.AllowAny
+
+
+class MyCourseListViewSet(generics.ListAPIView):
+    serializer_class = serializers.CourseSerializer
+
+    def get_queryset(self):
+        return (
+            models.Course.objects
+            .prefetch_related("students")
+            .select_related("teacher")
+            .filter(
+                Q(students=self.request.user) |
+                Q(teacher=self.request.user)
+            )
+            .order_by("start_datetime")
+            .distinct().all()
+        )
 
 
 class CourseRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
