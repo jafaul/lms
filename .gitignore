@@ -302,3 +302,5 @@ dz1_run.py
 
 static
 poetry.lock
+
+node_modules

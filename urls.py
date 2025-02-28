@@ -37,13 +37,6 @@ schema_view = get_schema_view(
     authentication_classes=[JWTAuthentication]
 )
 
-# swagger_schema = schema_view.with_ui("swagger", cache_timeout=0)
-#
-# swagger_schema.security = [
-#     {
-#         "Bearer": []
-#     }
-# ]
 
 api_urls = [
     path('courses/', include("apps.management.api_urls")),
@@ -89,3 +82,5 @@ if base.DEBUG:
 # todo dive deeper into celery, celery beat, celery beat for task with course data, celery results, caching with redis
 # todo check AJAX, GraphQL, jQuery
 # todo high scalability .com site to research microservices examples
+# todo react js/flux for stupid people
+
