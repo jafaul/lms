@@ -304,3 +304,4 @@ static
 poetry.lock
 
 client/*/node_modules
+node_modules
