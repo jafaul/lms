@@ -10,8 +10,9 @@ jobs:
       - image: cimg/python:3.12-node
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: poetry
+      - run:
+          name: Install dependencies (without installing root package)
+          command: poetry install --no-root
       - run:
           name: Run tests
           command: poetry run python manage.py test
