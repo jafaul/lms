@@ -17,6 +17,9 @@ jobs:
       - checkout
       - run: sleep 10
       - run:
+          name: Set Postgres User Dynamically
+          command: echo "export POSTGRES_USER=$DB_USERNAME" >> $BASH_ENV
+      - run:
           name: Print Database Username
           command: |
             echo "Database Username: $POSTGRES_USER"
