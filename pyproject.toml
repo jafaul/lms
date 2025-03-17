@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "LMS"
+name = "lms"
 version = "0.1.0"
 description = ""
 authors = ["Anastasiia Olifir <a.o.olifir@gmail.com>"]
