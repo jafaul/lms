@@ -1,8 +1,10 @@
 # This config was automatically generated from your source code
 # Stacks detected: deps:python:.,file:manage.py:.,package_manager:poetry:.
+
 version: 2.1
 orbs:
   python: circleci/python@2
+
 jobs:
   test-python:
     # Install dependencies and run tests
@@ -11,11 +13,11 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Print environment variables (safe ones)
-        command: |
-          echo "DEBUG=${DEBUG}"
-          echo "DJANGO_PROJECT_PORT=${DJANGO_PROJECT_PORT}"
-          echo "DB_HOST=${DB_HOST}"
+          name: Print environment variables (safe ones)
+          command: |
+            echo "DEBUG=${DEBUG}"
+            echo "DJANGO_PROJECT_PORT=${DJANGO_PROJECT_PORT}"
+            echo "DB_HOST=${DB_HOST}"
       - run:
           name: Install dependencies (without installing root package)
           command: poetry install --no-root
