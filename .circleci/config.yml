@@ -19,9 +19,10 @@ jobs:
       - run:
           name: Set Postgres User Dynamically
           command: |
-            PGPASSWORD=example psql -h postgres -U postgres -d testdb -c "CREATE USER $DB_USERNAME WITH PASSWORD 'example' SUPERUSER;" || echo "User already exists"
+            PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -U $POSTGRES_USER -d $POSTGRES_DB -c "CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD' SUPERUSER;" || echo "User already exists"
 
             echo "export POSTGRES_USER=$DB_USERNAME" >> $BASH_ENV
+            echo "export POSTGRES_PASSWORD=$DB_PASSWORD" >> $BASH_ENV
             source $BASH_ENV
 
       #      todo    add new user $DB_USERNAME into psql
