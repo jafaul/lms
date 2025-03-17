@@ -9,7 +9,6 @@ jobs:
       - image: postgres:16
         name: postgres
         environment:
-          POSTGRES_USER: user
           POSTGRES_PASSWORD: example
           POSTGRES_DB: testdb
           POSTGRES_HOST_AUTH_METHOD: trust
@@ -19,7 +18,7 @@ jobs:
       - run:
           name: Set Postgres User Dynamically
           command: |
-            PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -U $POSTGRES_USER -d $POSTGRES_DB -c "CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD' SUPERUSER;" || echo "User already exists"
+            PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -U postgres -d $POSTGRES_DB -c "CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD' SUPERUSER;" || echo "User already exists"
 
             echo "export POSTGRES_USER=$DB_USERNAME" >> $BASH_ENV
             echo "export POSTGRES_PASSWORD=$DB_PASSWORD" >> $BASH_ENV
