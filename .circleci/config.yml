@@ -19,8 +19,6 @@ jobs:
             DB_HOST: db-postgres
             DB_PORT: 5432
           command: |
-            circleci env subst < template.json > deploy.json
-            cat deploy.json
             echo "DJANGO_DEBUG=${DJANGO_DEBUG}"
             echo "DB_HOST=${DB_HOST}"
             echo "DB_PORT=${DB_PORT}"
