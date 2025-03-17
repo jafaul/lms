@@ -13,7 +13,8 @@ MIDDLEWARE += [
 AUTH_PASSWORD_VALIDATORS = []
 
 DEBUG_TOOLBAR_CONFIG = {
-    "SHOW_TOOLBAR_CALLBACK": lambda x: True
+    "SHOW_TOOLBAR_CALLBACK": lambda x: True,
+    'IS_RUNNING_TESTS': False
 }
 
 # EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
