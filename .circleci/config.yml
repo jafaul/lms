@@ -32,7 +32,7 @@ jobs:
                 RAISE NOTICE 'Creating new user: %', '$DB_USERNAME';
                 CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD' SUPERUSER;
               END IF
-            END \$\$
+            END \$\$;
             
             "
             echo "Updating POSTGRES_PASSWORD and POSTGRES_USER accordingly to environmnet variables..
