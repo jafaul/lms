@@ -11,6 +11,12 @@ jobs:
     steps:
       - checkout
       - run:
+        name: Print environment variables (safe ones)
+        command: |
+          echo "DEBUG=${DEBUG}"
+          echo "DJANGO_PROJECT_PORT=${DJANGO_PROJECT_PORT}"
+          echo "DB_HOST=${DB_HOST}"
+      - run:
           name: Install dependencies (without installing root package)
           command: poetry install --no-root
       - run:
@@ -34,32 +40,3 @@ workflows:
       - deploy:
           requires:
             - test-python
-
-environment:
-  DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-  DEBUG: ${DEBUG}
-  DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE}
-
-  DJANGO_PROJECT_PORT: ${DJANGO_PROJECT_PORT}
-  DB_PORT: ${DB_PORT}
-  DB_USERNAME: ${DB_USERNAME}
-  DB_PASSWORD: ${DB_PASSWORD}
-  DB_NAME: ${DB_NAME}
-  DB_HOST: ${DB_HOST}
-
-  AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-  AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-  AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
-  AWS_S3_SIGNATURE_NAME: ${AWS_S3_SIGNATURE_NAME}
-  AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
-
-  EMAIL_HOST: ${EMAIL_HOST}
-  EMAIL_PORT: ${EMAIL_PORT}
-  EMAIL_HOST_USER: ${EMAIL_HOST_USER}
-  EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
-  EMAIL_USE_TLS: ${EMAIL_USE_TLS}
-
-  SOCIAL_AUTH_GOOGLE_OAUTH2_KEY: ${SOCIAL_AUTH_GOOGLE_OAUTH2_KEY}
-  SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET: ${SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET}
-
-  REDIS_ADDR: ${REDIS_ADDR}
