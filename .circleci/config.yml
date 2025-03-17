@@ -13,11 +13,11 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Set virtual environment variables
-        environment:
-          DJANGO_DEBUG: "True"
-          DB_HOST: 'db-postgres'
-          DB_PORT: 5432
+          name: Set virtual environment variables
+          environment:
+            DJANGO_DEBUG: "True"
+            DB_HOST: 'db-postgres'
+            DB_PORT: 5432
       - run:
           name: Install dependencies (without installing root package)
           command: poetry install --no-root
