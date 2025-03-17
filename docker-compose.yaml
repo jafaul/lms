@@ -1,0 +1,73 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+        POSTGRES_USER: ${DB_USERNAME}
+        POSTGRES_PASSWORD: ${DB_PASSWORD}
+        POSTGRES_HOST: ${DB_HOST}
+        POSTGRES_DB: ${DB_NAME}
+    env_file:
+      - .env
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.4.2
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 5s
+    restart: unless-stopped
+
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes_from:
+      - django-web
+    command: /bin/bash -c "cd /src; celery -A apps.celery_app worker -E"
+    restart: unless-stopped
+
+
+  celerybeat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes_from:
+      - django-web
+    command: /bin/bash -c "cd /src; celery -A apps.celery_app beat -l INFO  --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    restart: unless-stopped
+
+  django-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DEBUG=${DEBUG}
+    volumes:
+      - .:/src
+      - static:/static
+    env_file:
+     - .env
+    command: "/bin/bash -c './manage.py migrate; invoke run'"
+    depends_on:
+      - postgres
+    ports:
+      - "${DJANGO_PROJECT_PORT}:${DJANGO_PROJECT_PORT}"
+    restart: unless-stopped
+
+
+volumes:
+  pgdata:
+  static:

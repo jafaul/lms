@@ -10,6 +10,15 @@ ENV POETRY_VIRTUALENVS_CREATE=false
 
 WORKDIR src/
 
+RUN apt update && apt install -y \
+    gcc \
+    build-essential \
+    python3-dev \
+    libpcre3-dev \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+
 COPY pyproject.toml .
 COPY poetry.lock .
 
