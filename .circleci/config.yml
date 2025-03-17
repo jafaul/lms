@@ -14,11 +14,13 @@ jobs:
       - checkout
       - run:
           name: Set virtual environment variables
+          envirnment:
+            DJANGO_DEBUG: True
+            DB_HOST: db-postgres
+            DB_PORT: 5432
           command: |
-            echo 'export DJANGO_DEBUG="True"' >> "$BASH_ENV"
-            echo 'export DB_HOST="db-postgres"' >> "$BASH_ENV"
-            echo 'export DB_PORT="5432"' >> "$BASH_ENV"
-            
+            circleci env subst < template.json > deploy.json
+            cat deploy.json
             echo "DJANGO_DEBUG=${DJANGO_DEBUG}"
             echo "DB_HOST=${DB_HOST}"
             echo "DB_PORT=${DB_PORT}"
