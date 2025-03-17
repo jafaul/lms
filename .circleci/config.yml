@@ -7,7 +7,7 @@ jobs:
     docker:
       - image: cimg/python:3.12-node
       - image: postgres:16
-        name: ${DB_HOST}
+        name: "${DB_HOST}"
         environment:
           POSTGRES_USER: testuser
           POSTGRES_PASSWORD: example
