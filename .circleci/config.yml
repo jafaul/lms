@@ -7,7 +7,6 @@ jobs:
     docker:
       - image: cimg/python:3.12-node
       - image: postgres:16
-        name: "${DB_HOST}"
         environment:
           POSTGRES_USER: testuser
           POSTGRES_PASSWORD: example
@@ -19,7 +18,7 @@ jobs:
       - run:
           name: Check Database Connection
           command: |
-            PGPASSWORD=example psql -h $DB_HOST -U testuser -d testdb -c "SELECT 1;"
+            PGPASSWORD=example psql -h postgres -U testuser -d testdb -c "SELECT 1;"
       - python/install-packages:
           pkg-manager: poetry
 
