@@ -10,7 +10,7 @@ jobs:
         name: postgres
         environment:
           POSTGRES_PASSWORD: pswd
-          POSTGRES_DB: tech_school
+          POSTGRES_DB: lms
           POSTGRES_HOST_AUTH_METHOD: trust
     steps:
       - checkout
@@ -19,9 +19,9 @@ jobs:
           name: Set Postgres User Dynamically
           command: |
             echo "DBNAME: $POSTGRES_DB"
-            PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -U postgres -d $POSTGRES_DB -c "ALTER USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD';"
+            PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -U postgres -d lms -c "ALTER USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD';"
 
-            PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -U postgres -d $POSTGRES_DB -c "CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD' SUPERUSER;" || echo "User already exists"
+            PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -U postgres -d lms -c "CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD' SUPERUSER;" || echo "User already exists"
             
             echo "export POSTGRES_PASSWORD=$DB_PASSWORD" >> $BASH_ENV
             echo "export POSTGRES_USER=$DB_USERNAME" >> $BASH_ENV
