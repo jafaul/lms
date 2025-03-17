@@ -14,10 +14,14 @@ jobs:
       - checkout
       - run:
           name: Set virtual environment variables
-          environment:
-            DJANGO_DEBUG: "True"
-            DB_HOST: 'db-postgres'
-            DB_PORT: '5432'
+          command: |
+            echo 'export DJANGO_DEBUG="True"' >> "$BASH_ENV"
+            echo 'export DB_HOST="db-postgres"' >> "$BASH_ENV"
+            echo 'export DB_PORT="5432"' >> "$BASH_ENV"
+            
+            echo "DJANGO_DEBUG=${DJANGO_DEBUG}"
+            echo "DB_HOST=${DB_HOST}"
+            echo "DB_PORT=${DB_PORT}"
       - run:
           name: Install dependencies (without installing root package)
           command: poetry install --no-root
