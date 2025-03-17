@@ -6,14 +6,15 @@ jobs:
   test-python:
     # Install dependencies and run tests
     docker:
-      - image: circleci/python:3.8
+      - image: docker:17.05.0-ce-git
     steps:
       - checkout
       - setup_remote_docker
       - run:
-          name: Install Docker Compose
+          name: Install dependencies
           command: |
-            pip install docker-compose
+            apk add --no-cache py-pip=9.0.0-r1
+            pip install docker-compose==1.15.0
       - run:
           name: Set virtual environment variables
           environment:
@@ -27,7 +28,7 @@ jobs:
       - run:
           name: Build and Run Docker Containers
           command: |
-            docker-compose up -d --build
+            docker-compose up -d
       - run:
           name: Run Tests Inside Docker
           command: |
