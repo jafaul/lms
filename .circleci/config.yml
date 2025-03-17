@@ -14,7 +14,7 @@ jobs:
       - checkout
       - run:
           name: Set virtual environment variables
-          envirnment:
+          environment:
             DJANGO_DEBUG: True
             DB_HOST: db-postgres
             DB_PORT: 5432
@@ -23,11 +23,13 @@ jobs:
             echo "DB_HOST=${DB_HOST}"
             echo "DB_PORT=${DB_PORT}"
       - run:
-          name: Install dependencies (without installing root package)
-          command: poetry install --no-root
+          name: Build and Run Docker Containers
+          command: |
+            docker-compose up -d --build
       - run:
-          name: Run tests
-          command: poetry run python manage.py test
+          name: Run Tests Inside Docker
+          command: |
+            docker-compose exec -T django-web python manage.py test
 
  # deploy:
   #  # This is an example deploy job, not actually used by the workflow
