@@ -10,7 +10,7 @@ jobs:
         name: db-postgres
         environment:
           POSTGRES_USER: testuser
-          POSTGRES_PASSWORD: testpassword
+          POSTGRES_PASSWORD: example
           POSTGRES_DB: testdb
           POSTGRES_HOST_AUTH_METHOD: trust
     steps:
@@ -19,7 +19,7 @@ jobs:
       - run:
           name: Check Database Connection
           command: |
-            PGPASSWORD=testpassword psql -h db-postgres -U testuser -d testdb -c "SELECT 1;"
+            PGPASSWORD=example psql -h db-postgres -U testuser -d testdb -c "SELECT 1;"
       - python/install-packages:
           pkg-manager: poetry
       - run: sleep 10
