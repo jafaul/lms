@@ -18,6 +18,7 @@ jobs:
       - run:
           name: Set Postgres User Dynamically
           command: |
+            echo "DBNAME: $POSTGRES_DB"
             PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -U postgres -d $POSTGRES_DB -c "ALTER USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD';"
 
             PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -U postgres -d $POSTGRES_DB -c "CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD' SUPERUSER;" || echo "User already exists"
