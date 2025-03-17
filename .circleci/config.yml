@@ -16,6 +16,9 @@ jobs:
       - checkout
       - run: sleep 10
       - run:
+          name: Print Hostname of Current Container
+          command: hostname -f
+      - run:
           name: Check Database Connection
           command: |
             PGPASSWORD=example psql -h postgres -U testuser -d testdb -c "SELECT 1;"
