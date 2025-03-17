@@ -1,7 +1,6 @@
 version: 2.1
 orbs:
   python: circleci/python@2
-# todo it more secure
 
 jobs:
   test-python:
@@ -16,10 +15,10 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Set Postgres password, username accordingly to Environmment variables
+          name: Set Postgres password, username accordingly to Environment variables
           command: |
             PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -U postgres -d lms -c "CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD' SUPERUSER;" || echo "User already exists"
-            echo "Updating POSTGRES_PASSWORD and POSTGRES_USER accordingly to environmnet variables.."
+            echo "Updating POSTGRES_PASSWORD and POSTGRES_USER accordingly to environment variables.."
             echo "export POSTGRES_PASSWORD=$DB_PASSWORD" >> $BASH_ENV
             echo "export POSTGRES_USER=$DB_USERNAME" >> $BASH_ENV
             echo "export POSTGRES_PASSWORD=$DB_PASSWORD" >> $BASH_ENV
