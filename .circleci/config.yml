@@ -14,7 +14,6 @@ jobs:
           POSTGRES_HOST_AUTH_METHOD: trust
     steps:
       - checkout
-#      - run: sleep 10
       - run:
           name: Set Postgres User Dynamically
           command: |
@@ -35,7 +34,7 @@ jobs:
       - run:
           name: Check Database Connection
           command: |
-            PGPASSWORD=example psql -h postgres -U $DB_USERNAME -d testdb -c "SELECT 1;"
+            PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -U $DB_USERNAME -d lms -c "SELECT 1;"
       - python/install-packages:
           pkg-manager: poetry
 
