@@ -19,7 +19,7 @@ jobs:
       - run:
           name: Check Database Connection
           command: |
-            PGPASSWORD=example psql -h db-postgres -U testuser -d testdb -c "SELECT 1;"
+            PGPASSWORD=$POSTGRES_PASSWORD psql -h $DB_HOST -U $POSTGRES_USER -d $POSTGRES_DB -c "SELECT 1;"
       - python/install-packages:
           pkg-manager: poetry
 
