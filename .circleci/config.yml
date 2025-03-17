@@ -18,7 +18,7 @@ jobs:
           name: Set Postgres password, username accordingly to Environmment variables
           command: |
             PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -U postgres -d lms -c "CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD' SUPERUSER;" || echo "User already exists"
-            echo "Updating POSTGRES_PASSWORD and POSTGRES_USER accordingly to environmnet variables..
+            echo "Updating POSTGRES_PASSWORD and POSTGRES_USER accordingly to environmnet variables.."
             echo "export POSTGRES_PASSWORD=$DB_PASSWORD" >> $BASH_ENV
             echo "export POSTGRES_USER=$DB_USERNAME" >> $BASH_ENV
             echo "export POSTGRES_PASSWORD=$DB_PASSWORD" >> $BASH_ENV
