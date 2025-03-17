@@ -6,10 +6,12 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', 'testdb'),
         'USER': os.getenv('DB_USERNAME', 'testuser'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'example'),
-        'HOST': os.getenv('DB_HOST', '0.0.0.0'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
+print("DOCKER")
+print(DATABASES)
 
 # print(DATABASES)
 
