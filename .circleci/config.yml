@@ -22,7 +22,7 @@ jobs:
             PGPASSWORD=example psql -h db-postgres -U testuser -d testdb -c "SELECT 1;"
       - python/install-packages:
           pkg-manager: poetry
-      - run: sleep 10
+
       - run:
           name: Run tests
           command: poetry run python manage.py test
