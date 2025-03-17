@@ -9,7 +9,7 @@ jobs:
       - image: postgres:16
         name: postgres
         environment:
-          POSTGRES_USER: $DB_USERNAME
+          POSTGRES_USER: ${DB_USERNAME}
           POSTGRES_PASSWORD: example
           POSTGRES_DB: testdb
           POSTGRES_HOST_AUTH_METHOD: trust
@@ -17,8 +17,9 @@ jobs:
       - checkout
       - run: sleep 10
       - run:
-          name: Print Hostname of Current Container
-          command: hostname -f
+          name: Print Database Username
+          command: |
+            echo "Database Username: $POSTGRES_USER"
       - run:
           name: Check Database Connection
           command: |
