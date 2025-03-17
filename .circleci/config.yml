@@ -33,19 +33,12 @@ jobs:
                 CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD' SUPERUSER;
               END IF
             END \$\$
-
+            
             "
-#            PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -U postgres -d lms -c "ALTER USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD';"
-#
-#            PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -U postgres -d lms -c "CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD' SUPERUSER;" || echo "User already exists"
-#
-            echo "Updating POSTGRES_PASSWORD and POSTGRES_USER accordingly to environmnet variables.."
-  
-            cat <<EOF >> $BASH_ENV
-            export POSTGRES_PASSWORD=$DB_PASSWORD
-            export POSTGRES_USER=$DB_USERNAME
-            EOF
-  
+            echo "Updating POSTGRES_PASSWORD and POSTGRES_USER accordingly to environmnet variables..
+            echo "export POSTGRES_PASSWORD=$DB_PASSWORD" >> $BASH_ENV
+            echo "export POSTGRES_USER=$DB_USERNAME" >> $BASH_ENV
+            echo "export POSTGRES_PASSWORD=$DB_PASSWORD" >> $BASH_ENV
             source $BASH_ENV
 
       - run:
