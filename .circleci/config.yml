@@ -13,12 +13,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Print environment variables (safe ones)
-          command: |
-            echo "DEBUG=${DEBUG}"
-            echo "DJANGO_PROJECT_PORT=${DJANGO_PROJECT_PORT}"
-            echo "DB_HOST=${DB_HOST}"
-      - run:
           name: Install dependencies (without installing root package)
           command: poetry install --no-root
       - run:
@@ -39,6 +33,6 @@ workflows:
   build-and-test:
     jobs:
       - test-python
-      - deploy:
-          requires:
-            - test-python
+#      - deploy:
+ #         requires:
+  #          - test-python
