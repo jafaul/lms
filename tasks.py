@@ -5,9 +5,9 @@ from invoke import task
 @task
 def run(ctx):
     print('Migrating db')
-    ctx.run('./manage.py migrate')
+    ctx.run('python manage.py migrate')
     print('Collect static')
-    ctx.run('./manage.py collectstatic --noinput')
+    ctx.run('python manage.py collectstatic --noinput')
 
     # comment for hetzner
     # print('Run WSGI server with gunicorn')

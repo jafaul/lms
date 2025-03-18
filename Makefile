@@ -23,5 +23,4 @@ init-docker:
 	docker compose version
 
 run:
-	chmod a+x manage.py
 	docker compose -f docker-prod.yml up -d
