@@ -15,8 +15,10 @@ init-prod:
 	sudo apt install docker-compose -y
 	sudo systemctl status docker
 	sudo systemctl enable --now docker
+	sudo systemctl start docker
 	sudo usermod -aG docker $USER
 	newgrp docker
+	docker context use default
 	docker --version
 	docker compose version
 
