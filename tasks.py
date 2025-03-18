@@ -29,9 +29,9 @@ def run(ctx):
     # if os.getenv('BASICAUTH'):
     #     command += ' --route "^/--basicauth:BA,{0}"'.format(os.getenv('BASICAUTH'))
 
-    if os.getenv('ENV', "dev") == 'dev':
-        command += ' --honour-stdin'
-    else:
-        command += ' --harakiri 30'
+    # if os.getenv('ENV', "dev") == 'dev':
+    #     command += ' --honour-stdin'
+    # else:
+    #     command += ' --harakiri 30'
 
     ctx.run(command)
