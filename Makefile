@@ -23,4 +23,4 @@ init-prod:
 	docker compose version
 
 run:
-	docker compose -f docker-prod.yml up
+	docker compose -f docker-prod.yml up -d
