@@ -36,10 +36,10 @@ invoke = "^2.2.0"
 
 [tool.poetry.group.dev.dependencies]
 django-debug-toolbar = "^5.0.1"
-ipython = "^8.31.0"
 black = {extras = ["d"], version = "^25.1.0"}
 debugpy = "^1.8.13"
 drf-yasg-stubs = "^0.1.4"
+ipython = "^9.0.2"
 
 [build-system]
 requires = ["poetry-core"]
