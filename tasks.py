@@ -4,11 +4,18 @@ from invoke import task
 
 @task
 def run(ctx):
+    print('Migrating db')
+    ctx.run('./manage.py migrate')
+    print('Collect static')
+    ctx.run('./manage.py collectstatic --noinput')
+
     command = ('uwsgi --http 0.0.0.0:8080 --master'
             ' --module "config.wsgi:get_wsgi_application()"'
             ' --processes=5'
             ' --offload-threads 4'
             ' --enable-threads'
+            ' --static-map /static=/static'
+            ' --static-map /media=/media'
     )
 
     if os.getenv('PY_AUTORELOAD'):
