@@ -5,7 +5,7 @@ run_test:
 	DJANGO_SETTINGS_MODULE='config.settings.test' ./manage.py test
 	DJANGO_SETTINGS_MODULE='config.settings.test' ./manage.py test
 
-init-prod:
+init-docker:
 	sudo apt update && sudo apt upgrade -y
 	sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
 	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
@@ -23,4 +23,5 @@ init-prod:
 	docker compose version
 
 run:
+	chmod a+x manage.py
 	docker compose -f docker-prod.yml up -d
