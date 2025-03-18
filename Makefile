@@ -10,4 +10,4 @@ run:
 	sudo apt install -y docker.io
 	sudo systemctl enable --now docker
 	sudo apt install docker-compose -y
-	docker compose -p djprod -f docker-prod.yml up
+	docker compose -f docker-prod.yml up
