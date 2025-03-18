@@ -1,2 +1,2 @@
-web: gunicorn jafaul/lms.wsgi --log-file -
+web: gunicorn lms-server.wsgi --log-file -
 
