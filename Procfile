@@ -1,3 +1,5 @@
-release: python manage.py migrate && python manage.py collectstatic --noinput
+release: docker-compose -p djprod -f docker-prod.yml up --build
 
-web: gunicorn config.wsgi --log-file -
+web: make run
+
+gunicorn config.wsgi --log-file -

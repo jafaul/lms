@@ -8,6 +8,10 @@ def run(ctx):
     ctx.run('./manage.py migrate')
     print('Collect static')
     ctx.run('./manage.py collectstatic --noinput')
+
+    # comment for hetzner
+    print('Run WSGI server with gunicorn')
+    ctx.run('gunicorn config.wsgi --bind 0.0.0.0:8000')
     # heroku supports gunicorn, hetzner supports uwsgi
     # command = ('uwsgi --http 0.0.0.0:8080 --master'
     #         ' --module "config.wsgi:get_wsgi_application()"'
