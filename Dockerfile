@@ -8,7 +8,7 @@ RUN pip install --no-cache-dir poetry==$POETRY_VERSION
 
 ENV POETRY_VIRTUALENVS_CREATE=false
 
-WORKDIR src/
+WORKDIR /src
 
 RUN apt update && apt install -y \
     gcc \
