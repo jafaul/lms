@@ -10,7 +10,6 @@ services:
       - .env
     ports:
       - ${DB_PORT}:${DB_PORT}
-    network_mode: "host"
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
