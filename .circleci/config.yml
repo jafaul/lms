@@ -9,6 +9,14 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install Docker client
+          command: apk add docker-cli
+
+      - setup_remote_docker:
+          version: edge
+          docker_layer_caching: true
+
+      - run:
           name: Create .env file
           command: |
             echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" > .env
