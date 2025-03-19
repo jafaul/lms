@@ -6,7 +6,12 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.docker')
+    import sys
+    if 'test' in sys.argv or 'test_coverage' in sys.argv:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
+    else:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.docker')
+    # print(os.getenv('DJANGO_SETTINGS_MODULE', 'config.settings.docker'))
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

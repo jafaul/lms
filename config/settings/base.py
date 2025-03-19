@@ -110,12 +110,12 @@ print(f"DB_HOST: {os.getenv('DB_HOST')}, DB_NAME: {os.getenv('DB_NAME')}, DB_USE
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'testdb'),
-        'USER': os.getenv('DB_USERNAME', 'testuser'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'example'),
-        'HOST': os.getenv('DB_HOST', 'postgres'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.getenv('DB_NAME', 'testdb'),
+        # 'USER': os.getenv('DB_USERNAME', 'testuser'),
+        # 'PASSWORD': os.getenv('DB_PASSWORD', 'example'),
+        # 'HOST': os.getenv('DB_HOST', 'postgres'),
+        # 'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
