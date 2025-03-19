@@ -71,6 +71,7 @@ services:
 
 networks:
   lms_network:
+     driver: bridge 
 
 volumes:
   pgdata:
