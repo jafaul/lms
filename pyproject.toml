@@ -33,6 +33,7 @@ dotenv = "^0.9.9"
 mypy = "^1.15.0"
 uwsgi = "^2.0.28"
 invoke = "^2.2.0"
+whitenoise = "^6.9.0"
 
 [tool.poetry.group.dev.dependencies]
 django-debug-toolbar = "^5.0.1"
