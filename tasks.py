@@ -6,26 +6,21 @@ from invoke import task
 def run(ctx):
     print('Migrating db')
     ctx.run('python manage.py migrate')
-    print('Collect static')
+    print('Collecting static')
     ctx.run('python manage.py collectstatic --noinput')
 
-    # comment for hetzner
-    # print('Run WSGI server with gunicorn')
-    # ctx.run('gunicorn config.wsgi --bind 0.0.0.0:8000')
-    # heroku supports gunicorn, hetzner supports uwsgi
+    cmd = ('uwsgi --http 0.0.0.0:8080 --master '
+           '--module "django.core.wsgi:get_wsgi_application()" '
+           '--processes 2 '
+           '--offload-threads 4 '
+           '--enable-threads '
+           '--static-map /static=/static '
+           '--static-map /media=/media'
+           )
 
-    command = ('uwsgi --http 0.0.0.0:8080 --master'
-            ' --module "config.wsgi:get_wsgi_application()"'
-            ' --processes=5'
-            ' --offload-threads 4'
-            ' --enable-threads'
-            # ' --static-map /static=/static'
-            # ' --static-map /media=/media'
-            # ' --static-safe /static'
-    )
 
     if os.getenv('PY_AUTORELOAD'):
-        command += ' --py-autoreload 1'
+        cmd += ' --py-autoreload 1'
 
     # if os.getenv('BASICAUTH'):
     #     command += ' --route "^/--basicauth:BA,{0}"'.format(os.getenv('BASICAUTH'))
@@ -35,4 +30,4 @@ def run(ctx):
     # else:
     #     command += ' --harakiri 30'
 
-    ctx.run(command)
+    ctx.run(cmd)
