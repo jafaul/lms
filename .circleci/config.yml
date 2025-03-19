@@ -50,7 +50,8 @@ jobs:
           command: |
             echo "ls"
             ls
-            docker compose run --rm django-web /bin/bash -c "ls"
+            docker compose run --rm django-web /bin/bash -c "ls" >> log.txt
+            cat log.txt
 
       - run:
           name: Run tests
