@@ -19,8 +19,9 @@ def run(ctx):
             ' --processes=5'
             ' --offload-threads 4'
             ' --enable-threads'
-            ' --static-map /static=/static'
-            ' --static-map /media=/media'
+            # ' --static-map /static=/static'
+            # ' --static-map /media=/media'
+            # ' --static-safe /static'
     )
 
     if os.getenv('PY_AUTORELOAD'):
