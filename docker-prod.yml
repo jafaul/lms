@@ -10,6 +10,8 @@ services:
       - .env
     ports:
       - ${DB_PORT}:${DB_PORT}
+    networks:
+       - lms_network
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
@@ -67,6 +69,8 @@ services:
       - "${DJANGO_PROJECT_PORT}:${DJANGO_PROJECT_PORT}"
     restart: unless-stopped
 
+networks:
+  lms_network:
 
 volumes:
   pgdata:
