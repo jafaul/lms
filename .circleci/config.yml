@@ -45,6 +45,13 @@ jobs:
 
       - python/install-packages:
           pkg-manager: poetry
+      - run:
+          name: Check location
+          command: |
+            echo "ls"
+            ls
+            docker compose run --rm django-web /bin/bash
+
 
       - run:
           name: Run tests
