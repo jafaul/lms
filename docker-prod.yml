@@ -60,7 +60,7 @@ services:
       - static:/static
     env_file:
      - .env
-    command: "/bin/bash -c './manage.py migrate; invoke run'"
+    command: "/bin/bash -c 'python manage.py migrate; invoke run'"
     depends_on:
       - postgres
     ports:

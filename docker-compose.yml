@@ -54,7 +54,7 @@ services:
       - static:/static
     env_file:
      - .env
-    command: "/bin/bash -c './manage.py migrate; python3 manage.py runserver 0.0.0.0:8080'"
+    command: "/bin/bash -c 'python manage.py migrate; python3 manage.py runserver 0.0.0.0:8080'"
     depends_on:
       - postgres
     ports:
