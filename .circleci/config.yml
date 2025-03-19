@@ -4,40 +4,11 @@ orbs:
 
 jobs:
   test-python:
-    docker:
-      - image: cimg/python:3.12-node
-      - image: postgres:16
-        name: postgres
-        environment:
-          POSTGRES_PASSWORD: pswd
-          POSTGRES_DB: lms
-          POSTGRES_HOST_AUTH_METHOD: trust
     steps:
       - checkout
       - run:
-          name: Set Postgres password, username accordingly to Environment variables
-          command: |
-            PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -U postgres -d lms -c "CREATE USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD' SUPERUSER;" || echo "User already exists"
-            echo "Updating POSTGRES_PASSWORD and POSTGRES_USER accordingly to environment variables.."
-            echo "export POSTGRES_PASSWORD=$DB_PASSWORD" >> $BASH_ENV
-            echo "export POSTGRES_USER=$DB_USERNAME" >> $BASH_ENV
-            echo "export POSTGRES_PASSWORD=$DB_PASSWORD" >> $BASH_ENV
-            source $BASH_ENV
-
-      - run:
-          name: Print Database Username
-          command: |
-            echo "Database Username: $POSTGRES_USER"
-      - run:
-          name: Check Database Connection
-          command: |
-            PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -U $DB_USERNAME -d lms -c "SELECT 1;"
-      - python/install-packages:
-          pkg-manager: poetry
-
-      - run:
           name: Run tests
-          command: poetry run python manage.py test
+          command: make test
 
 workflows:
   build-and-test:

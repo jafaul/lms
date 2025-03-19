@@ -1,8 +1,7 @@
 test:
 	docker compose run -it --rm django-web /bin/bash -c "DJANGO_SETTINGS_MODULE='config.settings.test' ./manage.py test"
 
-run_test:
-	DJANGO_SETTINGS_MODULE='config.settings.test' ./manage.py test
+run-test:
 	DJANGO_SETTINGS_MODULE='config.settings.test' ./manage.py test
 
 init-docker:
