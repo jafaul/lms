@@ -24,3 +24,12 @@ init-docker:
 
 run:
 	docker compose -f docker-prod.yml up -d
+
+rebuild:
+	git pull
+	echo "Pulled updates from REPO"
+	docker compose down
+	echo "Stopped docker compose"
+	docker compose -f docker-prod.yml up --build -d
+	echo "Rebuild and run docker compose"
+
