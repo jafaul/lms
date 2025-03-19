@@ -8,9 +8,9 @@ jobs:
       - image: cimg/python:3.12
     steps:
       - checkout
-      - run:
-          name: Install Docker client
-          command: apk add docker-cli
+#      - run:
+#          name: Install Docker client
+#          command: apk add docker-cli
 
       - setup_remote_docker:
           version: edge
