@@ -54,8 +54,13 @@ jobs:
 #            cat log.txt
 
       - run:
+          name: Run tests poetry
+          command: poetry run python manage.py test
+
+      - run:
           name: Run tests
-          command: poetry python manage.py test
+          command: python manage.py test
+
 
 workflows:
   build-and-test:
