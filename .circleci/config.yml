@@ -57,8 +57,16 @@ jobs:
             
             DEBIAN_FRONTEND=noninteractive sudo apt-get install -y docker-ce-cli docker-buildx-plugin docker-compose-plugin
       - setup_remote_docker: #activate the remote docker environment
-          version: edge
+          version: 20.10.7
           docker_layer_caching: false
+
+      - run:
+          name: Build and Start Docker Containers
+          command: docker compose up --build -d
+
+      - run:
+          name: Check if `manage.py` exists inside the container
+          command: docker compose run --rm django-web ls -lah /src
 
       - run:
           name: Run tests poetry
