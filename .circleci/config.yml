@@ -9,10 +9,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Ensure code is copied
-          command: cp -r * /home/circleci/project/
-
-      - run:
           name: Create .env file
           command: |
             echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" > .env
