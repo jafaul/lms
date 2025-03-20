@@ -44,7 +44,7 @@ services:
 
   django-web:
     build:
-      context: . #/home/circleci/project
+      context: /home/circleci/project
       dockerfile: Dockerfile
     environment:
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
