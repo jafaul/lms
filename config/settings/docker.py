@@ -6,7 +6,7 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', 'testdb'),
         'USER': os.getenv('DB_USERNAME', 'testuser'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'testpassword'),
-        'HOST': os.getenv('DB_HOST', 'postgres'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
