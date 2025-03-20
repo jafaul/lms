@@ -8,7 +8,10 @@ RUN pip install --no-cache-dir poetry==$POETRY_VERSION
 
 ENV POETRY_VIRTUALENVS_CREATE=false
 
-WORKDIR /src
+WORKDIR /src/
+COPY . /src/
+RUN ls -lah /src
+
 
 RUN apt update && apt install -y \
     gcc \
@@ -19,8 +22,8 @@ RUN apt update && apt install -y \
     && rm -rf /var/lib/apt/lists/*
 
 
-COPY pyproject.toml .
-COPY poetry.lock .
+COPY pyproject.toml /src/
+COPY poetry.lock /src/
 
 RUN poetry config virtualenvs.create false
 
@@ -30,5 +33,4 @@ RUN if [ "$DEBUG" = "False" ]; then \
         pip install poetry && poetry install --no-root --no-directory; \
     fi
 
-COPY . /src
 

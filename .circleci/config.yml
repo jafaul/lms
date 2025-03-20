@@ -63,6 +63,15 @@ jobs:
           name: Build and Start Docker Containers
           command: docker compose up --build -d
 
+     - run:
+          name: Debug: Show current path and files inside container
+          command: |
+            echo "Inside the container, current working directory is:"
+            docker compose run --rm django-web /bin/bash -c "pwd"
+            echo "Listing contents of /src:"
+            docker compose run --rm django-web /bin/bash -c "ls -lah /src"
+            
+
       - run:
           name: Check if `manage.py` exists inside the container
           command: docker compose run --rm django-web ls -lah /src
