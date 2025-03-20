@@ -58,7 +58,7 @@ jobs:
             DEBIAN_FRONTEND=noninteractive sudo apt-get install -y docker-ce-cli docker-buildx-plugin docker-compose-plugin
       - setup_remote_docker: #activate the remote docker environment
           version: edge
-          docker_layer_caching: true
+          docker_layer_caching: false
 
       - run:
           name: Run tests poetry

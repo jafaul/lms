@@ -4,10 +4,13 @@ from invoke import task
 
 @task
 def run(ctx):
+    ctx.run("pwd", hide=False)
+    print()
     print('Migrating db')
-    ctx.run('python manage.py migrate')
+    ctx.run('python manage.py migrate', hide=False)
     print('Collecting static')
-    ctx.run('python manage.py collectstatic --noinput')
+
+    ctx.run('python manage.py collectstatic --noinput', hide=False)
 
     cmd = ('uwsgi --http 0.0.0.0:8080 --master '
            '--module "django.core.wsgi:get_wsgi_application()" '
@@ -30,4 +33,5 @@ def run(ctx):
     # else:
     #     command += ' --harakiri 30'
 
-    ctx.run(cmd)
+    ctx.run(cmd, hide=False)
+
