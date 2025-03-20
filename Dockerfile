@@ -30,5 +30,5 @@ RUN if [ "$DEBUG" = "False" ]; then \
         pip install poetry && poetry install --no-root --no-directory; \
     fi
 
-COPY . .
+COPY . /src
 
