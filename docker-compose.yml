@@ -30,7 +30,7 @@ services:
       - .env
     volumes_from:
       - django-web
-    command: /bin/bash -c "cd /src; celery -A apps.celery_app worker -E"
+    command: /bin/bash -c "celery -A apps.celery_app worker -E"
 
   celerybeat:
     build:
@@ -40,7 +40,7 @@ services:
       - .env
     volumes_from:
       - django-web
-    command: /bin/bash -c "cd /src; celery -A apps.celery_app beat -l INFO  --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    command: /bin/bash -c "celery -A apps.celery_app beat -l INFO  --scheduler django_celery_beat.schedulers:DatabaseScheduler"
 
   django-web:
     build:
@@ -50,12 +50,12 @@ services:
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - DEBUG=${DEBUG}
     volumes:
-      - .:/src
+      - .:/.
       - static:/static
-    working_dir: /src
+    working_dir: /.
     env_file:
      - .env
-    command: "/bin/bash -c 'pwd; cd src; python manage.py migrate; python3 manage.py runserver 0.0.0.0:8080'"
+    command: "/bin/bash -c 'python manage.py migrate; python3 manage.py runserver 0.0.0.0:8080'"
     depends_on:
       - postgres
     ports:
