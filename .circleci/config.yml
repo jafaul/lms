@@ -8,6 +8,7 @@ jobs:
       - image: cimg/python:3.12
     steps:
       - checkout
+
       - run:
           name: Create .env file
           command: |
@@ -42,35 +43,29 @@ jobs:
           name: Install Docker Compose
           command: |
             sudo apt-get update
-            
             DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ca-certificates curl
-            
             sudo install -m 0755 -d /etc/apt/keyrings
-            
             sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null
             sudo chmod a+r /etc/apt/keyrings/docker.asc
-            
             echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
             $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-            
             sudo apt-get update
-            
             DEBIAN_FRONTEND=noninteractive sudo apt-get install -y docker-ce-cli docker-buildx-plugin docker-compose-plugin
-      - setup_remote_docker: #activate the remote docker environment
+
+      - setup_remote_docker:
           docker_layer_caching: false
 
       - run:
           name: Build and Start Docker Containers
           command: docker compose up --build -d
 
-     - run:
+      - run:
           name: Debug: Show current path and files inside container
           command: |
             echo "Inside the container, current working directory is:"
             docker compose run --rm django-web /bin/bash -c "pwd"
             echo "Listing contents of /src:"
             docker compose run --rm django-web /bin/bash -c "ls -lah /src"
-            
 
       - run:
           name: Check if `manage.py` exists inside the container
