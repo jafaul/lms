@@ -57,6 +57,11 @@ jobs:
       - run:
           name: Build and Start Docker Containers
           command: docker compose up --build -d
+      - run:
+          name: Copy files to container manually
+          command: |
+            docker compose run --rm django-web /bin/bash -c "mkdir -p /src && cp -r /home/circleci/project/* /src/"
+
 
       - run:
           name: Show current path and files inside container
