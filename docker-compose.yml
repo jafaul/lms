@@ -50,7 +50,7 @@ services:
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - DEBUG=${DEBUG}
     volumes:
-      - .:/src
+      - /home/circleci/project:/src
       - static:/static
     working_dir: /src
     env_file:
