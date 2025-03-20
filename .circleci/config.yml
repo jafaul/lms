@@ -29,7 +29,6 @@ jobs:
       - run:
           name: Run Database Migrations
           command: |
-            export DATABASE_URL=postgresql://testuser:testpassword@localhost:5432/testdb
             poetry run python manage.py migrate
 
 
