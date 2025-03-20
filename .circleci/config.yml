@@ -60,7 +60,7 @@ jobs:
           command: docker compose up --build -d
 
       - run:
-          name: Debug: Show current path and files inside container
+          name: Show current path and files inside container
           command: |
             echo "Inside the container, current working directory is:"
             docker compose run --rm django-web /bin/bash -c "pwd"
