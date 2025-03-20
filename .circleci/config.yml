@@ -6,80 +6,36 @@ jobs:
   test-python:
     docker:
       - image: cimg/python:3.12
+      - image: postgres:16
+        environment:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: testdb
     steps:
       - checkout
-      - run:
-          name: Create .env file
-          command: |
-            echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" > .env
-            echo "AWS_S3_REGION_NAME=$AWS_S3_REGION_NAME" >> .env
-            echo "AWS_S3_SIGNATURE_NAME=$AWS_S3_SIGNATURE_NAME" >> .env
-            echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> .env
-            echo "AWS_STORAGE_BUCKET_NAME=$AWS_STORAGE_BUCKET_NAME" >> .env
-            echo "DB_HOST=$DB_HOST" >> .env
-            echo "DB_NAME=$DB_NAME" >> .env
-            echo "DB_PASSWORD=$DB_PASSWORD" >> .env
-            echo "DB_PORT=$DB_PORT" >> .env
-            echo "DB_USERNAME=$DB_USERNAME" >> .env
-            echo "DEBUG=$DEBUG" >> .env
-            echo "DJANGO_DEBUG=$DJANGO_DEBUG" >> .env
-            echo "DJANGO_PROJECT_PORT=$DJANGO_PROJECT_PORT" >> .env
-            echo "DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY" >> .env
-            echo "DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE" >> .env
-            echo "EMAIL_HOST=$EMAIL_HOST" >> .env
-            echo "EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD" >> .env
-            echo "EMAIL_HOST_USER=$EMAIL_HOST_USER" >> .env
-            echo "EMAIL_PORT=$EMAIL_PORT" >> .env
-            echo "EMAIL_USE_TLS=$EMAIL_USE_TLS" >> .env
-            echo "REDIS_ADDR=$REDIS_ADDR" >> .env
-            echo "SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=$SOCIAL_AUTH_GOOGLE_OAUTH2_KEY" >> .env
-            echo "SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=$SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET" >> .env
+
+      - setup_remote_docker:
+          docker_layer_caching: true
 
       - python/install-packages:
           pkg-manager: poetry
 
+
       - run:
-          name: Install Docker Compose
+          name: Wait for PostgreSQL to be Ready
           command: |
-            sudo apt-get update
-            DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ca-certificates curl
-            sudo install -m 0755 -d /etc/apt/keyrings
-            sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null
-            sudo chmod a+r /etc/apt/keyrings/docker.asc
-            echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-            $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-            sudo apt-get update
-            DEBIAN_FRONTEND=noninteractive sudo apt-get install -y docker-ce-cli docker-buildx-plugin docker-compose-plugin
-
-      - setup_remote_docker:
-          docker_layer_caching: false
+            dockerize -wait tcp://localhost:5432 -timeout 60s
 
       - run:
-          name: Build and Start Docker Containers
-          command: docker compose up --build -d
-      - run:
-          name: Copy files to container manually
+          name: Run Database Migrations
           command: |
-            docker compose run --rm django-web /bin/bash -c "mkdir -p /src && cp -r /home/circleci/project/* /src/"
+            export DATABASE_URL=postgresql://testuser:testpassword@localhost:5432/testdb
+            poetry run python manage.py migrate
 
 
       - run:
-          name: Show current path and files inside container
-          command: |
-            echo "Inside the container, current working directory is:"
-            docker compose run --rm django-web /bin/bash -c "pwd"
-            echo "Listing contents of /src:"
-            docker compose run --rm django-web /bin/bash -c "ls -lah /src"
-            echo "Listing files in CircleCI workspace:"
-            ls -lah /home/circleci/project
-
-      - run:
-          name: Check if `manage.py` exists inside the container
-          command: docker compose run --rm django-web ls -lah /src
-
-      - run:
-          name: Run tests poetry
-          command: make test
+          name: Run Tests
+          command: poetry run manage.py test --settings=config.settings.dev
 
 workflows:
   build-and-test:
