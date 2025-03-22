@@ -30,7 +30,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "default-secret-key")
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "True") == "True"
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = ["*"]
 
@@ -109,14 +109,13 @@ WSGI_APPLICATION = "config.wsgi.application"
 print(f"DB_HOST: {os.getenv('DB_HOST')}, DB_NAME: {os.getenv('DB_NAME')}, DB_USERNAME: {os.getenv('DB_USERNAME')}")
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USERNAME"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT"),
-        "ATOMIC_REQUESTS": True,
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.getenv('DB_NAME', 'testdb'),
+        # 'USER': os.getenv('DB_USERNAME', 'testuser'),
+        # 'PASSWORD': os.getenv('DB_PASSWORD', 'example'),
+        # 'HOST': os.getenv('DB_HOST', 'postgres'),
+        # 'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
@@ -198,7 +197,8 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 AWS_S3_VERIFY = True
 AWS_QUERYSTRING_AUTH = False
-STATICFILES_STORAGE = "storages.backends.s3.S3Storage"
+# STATICFILES_STORAGE = "storages.backends.s3.S3Storage"
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 
 # social auth django

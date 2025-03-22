@@ -84,3 +84,7 @@ if base.DEBUG:
 # todo high scalability .com site to research microservices examples
 # todo react js/flux for stupid people
 
+# todo check vim book
+# todo implement vue js and nginx
+
+#todo change  .env to secret manager in aws usage for cloud server

@@ -1,0 +1,67 @@
+version: 2.1
+orbs:
+  python: circleci/python@2
+
+jobs:
+  test-python:
+    docker:
+      - image: cimg/python:3.12
+      - image: postgres:16
+        environment:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: testdb
+    steps:
+      - checkout
+
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      - python/install-packages:
+          pkg-manager: poetry
+
+
+      - run:
+          name: Wait for PostgreSQL to be Ready
+          command: |
+            dockerize -wait tcp://localhost:5432 -timeout 60s
+
+      - run:
+          name: Run Database Migrations
+          command: |
+            poetry run python manage.py migrate
+
+      - run:
+          name: Run Tests
+          command: poetry run python manage.py test --settings=config.settings.dev
+
+  deploy-prod:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - run:
+          name: "update apt"
+          command: "sudo apt-get update"
+      - run:
+          name: "Install python3-pip"
+          command: "sudo apt-get install python3-pip -y"
+
+      - run:
+          name: "install deploy requierements"
+          command: "pip3 install pexpect boto3"
+
+      - run:
+          name: "start deploy"
+          command: "python3 deploy.py"
+
+workflows:
+  build-and-test:
+    jobs:
+      - test-python
+  deploy-prod:
+    jobs:
+      - deploy-prod:
+          filters:
+            branches:
+              only: main
