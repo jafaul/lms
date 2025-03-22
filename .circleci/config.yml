@@ -51,7 +51,7 @@ jobs:
           name: "install deploy requierements"
           command: "pip3 install pexpect boto3"
 
-      - add-ssh-keys:
+      - add_ssh_keys:
           fingerprints:
             - 'SHA256:jxY5Yx+fxM/qAal/TRjGDlRAeDZk2hzB0usJ5xE+IMc'
 
