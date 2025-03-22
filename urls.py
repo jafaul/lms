@@ -86,3 +86,5 @@ if base.DEBUG:
 
 # todo check vim book
 # todo implement vue js and nginx
+
+#todo change  .env to secret manager in aws usage for cloud server
