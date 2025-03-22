@@ -2,7 +2,7 @@ from .docker import *
 
 DEBUG = False
 
-SITE_URL = "http://3.120.187.32:8080"
+SITE_URL = "http://13.60.78.222:8080"
 
 MIDDLEWARE += [
     'whitenoise.middleware.WhiteNoiseMiddleware'
