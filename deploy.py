@@ -13,7 +13,7 @@ class Pexpect:
     def __init__(self, host, default_expect='ubuntu@', timeout=300):
         self.host = host
         self.default_expect = default_expect
-        self.child = pexpect.spawn('ssh -i ~/.ssh/lms-jafaul.pem -o StrictHostKeyChecking=no ubuntu@{}'.format(host), timeout=timeout, encoding='utf-8')
+        self.child = pexpect.spawn('ssh -o StrictHostKeyChecking=no ubuntu@{}'.format(host), timeout=timeout, encoding='utf-8')
         self.child.logfile = sys.stdout
         self.child.expect(default_expect)
 
