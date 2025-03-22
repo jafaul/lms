@@ -13,7 +13,7 @@ class Pexpect:
     def __init__(self, host, default_expect='ubuntu@', timeout=300):
         self.host = host
         self.default_expect = default_expect
-        self.child = pexpect.spawn('ssh -o StrictHostKeyChecking=no ubuntu@{}'.format(host), timeout=timeout, encoding='utf-8')
+        self.child = pexpect.spawn('ssh  -i ~/.ssh/lms-jafaul.pem -o StrictHostKeyChecking=no ubuntu@{}'.format(host), timeout=timeout, encoding='utf-8')
         self.child.logfile = sys.stdout
         self.child.expect(default_expect)
 
@@ -44,7 +44,7 @@ def deploy_host(instance):
     docker_compose_file = os.getenv('DOCKER_COMPOSE_FILE', 'docker-prod.yml')
     docker_compose = 'docker compose -f {}'.format(docker_compose_file)
     expect_value = os.getenv('EXPECT_VALUE', 'ubuntu@')
-    deploy_version = os.getenv('CIRCLE_SHA1', 'master')
+    deploy_version = os.getenv('CIRCLE_SHA1', 'main')
 
     if not deploy_host or not deploy_version:
         raise ValueError('No env vars provided')
