@@ -51,6 +51,10 @@ jobs:
           name: "install deploy requierements"
           command: "pip3 install pexpect boto3"
 
+      - add-ssh-keys:
+          fingerprints:
+            - 'SHA256:jxY5Yx+fxM/qAal/TRjGDlRAeDZk2hzB0usJ5xE+IMc'
+
       - run:
           name: "start deploy"
           command: "python3 deploy.py"
